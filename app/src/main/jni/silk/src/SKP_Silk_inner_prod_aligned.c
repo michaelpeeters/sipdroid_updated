@@ -41,53 +41,56 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*        * only when len>6, memory access can be reduced by half.              */
 
 SKP_int32 SKP_Silk_inner_prod_aligned(
-        const SKP_int16 *const inVec1,  /*    I input vector 1    */
-        const SKP_int16 *const inVec2,  /*    I input vector 2    */
-        const SKP_int len   /*    I vector lengths    */
-) {
-    SKP_int i;
+    const SKP_int16* const inVec1,  /*    I input vector 1    */
+    const SKP_int16* const inVec2,  /*    I input vector 2    */
+    const SKP_int             len   /*    I vector lengths    */
+)
+{
+    SKP_int   i; 
     SKP_int32 sum = 0;
-    for (i = 0; i < len; i++) {
-        sum = SKP_SMLABB(sum, inVec1[i], inVec2[i]);
+    for( i = 0; i < len; i++ ) {
+        sum = SKP_SMLABB( sum, inVec1[ i ], inVec2[ i ] );
     }
     return sum;
 }
 
 SKP_int64 SKP_Silk_inner_prod_aligned_64(
-        const SKP_int32 *inVec1,        /*    I input vector 1    */
-        const SKP_int32 *inVec2,        /*    I input vector 2    */
-        const SKP_int len             /*    I vector lengths    */
-) {
-    SKP_int i;
+    const SKP_int32 *inVec1,        /*    I input vector 1    */ 
+    const SKP_int32 *inVec2,        /*    I input vector 2    */
+    const SKP_int   len             /*    I vector lengths    */
+)
+{
+    SKP_int   i; 
     SKP_int64 sum = 0;
-    for (i = 0; i < len; i++) {
-        sum = SKP_SMLAL(sum, inVec1[i], inVec2[i]);
+    for( i = 0; i < len; i++ ) {
+        sum = SKP_SMLAL( sum, inVec1[ i ], inVec2[ i ] );
     }
     return sum;
 }
-
 SKP_int64 SKP_Silk_inner_prod16_aligned_64(
-        const SKP_int16 *inVec1,        /*    I input vector 1    */
-        const SKP_int16 *inVec2,        /*    I input vector 2    */
-        const SKP_int len             /*    I vector lengths    */
-) {
-    SKP_int i;
+    const SKP_int16 *inVec1,        /*    I input vector 1    */ 
+    const SKP_int16 *inVec2,        /*    I input vector 2    */
+    const SKP_int   len             /*    I vector lengths    */
+)
+{
+    SKP_int   i; 
     SKP_int64 sum = 0;
-    for (i = 0; i < len; i++) {
-        sum = SKP_SMLALBB(sum, inVec1[i], inVec2[i]);
+    for( i = 0; i < len; i++ ) {
+        sum = SKP_SMLALBB( sum, inVec1[ i ], inVec2[ i ] );
     }
     return sum;
 }
 
 SKP_int32 SKP_Silk_inner_prod16_aligned_sat(
-        const SKP_int16 *const inVec1,  /*    I input vector 1  */
-        const SKP_int16 *const inVec2,  /*    I input vector 2  */
-        const SKP_int len            /*    I vector lengths  */
-) {
-    SKP_int i;
+    const SKP_int16* const inVec1,  /*    I input vector 1  */ 
+    const SKP_int16* const inVec2,  /*    I input vector 2  */
+    const SKP_int    len            /*    I vector lengths  */ 
+)
+{
+    SKP_int   i; 
     SKP_int32 sum = 0;
-    for (i = 0; i < len; i++) {
-        sum = SKP_ADD_SAT32(sum, SKP_SMULBB(inVec1[i], inVec2[i]));
+    for( i = 0; i < len; i++ ) {
+        sum = SKP_ADD_SAT32( sum, SKP_SMULBB( inVec1[ i ], inVec2[ i ] ) );
     }
     return sum;
 }

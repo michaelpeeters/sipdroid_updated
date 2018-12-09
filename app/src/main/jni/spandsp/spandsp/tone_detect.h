@@ -31,7 +31,8 @@
 /*!
     Goertzel filter descriptor.
 */
-struct goertzel_descriptor_s {
+struct goertzel_descriptor_s
+{
 #if defined(SPANDSP_USE_FIXED_POINT)
     int16_t fac;
 #else
@@ -43,7 +44,8 @@ struct goertzel_descriptor_s {
 /*!
     Goertzel filter state descriptor.
 */
-struct goertzel_state_s {
+struct goertzel_state_s
+{
 #if defined(SPANDSP_USE_FIXED_POINT)
     int16_t v2;
     int16_t v3;
@@ -73,38 +75,33 @@ extern "C"
 #endif
 
 /*! \brief Create a descriptor for use with either a Goertzel transform */
-SPAN_DECLARE(void)
-make_goertzel_descriptor(goertzel_descriptor_t * t ,
-float freq,
-int samples ) ;
+SPAN_DECLARE(void) make_goertzel_descriptor(goertzel_descriptor_t *t,
+                                            float freq,
+                                            int samples);
 
 /*! \brief Initialise the state of a Goertzel transform.
     \param s The Goertzel context. If NULL, a context is allocated with malloc.
     \param t The Goertzel descriptor.
     \return A pointer to the Goertzel state. */
-SPAN_DECLARE(goertzel_state_t * ) goertzel_init(goertzel_state_t * s ,
-goertzel_descriptor_t *t ) ;
+SPAN_DECLARE(goertzel_state_t *) goertzel_init(goertzel_state_t *s,
+                                               goertzel_descriptor_t *t);
 
-SPAN_DECLARE(int)
-goertzel_release(goertzel_state_t * s ) ;
+SPAN_DECLARE(int) goertzel_release(goertzel_state_t *s);
 
-SPAN_DECLARE(int)
-goertzel_free(goertzel_state_t * s ) ;
+SPAN_DECLARE(int) goertzel_free(goertzel_state_t *s);
 
 /*! \brief Reset the state of a Goertzel transform.
     \param s The Goertzel context. */
-SPAN_DECLARE(void)
-goertzel_reset(goertzel_state_t * s ) ;
+SPAN_DECLARE(void) goertzel_reset(goertzel_state_t *s);
 
 /*! \brief Update the state of a Goertzel transform.
     \param s The Goertzel context.
     \param amp The samples to be transformed.
     \param samples The number of samples.
     \return The number of samples unprocessed */
-SPAN_DECLARE(int)
-goertzel_update(goertzel_state_t * s ,
-const int16_t amp[],
-int samples ) ;
+SPAN_DECLARE(int) goertzel_update(goertzel_state_t *s,
+                                  const int16_t amp[],
+                                  int samples);
 
 /*! \brief Evaluate the final result of a Goertzel transform.
     \param s The Goertzel context.
@@ -115,36 +112,34 @@ int samples ) ;
 #if defined(SPANDSP_USE_FIXED_POINT)
 SPAN_DECLARE(int32_t) goertzel_result(goertzel_state_t *s);
 #else
-SPAN_DECLARE(float)
-goertzel_result(goertzel_state_t * s ) ;
+SPAN_DECLARE(float) goertzel_result(goertzel_state_t *s);
 #endif
 
 /*! \brief Update the state of a Goertzel transform.
     \param s The Goertzel context.
     \param amp The sample to be transformed. */
-static __inline__ void goertzel_sample(goertzel_state_t * s, int16_t
-amp )
+static __inline__ void goertzel_sample(goertzel_state_t *s, int16_t amp)
 {
 #if defined(SPANDSP_USE_FIXED_POINT)
-int16_t x;
-int16_t v1;
+    int16_t x;
+    int16_t v1;
 #else
-float v1;
+    float v1;
 #endif
 
-v1 = s->v2;
-s -> v2 = s->v3;
+    v1 = s->v2;
+    s->v2 = s->v3;
 #if defined(SPANDSP_USE_FIXED_POINT)
-x = (((int32_t) s->fac*s->v2) >> 14);
-/* Scale down the input signal to avoid overflows. 9 bits is enough to
-   monitor the signals of interest with adequate dynamic range and
-   resolution. In telephony we generally only start with 13 or 14 bits,
-   anyway. */
-s->v3 = x - v1 + (amp >> 7);
+    x = (((int32_t) s->fac*s->v2) >> 14);
+    /* Scale down the input signal to avoid overflows. 9 bits is enough to
+       monitor the signals of interest with adequate dynamic range and
+       resolution. In telephony we generally only start with 13 or 14 bits,
+       anyway. */
+    s->v3 = x - v1 + (amp >> 7);
 #else
-s -> v3 = s->fac * s->v2 - v1 + amp;
+    s->v3 = s->fac*s->v2 - v1 + amp;
 #endif
-s -> current_sample ++ ;
+    s->current_sample++;
 }
 /*- End of function --------------------------------------------------------*/
 
@@ -168,26 +163,23 @@ s -> current_sample ++ ;
 #if defined(SPANDSP_USE_FIXED_POINT)
 static __inline__ void goertzel_samplex(goertzel_state_t *s, int16_t amp)
 #else
-static __inline__ void goertzel_samplex(goertzel_state_t * s, float
-amp)
+static __inline__ void goertzel_samplex(goertzel_state_t *s, float amp)
 #endif
 {
 #if defined(SPANDSP_USE_FIXED_POINT)
-int16_t x;
-int16_t v1;
+    int16_t x;
+    int16_t v1;
 #else
-float v1;
+    float v1;
 #endif
 
-v1 = s->v2;
-s->
-v2 = s->v3;
+    v1 = s->v2;
+    s->v2 = s->v3;
 #if defined(SPANDSP_USE_FIXED_POINT)
-x = (((int32_t) s->fac*s->v2) >> 14);
-s->v3 = x - v1 + amp;
+    x = (((int32_t) s->fac*s->v2) >> 14);
+    s->v3 = x - v1 + amp;
 #else
-s->
-v3 = s->fac * s->v2 - v1 + amp;
+    s->v3 = s->fac*s->v2 - v1 + amp;
 #endif
 }
 /*- End of function --------------------------------------------------------*/
@@ -199,14 +191,7 @@ v3 = s->fac * s->v2 - v1 + amp;
     \param window_len The length of the periodogram window. This must be an even number.
     \return The number of generated coefficients.
 */
-SPAN_DECLARE(int)
-
-periodogram_generate_coeffs(complexf_t
-coeffs[],
-float freq,
-int sample_rate,
-int window_len
-);
+SPAN_DECLARE(int) periodogram_generate_coeffs(complexf_t coeffs[], float freq, int sample_rate, int window_len);
 
 /*! Generate the phase offset to be expected between successive periodograms evaluated at the 
     specified interval.
@@ -216,14 +201,7 @@ int window_len
     \param interval The interval between periodograms, in samples.
     \return The scaling factor.
 */
-SPAN_DECLARE(float)
-
-periodogram_generate_phase_offset(complexf_t
-*offset,
-float freq,
-int sample_rate,
-int interval
-);
+SPAN_DECLARE(float) periodogram_generate_phase_offset(complexf_t *offset, float freq, int sample_rate, int interval);
 
 /*! Evaluate a periodogram.
     \param coeffs A set of coefficients generated by periodogram_generate_coeffs().
@@ -231,9 +209,7 @@ int interval
     \param len The length of the periodogram, in samples. This must be an even number.
     \return The periodogram result.
 */
-SPAN_DECLARE(complexf_t)
-
-periodogram(const complexf_t coeffs[], const complexf_t amp[], int len);
+SPAN_DECLARE(complexf_t) periodogram(const complexf_t coeffs[], const complexf_t amp[], int len);
 
 /*! Prepare data for evaluating a set of periodograms.
     \param sum A vector of sums of pairs of signal samples. This will be half the length of len.
@@ -242,14 +218,7 @@ periodogram(const complexf_t coeffs[], const complexf_t amp[], int len);
     \param len The length of the periodogram, in samples. This must be an even number.
     \return The length of the vectors sum and diff.
 */
-SPAN_DECLARE(int)
-
-periodogram_prepare(complexf_t
-sum[],
-complexf_t diff[],
-const complexf_t amp[],
-int len
-);
+SPAN_DECLARE(int) periodogram_prepare(complexf_t sum[], complexf_t diff[], const complexf_t amp[], int len);
 
 /*! Evaluate a periodogram, based on data prepared by periodogram_prepare(). This is more efficient
     than using periodogram() when several periodograms are to be applied to the same signal.
@@ -259,10 +228,7 @@ int len
     \param len The length of the periodogram, in samples. This must be an even number.
     \return The periodogram result.
 */
-SPAN_DECLARE(complexf_t)
-
-periodogram_apply(const complexf_t coeffs[], const complexf_t sum[], const complexf_t diff[],
-                  int len);
+SPAN_DECLARE(complexf_t) periodogram_apply(const complexf_t coeffs[], const complexf_t sum[], const complexf_t diff[], int len);
 
 /*! Apply a phase offset, to find the frequency error between periodogram evaluations.
     specified interval.
@@ -272,10 +238,7 @@ periodogram_apply(const complexf_t coeffs[], const complexf_t sum[], const compl
     \param result A pointer to the current periodogram result.
     \return The frequency error, in Hz.
 */
-SPAN_DECLARE(float)
-
-periodogram_freq_error(const complexf_t *phase_offset, float scale, const complexf_t *last_result,
-                       const complexf_t *result);
+SPAN_DECLARE(float) periodogram_freq_error(const complexf_t *phase_offset, float scale, const complexf_t *last_result, const complexf_t *result);
 
 #if defined(__cplusplus)
 }

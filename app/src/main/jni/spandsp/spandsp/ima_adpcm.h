@@ -44,13 +44,14 @@ IMA ADPCM offers a good balance of simplicity and quality at a rate of
 \section ima_adpcm_page_sec_3 How do I use it?
 */
 
-enum {
+enum
+{
     /*! IMA4 is the original IMA ADPCM variant */
-            IMA_ADPCM_IMA4 = 0,
+    IMA_ADPCM_IMA4 = 0,
     /*! DVI4 is the IMA ADPCM variant defined in RFC3551 */
-            IMA_ADPCM_DVI4 = 1,
+    IMA_ADPCM_DVI4 = 1,
     /*! VDVI is the variable bit rate IMA ADPCM variant defined in RFC3551 */
-            IMA_ADPCM_VDVI = 2
+    IMA_ADPCM_VDVI = 2
 };
 
 /*!
@@ -72,21 +73,19 @@ extern "C"
            zero sample samples means treat each encode or decode operation
            as a chunk.
     \return A pointer to the IMA ADPCM context, or NULL for error. */
-SPAN_DECLARE(ima_adpcm_state_t * ) ima_adpcm_init(ima_adpcm_state_t * s ,
-int variant,
-int chunk_size ) ;
+SPAN_DECLARE(ima_adpcm_state_t *) ima_adpcm_init(ima_adpcm_state_t *s,
+                                                 int variant,
+                                                 int chunk_size);
 
 /*! Release an IMA ADPCM encode or decode context.
     \param s The IMA ADPCM context.
     \return 0 for OK. */
-SPAN_DECLARE(int)
-ima_adpcm_release(ima_adpcm_state_t * s ) ;
+SPAN_DECLARE(int) ima_adpcm_release(ima_adpcm_state_t *s);
 
 /*! Free an IMA ADPCM encode or decode context.
     \param s The IMA ADPCM context.
     \return 0 for OK. */
-SPAN_DECLARE(int)
-ima_adpcm_free(ima_adpcm_state_t * s ) ;
+SPAN_DECLARE(int) ima_adpcm_free(ima_adpcm_state_t *s);
 
 /*! Encode a buffer of linear PCM data to IMA ADPCM.
     \param s The IMA ADPCM context.
@@ -94,11 +93,10 @@ ima_adpcm_free(ima_adpcm_state_t * s ) ;
     \param amp The audio sample buffer.
     \param len The number of samples in the buffer.
     \return The number of bytes of IMA ADPCM data produced. */
-SPAN_DECLARE(int)
-ima_adpcm_encode(ima_adpcm_state_t * s ,
-uint8_t ima_data[],
-const int16_t amp[],
-int len ) ;
+SPAN_DECLARE(int) ima_adpcm_encode(ima_adpcm_state_t *s,
+                                   uint8_t ima_data[],
+                                   const int16_t amp[],
+                                   int len);
 
 /*! Decode a buffer of IMA ADPCM data to linear PCM.
     \param s The IMA ADPCM context.
@@ -106,11 +104,10 @@ int len ) ;
     \param ima_data The IMA ADPCM data
     \param ima_bytes The number of bytes of IMA ADPCM data
     \return The number of samples returned. */
-SPAN_DECLARE(int)
-ima_adpcm_decode(ima_adpcm_state_t * s ,
-int16_t amp[],
-const uint8_t ima_data[],
-int ima_bytes ) ;
+SPAN_DECLARE(int) ima_adpcm_decode(ima_adpcm_state_t *s,
+                                   int16_t amp[],
+                                   const uint8_t ima_data[],
+                                   int ima_bytes);
 
 #if defined(__cplusplus)
 }

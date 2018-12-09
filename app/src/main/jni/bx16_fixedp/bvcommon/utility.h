@@ -26,10 +26,7 @@
 ******************************************************************************/
 
 void UW8copy(UWord8 *y, UWord8 *x, int size);
-
 void W16copy(Word16 *y, Word16 *x, int size);
-
 void W16zero(Word16 *x, int size);
-
 void W32copy(Word32 *y, Word32 *x, int size);
 

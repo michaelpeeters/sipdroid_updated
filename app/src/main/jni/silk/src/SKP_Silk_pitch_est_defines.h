@@ -35,9 +35,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Definitions For Fix pitch estimator						*/
 /************************************************************/
 
-#define PITCH_EST_SHORTLAG_BIAS_Q15            6554    /* 0.2f. for logarithmic weighting	*/
-#define PITCH_EST_PREVLAG_BIAS_Q15            6554    /* Prev lag bias	*/
-#define PITCH_EST_FLATCONTOUR_BIAS_Q20        52429    /* 0.05f */
+#define PITCH_EST_SHORTLAG_BIAS_Q15			6554	/* 0.2f. for logarithmic weighting	*/
+#define PITCH_EST_PREVLAG_BIAS_Q15			6554	/* Prev lag bias	*/
+#define PITCH_EST_FLATCONTOUR_BIAS_Q20		52429	/* 0.05f */
 
 #endif
 

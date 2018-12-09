@@ -52,7 +52,7 @@
 #ifdef _USE_SSE
 #error SSE is only for floating-point
 #endif
-#if ((defined (ARM4_ASM) || defined (ARM4_ASM)) && defined(BFIN_ASM)) || (defined (ARM4_ASM) && defined(ARM5E_ASM))
+#if ((defined (ARM4_ASM)||defined (ARM4_ASM)) && defined(BFIN_ASM)) || (defined (ARM4_ASM)&&defined(ARM5E_ASM))
 #error Make up your mind. What CPU do you have?
 #endif
 #ifdef VORBIS_PSYCHO
@@ -75,23 +75,21 @@
 #endif
 
 #ifndef OUTSIDE_SPEEX
-
 #include "speex/speex_types.h"
-
 #endif
 
 #define ABS(x) ((x) < 0 ? (-(x)) : (x))      /**< Absolute integer value. */
 #define ABS16(x) ((x) < 0 ? (-(x)) : (x))    /**< Absolute 16-bit value.  */
-#define MIN16(a, b) ((a) < (b) ? (a) : (b))   /**< Maximum 16-bit value.   */
-#define MAX16(a, b) ((a) > (b) ? (a) : (b))   /**< Maximum 16-bit value.   */
+#define MIN16(a,b) ((a) < (b) ? (a) : (b))   /**< Maximum 16-bit value.   */
+#define MAX16(a,b) ((a) > (b) ? (a) : (b))   /**< Maximum 16-bit value.   */
 #define ABS32(x) ((x) < 0 ? (-(x)) : (x))    /**< Absolute 32-bit value.  */
-#define MIN32(a, b) ((a) < (b) ? (a) : (b))   /**< Maximum 32-bit value.   */
-#define MAX32(a, b) ((a) > (b) ? (a) : (b))   /**< Maximum 32-bit value.   */
+#define MIN32(a,b) ((a) < (b) ? (a) : (b))   /**< Maximum 32-bit value.   */
+#define MAX32(a,b) ((a) > (b) ? (a) : (b))   /**< Maximum 32-bit value.   */
 
 #ifdef FIXED_POINT
 
 typedef spx_int16_t spx_word16_t;
-typedef spx_int32_t spx_word32_t;
+typedef spx_int32_t   spx_word32_t;
 typedef spx_word32_t spx_mem_t;
 typedef spx_word16_t spx_coef_t;
 typedef spx_word16_t spx_lsp_t;
@@ -223,13 +221,14 @@ typedef float spx_word32_t;
 #define BITS_PER_CHAR 16
 #define LOG2_BITS_PER_CHAR 4
 
-#else
+#else 
 
 #define BYTES_PER_CHAR 1
 #define BITS_PER_CHAR 8
 #define LOG2_BITS_PER_CHAR 3
 
 #endif
+
 
 
 #ifdef FIXED_DEBUG

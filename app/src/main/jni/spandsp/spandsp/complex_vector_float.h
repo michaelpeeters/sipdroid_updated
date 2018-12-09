@@ -33,18 +33,20 @@ extern "C"
 {
 #endif
 
-static __inline__ void cvec_copyf(complexf_t z[], const complexf_t x[], int n) {
+static __inline__ void cvec_copyf(complexf_t z[], const complexf_t x[], int n)
+{
     int i;
-
-    for (i = 0; i < n; i++)
+    
+    for (i = 0;  i < n;  i++)
         z[i] = x[i];
 }
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ void cvec_copy(complex_t z[], const complex_t x[], int n) {
+static __inline__ void cvec_copy(complex_t z[], const complex_t x[], int n)
+{
     int i;
-
-    for (i = 0; i < n; i++)
+    
+    for (i = 0;  i < n;  i++)
         z[i] = x[i];
 }
 /*- End of function --------------------------------------------------------*/
@@ -60,18 +62,20 @@ static __inline__ void cvec_copyl(complexl_t z[], const complexl_t x[], int n)
 /*- End of function --------------------------------------------------------*/
 #endif
 
-static __inline__ void cvec_zerof(complexf_t z[], int n) {
+static __inline__ void cvec_zerof(complexf_t z[], int n)
+{
     int i;
-
-    for (i = 0; i < n; i++)
+    
+    for (i = 0;  i < n;  i++)
         z[i] = complex_setf(0.0f, 0.0f);
 }
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ void cvec_zero(complex_t z[], int n) {
+static __inline__ void cvec_zero(complex_t z[], int n)
+{
     int i;
-
-    for (i = 0; i < n; i++)
+    
+    for (i = 0;  i < n;  i++)
         z[i] = complex_set(0.0, 0.0);
 }
 /*- End of function --------------------------------------------------------*/
@@ -87,18 +91,20 @@ static __inline__ void cvec_zerol(complexl_t z[], int n)
 /*- End of function --------------------------------------------------------*/
 #endif
 
-static __inline__ void cvec_setf(complexf_t z[], complexf_t *x, int n) {
+static __inline__ void cvec_setf(complexf_t z[], complexf_t *x, int n)
+{
     int i;
-
-    for (i = 0; i < n; i++)
+    
+    for (i = 0;  i < n;  i++)
         z[i] = *x;
 }
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ void cvec_set(complex_t z[], complex_t *x, int n) {
+static __inline__ void cvec_set(complex_t z[], complex_t *x, int n)
+{
     int i;
-
-    for (i = 0; i < n; i++)
+    
+    for (i = 0;  i < n;  i++)
         z[i] = *x;
 }
 /*- End of function --------------------------------------------------------*/
@@ -114,17 +120,9 @@ static __inline__ void cvec_setl(complexl_t z[], complexl_t *x, int n)
 /*- End of function --------------------------------------------------------*/
 #endif
 
-SPAN_DECLARE(void)
-cvec_mulf(complexf_t
-z [ ] , const complexf_t x[],
-const complexf_t y[],
-int n ) ;
+SPAN_DECLARE(void) cvec_mulf(complexf_t z[], const complexf_t x[], const complexf_t y[], int n);
 
-SPAN_DECLARE(void)
-cvec_mul(complex_t
-z [ ] , const complex_t x[],
-const complex_t y[],
-int n ) ;
+SPAN_DECLARE(void) cvec_mul(complex_t z[], const complex_t x[], const complex_t y[], int n);
 
 #if defined(HAVE_LONG_DOUBLE)
 SPAN_DECLARE(void) cvec_mull(complexl_t z[], const complexl_t x[], const complexl_t y[], int n);
@@ -135,16 +133,14 @@ SPAN_DECLARE(void) cvec_mull(complexl_t z[], const complexl_t x[], const complex
     \param y The first vector.
     \param n The number of elements in the vectors.
     \return The dot product of the two vectors. */
-SPAN_DECLARE(complexf_t)
-cvec_dot_prodf(const complexf_t x[], const complexf_t y[], int n);
+SPAN_DECLARE(complexf_t) cvec_dot_prodf(const complexf_t x[], const complexf_t y[], int n);
 
 /*! \brief Find the dot product of two complex double vectors.
     \param x The first vector.
     \param y The first vector.
     \param n The number of elements in the vectors.
     \return The dot product of the two vectors. */
-SPAN_DECLARE(complex_t)
-cvec_dot_prod(const complex_t x[], const complex_t y[], int n);
+SPAN_DECLARE(complex_t) cvec_dot_prod(const complex_t x[], const complex_t y[], int n);
 
 #if defined(HAVE_LONG_DOUBLE)
 /*! \brief Find the dot product of two complex long double vectors.
@@ -162,14 +158,11 @@ SPAN_DECLARE(complexl_t) cvec_dot_prodl(const complexl_t x[], const complexl_t y
     \param n The number of elements in the vectors.
     \param pos The starting position in the x vector.
     \return The dot product of the two vectors. */
-SPAN_DECLARE(complexf_t)
-cvec_circular_dot_prodf(const complexf_t x[], const complexf_t y[], int n, int pos);
+SPAN_DECLARE(complexf_t) cvec_circular_dot_prodf(const complexf_t x[], const complexf_t y[], int n, int pos);
 
-SPAN_DECLARE(void)
-cvec_lmsf(const complexf_t x[], complexf_t y[], int n, const complexf_t *error);
+SPAN_DECLARE(void) cvec_lmsf(const complexf_t x[], complexf_t y[], int n, const complexf_t *error);
 
-SPAN_DECLARE(void)
-cvec_circular_lmsf(const complexf_t x[], complexf_t y[], int n, int pos, const complexf_t *error);
+SPAN_DECLARE(void) cvec_circular_lmsf(const complexf_t x[], complexf_t y[], int n, int pos, const complexf_t *error);
 
 #if defined(__cplusplus)
 }

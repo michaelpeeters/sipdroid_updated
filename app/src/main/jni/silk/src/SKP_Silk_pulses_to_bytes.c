@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * File Name:   SKP_Silk_pulses_to_bytes.c
  */
 
+#include <stdlib.h>
 #include "SKP_Silk_main.h"
 
 /* nBytes = sum_over_shell_blocks( POLY_FIT_0 + POLY_FIT_1 * sum_abs_val + POLY_FIT_2 * sum_abs_val^2 ) */
@@ -37,30 +38,31 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define POLY_FIT_2_Q20     -9222 // ToDo better training with 
 
 /* Predict number of bytes used to encode q */
-SKP_int SKP_Silk_pulses_to_bytes( /* O  Return value, predicted number of bytes used to encode q */
-        SKP_Silk_encoder_state *psEncC,        /* I/O  Encoder State */
-        SKP_int q[]             /* I    Pulse signal  */
-) {
+SKP_int SKP_Silk_pulses_to_bytes( /* O  Return value, predicted number of bytes used to encode q */ 
+    SKP_Silk_encoder_state          *psEncC,        /* I/O  Encoder State */
+    SKP_int                         q[]             /* I    Pulse signal  */
+)
+{
     SKP_int i, j, iter, *q_ptr;
     SKP_int32 sum_abs_val, nBytes, acc_nBytes;
     /* Take the absolute value of the pulses */
     iter = psEncC->frame_length / SHELL_CODEC_FRAME_LENGTH;
-
+    
     /* Calculate rate as a nonlinaer mapping of sum abs value of each Shell block */
-    q_ptr = q;
+    q_ptr      = q;
     acc_nBytes = 0;
-    for (j = 0; j < iter; j++) {
+    for( j = 0; j < iter; j++ ) {
         sum_abs_val = 0;
-        for (i = 0; i < SHELL_CODEC_FRAME_LENGTH; i += 4) {
-            sum_abs_val += SKP_abs(q_ptr[i + 0]);
-            sum_abs_val += SKP_abs(q_ptr[i + 1]);
-            sum_abs_val += SKP_abs(q_ptr[i + 2]);
-            sum_abs_val += SKP_abs(q_ptr[i + 3]);
+        for(i = 0; i < SHELL_CODEC_FRAME_LENGTH; i+=4){
+            sum_abs_val += SKP_abs( q_ptr[ i + 0 ] );
+            sum_abs_val += SKP_abs( q_ptr[ i + 1 ] );
+            sum_abs_val += SKP_abs( q_ptr[ i + 2 ] );
+            sum_abs_val += SKP_abs( q_ptr[ i + 3 ] );
         }
         /* Calculate nBytes used for thi sshell frame */
-        nBytes = SKP_SMULWB(SKP_SMULBB(sum_abs_val, sum_abs_val), POLY_FIT_2_Q20);  // Q4
-        nBytes = SKP_LSHIFT_SAT32(nBytes, 11);                                        // Q15
-        nBytes += SKP_SMULBB(sum_abs_val, POLY_FIT_1_Q15);                            // Q15
+        nBytes = SKP_SMULWB( SKP_SMULBB( sum_abs_val, sum_abs_val ), POLY_FIT_2_Q20 );  // Q4
+        nBytes = SKP_LSHIFT_SAT32( nBytes, 11 );                                        // Q15
+        nBytes += SKP_SMULBB( sum_abs_val, POLY_FIT_1_Q15 );                            // Q15
         nBytes += POLY_FIT_0_Q15;                                                       // Q15
 
         acc_nBytes += nBytes;
@@ -68,8 +70,8 @@ SKP_int SKP_Silk_pulses_to_bytes( /* O  Return value, predicted number of bytes 
         q_ptr += SHELL_CODEC_FRAME_LENGTH; /* update pointer */
     }
 
-    acc_nBytes = SKP_RSHIFT_ROUND(acc_nBytes, 15);                                    // Q0
-    acc_nBytes = SKP_SAT16(acc_nBytes); // just to be sure                            // Q0
-
-    return ((SKP_int) acc_nBytes);
+    acc_nBytes = SKP_RSHIFT_ROUND( acc_nBytes, 15 );                                    // Q0
+    acc_nBytes = SKP_SAT16( acc_nBytes ); // just to be sure                            // Q0
+    
+    return(( SKP_int )acc_nBytes);
 }

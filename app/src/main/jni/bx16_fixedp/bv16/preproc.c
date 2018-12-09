@@ -26,6 +26,8 @@
 ******************************************************************************/
 
 #include "typedef.h"
+#include "bvcommon.h"
+#include "bv16cnst.h"
 #include "bv16strct.h"
 #include "bv16externs.h"
 #include "basop32.h"
@@ -39,37 +41,38 @@
 /************************************************************************/
 
 void preprocess(
-        struct BV16_Encoder_State *cs,
-        Word16 *output,                 /* (o) Q0 output signal, less factor 1.5  */
-        Word16 *input,                  /* (i) Q0 input signal                    */
-        Word16 N)                       /* length of signal                       */
+                struct BV16_Encoder_State *cs,
+                Word16 *output,                 /* (o) Q0 output signal, less factor 1.5  */
+                Word16 *input,                  /* (i) Q0 input signal                    */
+                Word16 N)                       /* length of signal                       */
 {
-    Word16 n;
-    Word32 a0;
+   Word16 n;
+   Word32 a0;
+   
+   for(n=0; n<N; n++)
+   {
+      
+      /* pole section of filtering */
+      a0 = Mpy_32_16(cs->hpfpm[0], cs->hpfpm[1], hpfa[1]);              // Q14
+      a0 = L_add(a0, Mpy_32_16(cs->hpfpm[2], cs->hpfpm[3], hpfa[2]));   // Q14
 
-    for (n = 0; n < N; n++) {
+      /* zero section of filtering */
+      a0 = L_mac0(a0, input[n], hpfb[0]);                               // Q14
+      a0 = L_mac0(a0, cs->hpfzm[0], hpfb[1]);                           // Q14
+      a0 = L_mac0(a0, cs->hpfzm[1], hpfb[2]);                           // Q14
+      a0 = L_shl(a0, 1);                                                // Q15
 
-        /* pole section of filtering */
-        a0 = Mpy_32_16(cs->hpfpm[0], cs->hpfpm[1], hpfa[1]);              // Q14
-        a0 = L_add(a0, Mpy_32_16(cs->hpfpm[2], cs->hpfpm[3], hpfa[2]));   // Q14
+      /* update pole section of memory */
+      cs->hpfpm[2] = cs->hpfpm[0];
+      cs->hpfpm[3] = cs->hpfpm[1];
+      L_Extract(a0, cs->hpfpm, cs->hpfpm+1);
 
-        /* zero section of filtering */
-        a0 = L_mac0(a0, input[n], hpfb[0]);                               // Q14
-        a0 = L_mac0(a0, cs->hpfzm[0], hpfb[1]);                           // Q14
-        a0 = L_mac0(a0, cs->hpfzm[1], hpfb[2]);                           // Q14
-        a0 = L_shl(a0, 1);                                                // Q15
+      /* get output in Q0 (less down-scaling by factor 1.5) */
+      a0 = L_shl(a0, 1);                                                // Q16
+      output[n] = intround(a0);                                            // Q0
 
-        /* update pole section of memory */
-        cs->hpfpm[2] = cs->hpfpm[0];
-        cs->hpfpm[3] = cs->hpfpm[1];
-        L_Extract(a0, cs->hpfpm, cs->hpfpm + 1);
-
-        /* get output in Q0 (less down-scaling by factor 1.5) */
-        a0 = L_shl(a0, 1);                                                // Q16
-        output[n] = intround(a0);                                            // Q0
-
-        /* update zero section of memory */
-        cs->hpfzm[1] = cs->hpfzm[0];                                      // Q0
-        cs->hpfzm[0] = input[n];                                          // Q0
-    }
+      /* update zero section of memory */
+      cs->hpfzm[1] = cs->hpfzm[0];                                      // Q0
+      cs->hpfzm[0] = input[n];                                          // Q0
+   }
 }

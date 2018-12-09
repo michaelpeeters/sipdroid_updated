@@ -33,11 +33,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include <float.h>
-
 #if defined( __GNUC__ )
-
 #include <stdint.h>
-
 #endif
 
 #define SKP_int         int                     /* used for counters etc; at least 16 bits */
@@ -68,7 +65,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # define SKP_STR_CASEINSENSITIVE_COMPARE(x, y) _stricmp(x, y)
 #else
 # define SKP_STR_CASEINSENSITIVE_COMPARE(x, y) strcasecmp(x, y)
-#endif
+#endif 
 
 #define SKP_int64_MAX   ((SKP_int64)0x7FFFFFFFFFFFFFFFLL)   //  2^63 - 1  
 #define SKP_int64_MIN   ((SKP_int64)0x8000000000000000LL)   // -2^63     

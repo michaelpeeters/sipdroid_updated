@@ -38,7 +38,8 @@ far modem supports V.42 is also defined.
 #if !defined(_SPANDSP_V42_H_)
 #define _SPANDSP_V42_H_
 
-enum {
+enum
+{
     LAPM_DETECT = 0,
     LAPM_ESTABLISH = 1,
     LAPM_DATA = 2,
@@ -50,10 +51,10 @@ enum {
 };
 
 typedef void (*v42_status_func_t)(void *user_data, int status);
-
 typedef void (*v42_frame_handler_t)(void *user_data, const uint8_t *pkt, int len);
 
-typedef struct lapm_frame_queue_s {
+typedef struct lapm_frame_queue_s
+{
     struct lapm_frame_queue_s *next;
     int len;
     uint8_t frame[];
@@ -74,15 +75,14 @@ typedef struct v42_state_s v42_state_t;
 /*! Log the interpreted frames */
 #define LAPM_DEBUG_LAPM_DUMP        (1 << 1)
 /*! Log state machine changes */
-#define LAPM_DEBUG_LAPM_STATE        (1 << 2)
+#define LAPM_DEBUG_LAPM_STATE 	    (1 << 2)
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
 
-SPAN_DECLARE(const char *)
-lapm_status_to_str(int status);
+SPAN_DECLARE(const char *) lapm_status_to_str(int status);
 
 /*! Dump LAP.M frames in a raw and/or decoded forms
     \param frame The frame itself
@@ -90,60 +90,43 @@ lapm_status_to_str(int status);
     \param showraw TRUE if the raw octets should be dumped
     \param txrx TRUE if tx, FALSE if rx. Used to highlight the packet's direction.
 */
-SPAN_DECLARE(void)
-lapm_dump(lapm_state_t * s , const uint8_t *frame,
-int len,
-int showraw,
-int txrx ) ;
+SPAN_DECLARE(void) lapm_dump(lapm_state_t *s, const uint8_t *frame, int len, int showraw, int txrx);
 
 /*! Accept an HDLC packet
 */
-SPAN_DECLARE_NONSTD(void)
-lapm_receive(void *user_data, const uint8_t *buf, int len, int ok);
+SPAN_DECLARE_NONSTD(void) lapm_receive(void *user_data, const uint8_t *buf, int len, int ok);
 
 /*! Transmit a LAP.M frame
 */
-SPAN_DECLARE(int)
-lapm_tx(lapm_state_t * s , const void *buf,
-int len ) ;
+SPAN_DECLARE(int) lapm_tx(lapm_state_t *s, const void *buf, int len);
 
 /*! Transmit a LAP.M information frame
 */
-SPAN_DECLARE(int)
-lapm_tx_iframe(lapm_state_t * s , const void *buf,
-int len,
-int cr ) ;
+SPAN_DECLARE(int) lapm_tx_iframe(lapm_state_t *s, const void *buf, int len, int cr);
 
 /*! Send a break over a LAP.M connection
 */
-SPAN_DECLARE(int)
-lapm_break(lapm_state_t * s , int enable ) ;
+SPAN_DECLARE(int) lapm_break(lapm_state_t *s, int enable);
 
 /*! Initiate an orderly release of a LAP.M connection
 */
-SPAN_DECLARE(int)
-lapm_release(lapm_state_t * s ) ;
+SPAN_DECLARE(int) lapm_release(lapm_state_t *s);
 
 /*! Enable or disable loopback of a LAP.M connection
 */
-SPAN_DECLARE(int)
-lapm_loopback(lapm_state_t * s , int enable ) ;
+SPAN_DECLARE(int) lapm_loopback(lapm_state_t *s, int enable);
 
 /*! Assign or remove a callback routine used to deal with V.42 status changes.
 */
-SPAN_DECLARE(void)
-v42_set_status_callback(v42_state_t * s , v42_status_func_t callback,
-void *user_data ) ;
+SPAN_DECLARE(void) v42_set_status_callback(v42_state_t *s, v42_status_func_t callback, void *user_data);
 
 /*! Process a newly received bit for a V.42 context.
 */
-SPAN_DECLARE(void)
-v42_rx_bit(void *user_data, int bit);
+SPAN_DECLARE(void) v42_rx_bit(void *user_data, int bit);
 
 /*! Get the next transmit bit for a V.42 context.
 */
-SPAN_DECLARE(int)
-v42_tx_bit(void *user_data);
+SPAN_DECLARE(int) v42_tx_bit(void *user_data);
 
 /*! Initialise a V.42 context.
     \param s The V.42 context.
@@ -152,27 +135,22 @@ v42_tx_bit(void *user_data);
     \param user_data An opaque pointer passed to the frame handler routine.
     \return ???
 */
-SPAN_DECLARE(v42_state_t * ) v42_init(v42_state_t * s , int calling_party,
-int detect, v42_frame_handler_t
-frame_handler , void *user_data ) ;
+SPAN_DECLARE(v42_state_t *) v42_init(v42_state_t *s, int calling_party, int detect, v42_frame_handler_t frame_handler, void *user_data);
 
 /*! Restart a V.42 context.
     \param s The V.42 context.
 */
-SPAN_DECLARE(void)
-v42_restart(v42_state_t * s ) ;
+SPAN_DECLARE(void) v42_restart(v42_state_t *s);
 
 /*! Release a V.42 context.
     \param s The V.42 context.
     \return 0 if OK */
-SPAN_DECLARE(int)
-v42_release(v42_state_t * s ) ;
+SPAN_DECLARE(int) v42_release(v42_state_t *s);
 
 /*! Free a V.42 context.
     \param s The V.42 context.
     \return 0 if OK */
-SPAN_DECLARE(int)
-v42_free(v42_state_t * s ) ;
+SPAN_DECLARE(int) v42_free(v42_state_t *s);
 
 #if defined(__cplusplus)
 }

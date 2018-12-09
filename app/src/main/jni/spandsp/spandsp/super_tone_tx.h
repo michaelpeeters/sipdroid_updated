@@ -50,29 +50,26 @@ extern "C"
 {
 #endif
 
-SPAN_DECLARE(super_tone_tx_step_t * ) super_tone_tx_make_step(super_tone_tx_step_t * s ,
-float f1,
-float l1,
-float f2,
-float l2,
-int length,
-int cycles ) ;
+SPAN_DECLARE(super_tone_tx_step_t *) super_tone_tx_make_step(super_tone_tx_step_t *s,
+                                                             float f1,
+                                                             float l1,
+                                                             float f2,
+                                                             float l2,
+                                                             int length,
+                                                             int cycles);
 
-SPAN_DECLARE(int)
-super_tone_tx_free_tone(super_tone_tx_step_t * s ) ;
+SPAN_DECLARE(int) super_tone_tx_free_tone(super_tone_tx_step_t *s);
 
 /*! Initialise a supervisory tone generator.
     \brief Initialise a supervisory tone generator.
     \param s The supervisory tone generator context.
     \param tree The supervisory tone tree to be generated.
     \return The supervisory tone generator context. */
-SPAN_DECLARE(super_tone_tx_state_t * ) super_tone_tx_init(super_tone_tx_state_t * s , super_tone_tx_step_t *tree ) ;
+SPAN_DECLARE(super_tone_tx_state_t *) super_tone_tx_init(super_tone_tx_state_t *s, super_tone_tx_step_t *tree);
 
-SPAN_DECLARE(int)
-super_tone_tx_release(super_tone_tx_state_t * s ) ;
+SPAN_DECLARE(int) super_tone_tx_release(super_tone_tx_state_t *s);
 
-SPAN_DECLARE(int)
-super_tone_tx_free(super_tone_tx_state_t * s ) ;
+SPAN_DECLARE(int) super_tone_tx_free(super_tone_tx_state_t *s);
 
 /*! Generate a block of audio samples for a supervisory tone pattern.
     \brief Generate a block of audio samples for a supervisory tone pattern.
@@ -80,9 +77,7 @@ super_tone_tx_free(super_tone_tx_state_t * s ) ;
     \param amp The audio sample buffer.
     \param max_samples The maximum number of samples to be generated.
     \return The number of samples generated. */
-SPAN_DECLARE(int)
-super_tone_tx(super_tone_tx_state_t * s , int16_t amp[],
-int max_samples ) ;
+SPAN_DECLARE(int) super_tone_tx(super_tone_tx_state_t *s, int16_t amp[], int max_samples);
 
 #if defined(__cplusplus)
 }

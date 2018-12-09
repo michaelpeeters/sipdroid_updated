@@ -41,7 +41,8 @@ buffer length would wreck a modem's data flow.
 */
 
 /* Return codes */
-enum {
+enum
+{
     PLAYOUT_OK = 0,
     PLAYOUT_ERROR,
     PLAYOUT_EMPTY,
@@ -52,12 +53,13 @@ enum {
 
 /* Frame types */
 #define PLAYOUT_TYPE_CONTROL    0
-#define PLAYOUT_TYPE_SILENCE    1
+#define PLAYOUT_TYPE_SILENCE	1
 #define PLAYOUT_TYPE_SPEECH     2
 
 typedef int timestamp_t;
 
-typedef struct playout_frame_s {
+typedef struct playout_frame_s
+{
     /*! The actual frame data */
     void *data;
     /*! The type of frame */
@@ -78,7 +80,8 @@ typedef struct playout_frame_s {
     Playout (jitter buffer) descriptor. This defines the working state
     for a single instance of playout buffering.
 */
-typedef struct {
+typedef struct
+{
     /*! TRUE if the buffer is dynamically sized */
     int dynamic;
     /*! The minimum length (dynamic) or fixed length (static) of the buffer */
@@ -144,11 +147,7 @@ extern "C"
     \return One of
         PLAYOUT_OK:  Frame queued OK.
         PLAYOUT_ERROR: Some problem occured - e.g. out of memory. */
-SPAN_DECLARE(int)
-playout_put(playout_state_t * s , void *data,
-int type, timestamp_t
-sender_len , timestamp_t sender_stamp, timestamp_t
-receiver_stamp ) ;
+SPAN_DECLARE(int) playout_put(playout_state_t *s, void *data, int type, timestamp_t sender_len, timestamp_t sender_stamp, timestamp_t receiver_stamp);
 
 /*! Get the next frame.
     \param s The play-out context.
@@ -163,29 +162,25 @@ receiver_stamp ) ;
                         this time (either we need to grow, or there was a lost frame).
         PLAYOUT_EMPTY: The buffer is empty.
  */
-SPAN_DECLARE(int)
-playout_get(playout_state_t * s , playout_frame_t *frame, timestamp_t
-sender_stamp ) ;
+SPAN_DECLARE(int) playout_get(playout_state_t *s, playout_frame_t *frame, timestamp_t sender_stamp);
 
 /*! Unconditionally get the first buffered frame. This may be used to clear out the queue, and free
     all its contents, before the context is freed.
     \param s The play-out context.
     \return The frame, or NULL is the queue is empty. */
-SPAN_DECLARE(playout_frame_t * ) playout_get_unconditional(playout_state_t * s ) ;
+SPAN_DECLARE(playout_frame_t *) playout_get_unconditional(playout_state_t *s);
 
 /*! Find the current length of the buffer.
     \param s The play-out context.
     \return The length of the buffer. */
-SPAN_DECLARE(timestamp_t)
-playout_current_length(playout_state_t * s ) ;
+SPAN_DECLARE(timestamp_t) playout_current_length(playout_state_t *s);
 
 /*! Find the time at which the next queued frame is due to play.
     Note: This value may change backwards as freshly received out of order frames are
           added to the buffer.
     \param s The play-out context.
     \return The next timestamp. */
-SPAN_DECLARE(timestamp_t)
-playout_next_due(playout_state_t * s ) ;
+SPAN_DECLARE(timestamp_t) playout_next_due(playout_state_t *s);
 
 /*! Reset an instance of play-out buffering.
     NOTE:  The buffer should be empty before you call this function, otherwise
@@ -194,28 +189,24 @@ playout_next_due(playout_state_t * s ) ;
     \param min_length Minimum length of the buffer, in samples.
     \param max_length Maximum length of the buffer, in samples. If this equals min_length, static
            length buffering is used. */
-SPAN_DECLARE(void)
-playout_restart(playout_state_t * s , int min_length,
-int max_length ) ;
+SPAN_DECLARE(void) playout_restart(playout_state_t *s, int min_length, int max_length);
 
 /*! Create a new instance of play-out buffering.
     \param min_length Minimum length of the buffer, in samples.
     \param max_length Maximum length of the buffer, in samples. If this equals min_length, static
            length buffering is used.
     \return The new context */
-SPAN_DECLARE(playout_state_t * ) playout_init(int min_length, int max_length);
+SPAN_DECLARE(playout_state_t *) playout_init(int min_length, int max_length);
 
 /*! Release an instance of play-out buffering.
     \param s The play-out context to be releaased
     \return 0 if OK, else -1 */
-SPAN_DECLARE(int)
-playout_release(playout_state_t * s ) ;
+SPAN_DECLARE(int) playout_release(playout_state_t *s);
 
 /*! Free an instance of play-out buffering.
     \param s The play-out context to be destroyed
     \return 0 if OK, else -1 */
-SPAN_DECLARE(int)
-playout_free(playout_state_t * s ) ;
+SPAN_DECLARE(int) playout_free(playout_state_t *s);
 
 #if defined(__cplusplus)
 }

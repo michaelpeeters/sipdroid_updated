@@ -42,31 +42,32 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Resamples by a factor 3/2 */
 void SKP_Silk_resample_3_2(
-        SKP_int16 *out,       /*   O: Fs_high signal  [inLen*3/2]             */
-        SKP_int32 *S,         /* I/O: State vector    [7+4]                   */
-        const SKP_int16 *in,        /* I:   Fs_low signal   [inLen]                 */
-        SKP_int inLen       /* I:   Input length, must be a multiple of 2   */
-) {
-    SKP_int LSubFrameIn, LSubFrameOut;
-    SKP_int16 outH[3 * IN_SUBFR_LEN_RESAMPLE_3_2];
-    SKP_int32 scratch[(9 * IN_SUBFR_LEN_RESAMPLE_3_2) / 2];
+    SKP_int16           *out,       /*   O: Fs_high signal  [inLen*3/2]             */
+    SKP_int32           *S,         /* I/O: State vector    [7+4]                   */
+    const SKP_int16     *in,        /* I:   Fs_low signal   [inLen]                 */
+    SKP_int             inLen       /* I:   Input length, must be a multiple of 2   */
+)
+{
+    SKP_int     LSubFrameIn, LSubFrameOut;
+    SKP_int16   outH[      3 * IN_SUBFR_LEN_RESAMPLE_3_2 ];
+    SKP_int32   scratch[ ( 9 * IN_SUBFR_LEN_RESAMPLE_3_2 ) / 2 ];
 
     /* Check that input is multiple of 2 */
-    SKP_assert(inLen % 2 == 0);
+    SKP_assert( inLen % 2 == 0 );
 
-    while (inLen > 0) {
-        LSubFrameIn = SKP_min_int(IN_SUBFR_LEN_RESAMPLE_3_2, inLen);
-        LSubFrameOut = SKP_SMULWB(98304, LSubFrameIn);
+    while( inLen > 0 ) {
+        LSubFrameIn  = SKP_min_int( IN_SUBFR_LEN_RESAMPLE_3_2, inLen );
+        LSubFrameOut = SKP_SMULWB( 98304, LSubFrameIn );
 
         /* Upsample by a factor 3 */
-        SKP_Silk_resample_3_1(outH, &S[0], in, LSubFrameIn);
-
+        SKP_Silk_resample_3_1( outH, &S[ 0 ], in, LSubFrameIn );
+        
         /* Downsample by a factor 2 */
         /* Scratch size needs to be: 3 * LSubFrameOut * sizeof( SKP_int32 ) */
-        SKP_Silk_resample_1_2_coarse(outH, &S[7], out, scratch, LSubFrameOut);
+        SKP_Silk_resample_1_2_coarse( outH, &S[ 7 ], out, scratch, LSubFrameOut );
 
-        in += LSubFrameIn;
-        out += LSubFrameOut;
+        in    += LSubFrameIn;
+        out   += LSubFrameOut;
         inLen -= LSubFrameIn;
     }
 }

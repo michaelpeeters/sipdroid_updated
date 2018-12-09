@@ -41,21 +41,22 @@ conjunction with the error correction scheme defined in V.42.
 #define V42BIS_TABLE_SIZE       5021    /* This should be a prime >(2^V42BIS_MAX_BITS) */
 #define V42BIS_MAX_STRING_SIZE  250
 
-enum {
+enum
+{
     V42BIS_P0_NEITHER_DIRECTION = 0,
     V42BIS_P0_INITIATOR_RESPONDER,
     V42BIS_P0_RESPONDER_INITIATOR,
     V42BIS_P0_BOTH_DIRECTIONS
 };
 
-enum {
+enum
+{
     V42BIS_COMPRESSION_MODE_DYNAMIC = 0,
     V42BIS_COMPRESSION_MODE_ALWAYS,
     V42BIS_COMPRESSION_MODE_NEVER
 };
 
 typedef void (*v42bis_frame_handler_t)(void *user_data, const uint8_t *pkt, int len);
-
 typedef void (*v42bis_data_handler_t)(void *user_data, const uint8_t *buf, int len);
 
 /*!
@@ -74,30 +75,24 @@ extern "C"
     \param buf The data to be compressed.
     \param len The length of the data buffer.
     \return 0 */
-SPAN_DECLARE(int)
-v42bis_compress(v42bis_state_t * s , const uint8_t *buf,
-int len ) ;
+SPAN_DECLARE(int) v42bis_compress(v42bis_state_t *s, const uint8_t *buf, int len);
 
 /*! Flush out any data remaining in a compression buffer.
     \param s The V.42bis context.
     \return 0 */
-SPAN_DECLARE(int)
-v42bis_compress_flush(v42bis_state_t * s ) ;
+SPAN_DECLARE(int) v42bis_compress_flush(v42bis_state_t *s);
 
 /*! Decompress a block of octets.
     \param s The V.42bis context.
     \param buf The data to be decompressed.
     \param len The length of the data buffer.
     \return 0 */
-SPAN_DECLARE(int)
-v42bis_decompress(v42bis_state_t * s , const uint8_t *buf,
-int len ) ;
-
+SPAN_DECLARE(int) v42bis_decompress(v42bis_state_t *s, const uint8_t *buf, int len);
+    
 /*! Flush out any data remaining in the decompression buffer.
     \param s The V.42bis context.
     \return 0 */
-SPAN_DECLARE(int)
-v42bis_decompress_flush(v42bis_state_t * s ) ;
+SPAN_DECLARE(int) v42bis_decompress_flush(v42bis_state_t *s);
 
 /*! Set the compression mode.
     \param s The V.42bis context.
@@ -105,8 +100,7 @@ v42bis_decompress_flush(v42bis_state_t * s ) ;
             V42BIS_COMPRESSION_MODE_DYNAMIC,
             V42BIS_COMPRESSION_MODE_ALWAYS,
             V42BIS_COMPRESSION_MODE_NEVER */
-SPAN_DECLARE(void)
-v42bis_compression_control(v42bis_state_t * s , int mode ) ;
+SPAN_DECLARE(void) v42bis_compression_control(v42bis_state_t *s, int mode);
 
 /*! Initialise a V.42bis context.
     \param s The V.42bis context.
@@ -120,30 +114,26 @@ v42bis_compression_control(v42bis_state_t * s , int mode ) ;
     \param data_user_data An opaque pointer passed to the data callback handler.
     \param max_data_len The maximum length that should be passed to the data handler.
     \return The V.42bis context. */
-SPAN_DECLARE(v42bis_state_t * ) v42bis_init(v42bis_state_t * s ,
-int negotiated_p0,
-int negotiated_p1,
-int negotiated_p2,
-        v42bis_frame_handler_t
-frame_handler ,
-void *frame_user_data,
-int max_frame_len,
-        v42bis_data_handler_t
-data_handler ,
-void *data_user_data,
-int max_data_len ) ;
+SPAN_DECLARE(v42bis_state_t *) v42bis_init(v42bis_state_t *s,
+                                           int negotiated_p0,
+                                           int negotiated_p1,
+                                           int negotiated_p2,
+                                           v42bis_frame_handler_t frame_handler,
+                                           void *frame_user_data,
+                                           int max_frame_len,
+                                           v42bis_data_handler_t data_handler,
+                                           void *data_user_data,
+                                           int max_data_len);
 
 /*! Release a V.42bis context.
     \param s The V.42bis context.
     \return 0 if OK */
-SPAN_DECLARE(int)
-v42bis_release(v42bis_state_t * s ) ;
+SPAN_DECLARE(int) v42bis_release(v42bis_state_t *s);
 
 /*! Free a V.42bis context.
     \param s The V.42bis context.
     \return 0 if OK */
-SPAN_DECLARE(int)
-v42bis_free(v42bis_state_t * s ) ;
+SPAN_DECLARE(int) v42bis_free(v42bis_state_t *s);
 
 #if defined(__cplusplus)
 }

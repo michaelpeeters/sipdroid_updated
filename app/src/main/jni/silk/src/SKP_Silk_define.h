@@ -63,7 +63,7 @@ extern "C"
 
 /* Integration/hysteresis threshold for lowering internal sample frequency */
 /* 30000000 -> 6 sec if bitrate is 5000 bps below limit; 3 sec if bitrate is 10000 bps below limit */
-#define ACCUM_BITS_DIFF_THRESHOLD               30000000
+#define ACCUM_BITS_DIFF_THRESHOLD               30000000 
 #define TARGET_RATE_TAB_SZ                      8
 
 /* DTX settings                                 */
@@ -111,7 +111,7 @@ extern "C"
 #ifdef EMBEDDED_OPT
 #   define SWITCH_TRANSITION_FILTERING          0
 #else
-#ifndef FORCE_FS_KHZ
+#ifndef FORCE_FS_KHZ 
 #   define SWITCH_TRANSITION_FILTERING          1
 #else
 #   define SWITCH_TRANSITION_FILTERING          0
@@ -122,7 +122,7 @@ extern "C"
 #define DEC_HP_ORDER                            2
 
 /* Maximum sampling frequency, should be 16 for embedded */
-#define MAX_FS_KHZ                              24
+#define MAX_FS_KHZ                              24 
 
 /* Signal Types used by silk */
 #define SIG_TYPE_VOICED                         0
@@ -132,7 +132,7 @@ extern "C"
 #define NO_VOICE_ACTIVITY                       0
 #define VOICE_ACTIVITY                          1
 
-/* number of samples per frame */
+/* number of samples per frame */ 
 #define FRAME_LENGTH_MS                         20 /* 20 ms */
 #define MAX_FRAME_LENGTH                        (FRAME_LENGTH_MS * MAX_FS_KHZ)
 
@@ -235,7 +235,7 @@ extern "C"
 
 #define MAX_MATRIX_SIZE                         MAX_LPC_ORDER /* Max of LPC Order and LTP order */
 
-#if(MAX_LPC_ORDER > DECISION_DELAY)
+#if( MAX_LPC_ORDER > DECISION_DELAY )
 # define NSQ_LPC_BUF_LENGTH                     MAX_LPC_ORDER
 #else
 # define NSQ_LPC_BUF_LENGTH                     DECISION_DELAY
@@ -253,13 +253,13 @@ extern "C"
 
 #define VAD_INTERNAL_SUBFRAMES_LOG2             2
 #define VAD_INTERNAL_SUBFRAMES                  (1 << VAD_INTERNAL_SUBFRAMES_LOG2)
-
+    
 #define VAD_NOISE_LEVEL_SMOOTH_COEF_Q16         1024    /* Must be <  4096                                  */
-#define VAD_NOISE_LEVELS_BIAS                   50
+#define VAD_NOISE_LEVELS_BIAS                   50 
 
 /* Sigmoid settings */
 #define VAD_NEGATIVE_OFFSET_Q5                  128     /* sigmoid is 0 at -128                             */
-#define VAD_SNR_FACTOR_Q16                      45000
+#define VAD_SNR_FACTOR_Q16                      45000 
 
 /* smoothing for SNR measurement */
 #define VAD_SNR_SMOOTH_COEF_Q18                 4096
@@ -268,7 +268,7 @@ extern "C"
 /* NLSF quantizer */
 /******************/
 #ifdef NLSF_TRAINING
-#   define NLSF_MSVQ_MAX_CB_STAGES                      30
+#   define NLSF_MSVQ_MAX_CB_STAGES                      30 
 #   define NLSF_MSVQ_MAX_VECTORS_IN_STAGE               256
 #   define NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END    128
 #else
@@ -283,13 +283,13 @@ extern "C"
 #define MAX_NLSF_MSVQ_SURVIVORS_MC_MODE         4
 
 /* Based on above defines, calculate how much memory is necessary to allocate */
-#if(NLSF_MSVQ_MAX_VECTORS_IN_STAGE > (MAX_NLSF_MSVQ_SURVIVORS_LC_MODE * NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END))
+#if( NLSF_MSVQ_MAX_VECTORS_IN_STAGE > ( MAX_NLSF_MSVQ_SURVIVORS_LC_MODE * NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END ) )
 #   define NLSF_MSVQ_TREE_SEARCH_MAX_VECTORS_EVALUATED_LC_MODE  NLSF_MSVQ_MAX_VECTORS_IN_STAGE
 #else
 #   define NLSF_MSVQ_TREE_SEARCH_MAX_VECTORS_EVALUATED_LC_MODE  MAX_NLSF_MSVQ_SURVIVORS_LC_MODE * NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END
 #endif
 
-#if(NLSF_MSVQ_MAX_VECTORS_IN_STAGE > (MAX_NLSF_MSVQ_SURVIVORS * NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END))
+#if( NLSF_MSVQ_MAX_VECTORS_IN_STAGE > ( MAX_NLSF_MSVQ_SURVIVORS * NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END ) )
 #   define NLSF_MSVQ_TREE_SEARCH_MAX_VECTORS_EVALUATED  NLSF_MSVQ_MAX_VECTORS_IN_STAGE
 #else
 #   define NLSF_MSVQ_TREE_SEARCH_MAX_VECTORS_EVALUATED  MAX_NLSF_MSVQ_SURVIVORS * NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END

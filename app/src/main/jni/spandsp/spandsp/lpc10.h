@@ -46,7 +46,8 @@ or other restrictions.
 /*!
     LPC10 codec unpacked frame.
 */
-typedef struct {
+typedef struct
+{
     /*! Pitch */
     int32_t ipitch;
     /*! Energy */
@@ -76,13 +77,11 @@ extern "C"
     \param s The LPC10e context
     \param error_correction ???
     \return A pointer to the LPC10e context, or NULL for error. */
-SPAN_DECLARE(lpc10_encode_state_t * ) lpc10_encode_init(lpc10_encode_state_t * s , int error_correction ) ;
+SPAN_DECLARE(lpc10_encode_state_t *) lpc10_encode_init(lpc10_encode_state_t *s, int error_correction);
 
-SPAN_DECLARE(int)
-lpc10_encode_release(lpc10_encode_state_t * s ) ;
+SPAN_DECLARE(int) lpc10_encode_release(lpc10_encode_state_t *s);
 
-SPAN_DECLARE(int)
-lpc10_encode_free(lpc10_encode_state_t * s ) ;
+SPAN_DECLARE(int) lpc10_encode_free(lpc10_encode_state_t *s);
 
 /*! Encode a buffer of linear PCM data to LPC10e.
     \param s The LPC10e context.
@@ -91,22 +90,17 @@ lpc10_encode_free(lpc10_encode_state_t * s ) ;
     \param len The number of samples in the buffer. This must be a multiple of 180, as
            this is the number of samples on a frame.
     \return The number of bytes of LPC10e data produced. */
-SPAN_DECLARE(int)
-lpc10_encode(lpc10_encode_state_t * s , uint8_t code[],
-const int16_t amp[],
-int len ) ;
+SPAN_DECLARE(int) lpc10_encode(lpc10_encode_state_t *s, uint8_t code[], const int16_t amp[], int len);
 
 /*! Initialise an LPC10e decode context.
     \param s The LPC10e context
     \param error_correction ???
     \return A pointer to the LPC10e context, or NULL for error. */
-SPAN_DECLARE(lpc10_decode_state_t * ) lpc10_decode_init(lpc10_decode_state_t * st , int error_correction ) ;
+SPAN_DECLARE(lpc10_decode_state_t *) lpc10_decode_init(lpc10_decode_state_t *st, int error_correction);
 
-SPAN_DECLARE(int)
-lpc10_decode_release(lpc10_decode_state_t * s ) ;
+SPAN_DECLARE(int) lpc10_decode_release(lpc10_decode_state_t *s);
 
-SPAN_DECLARE(int)
-lpc10_decode_free(lpc10_decode_state_t * s ) ;
+SPAN_DECLARE(int) lpc10_decode_free(lpc10_decode_state_t *s);
 
 /*! Decode a buffer of LPC10e data to linear PCM.
     \param s The LPC10e context.
@@ -115,10 +109,7 @@ lpc10_decode_free(lpc10_decode_state_t * s ) ;
     \param len The number of bytes of LPC10e data to be decoded. This must be a multiple of 7,
            as each frame is packed into 7 bytes.
     \return The number of samples returned. */
-SPAN_DECLARE(int)
-lpc10_decode(lpc10_decode_state_t * s , int16_t amp[],
-const uint8_t code[],
-int len ) ;
+SPAN_DECLARE(int) lpc10_decode(lpc10_decode_state_t *s, int16_t amp[], const uint8_t code[], int len);
 
 
 #if defined(__cplusplus)

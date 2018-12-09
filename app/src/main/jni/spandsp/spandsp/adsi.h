@@ -184,7 +184,8 @@ Timeouts are, obviously, required to ensure this system behaves well when the ca
 or the second ring are missing.
 */
 
-enum {
+enum
+{
     ADSI_STANDARD_NONE = 0,
     ADSI_STANDARD_CLASS = 1,
     ADSI_STANDARD_CLIP = 2,
@@ -209,37 +210,39 @@ enum {
  */
 
 /*! Definitions for CLASS (Custom Local Area Signaling Services) */
-enum {
+enum
+{
     /*! Single data message caller ID */
-            CLASS_SDMF_CALLERID = 0x04,
+    CLASS_SDMF_CALLERID =               0x04,
     /*! Multiple data message caller ID */
-            CLASS_MDMF_CALLERID = 0x80,
+    CLASS_MDMF_CALLERID =               0x80,
     /*! Single data message message waiting */
-            CLASS_SDMF_MSG_WAITING = 0x06,
+    CLASS_SDMF_MSG_WAITING =            0x06,
     /*! Multiple data message message waiting */
-            CLASS_MDMF_MSG_WAITING = 0x82
+    CLASS_MDMF_MSG_WAITING =            0x82
 };
 
 /*! CLASS MDMF message IDs */
-enum {
+enum
+{
     /*! Date and time (MMDDHHMM) */
-            MCLASS_DATETIME = 0x01,
+    MCLASS_DATETIME =                   0x01,
     /*! Caller number */
-            MCLASS_CALLER_NUMBER = 0x02,
+    MCLASS_CALLER_NUMBER =              0x02,
     /*! Dialed number */
-            MCLASS_DIALED_NUMBER = 0x03,
+    MCLASS_DIALED_NUMBER =              0x03,
     /*! Caller number absent: 'O' or 'P' */
-            MCLASS_ABSENCE1 = 0x04,
+    MCLASS_ABSENCE1 =                   0x04,
     /*! Call forward: universal ('0'), on busy ('1'), or on unanswered ('2') */
-            MCLASS_REDIRECT = 0x05,
+    MCLASS_REDIRECT =                   0x05,
     /*! Long distance: 'L' */
-            MCLASS_QUALIFIER = 0x06,
+    MCLASS_QUALIFIER =                  0x06,
     /*! Caller's name */
-            MCLASS_CALLER_NAME = 0x07,
+    MCLASS_CALLER_NAME =                0x07,
     /*! Caller's name absent: 'O' or 'P' */
-            MCLASS_ABSENCE2 = 0x08,
+    MCLASS_ABSENCE2 =                   0x08,
     /*! Alternate route */
-            MCLASS_ALT_ROUTE = 0x09
+    MCLASS_ALT_ROUTE =                  0x09
 };
 
 /*! CLASS MDMF message waiting message IDs */
@@ -247,85 +250,89 @@ enum {
 #define MCLASS_VISUAL_INDICATOR         0x0B
 
 /*! Definitions for CLIP (Calling Line Identity Presentation) (from ETS 300 659-1) */
-enum {
+enum
+{
     /*! Multiple data message caller ID */
-            CLIP_MDMF_CALLERID = 0x80,
+    CLIP_MDMF_CALLERID =                0x80,
     /*! Multiple data message message waiting */
-            CLIP_MDMF_MSG_WAITING = 0x82,
+    CLIP_MDMF_MSG_WAITING =             0x82,
     /*! Multiple data message charge information */
-            CLIP_MDMF_CHARGE_INFO = 0x86,
+    CLIP_MDMF_CHARGE_INFO =             0x86,
     /*! Multiple data message SMS */
-            CLIP_MDMF_SMS = 0x89
+    CLIP_MDMF_SMS =                     0x89
 };
 
 /*! CLIP message IDs (from ETS 300 659-1) */
-enum {
+enum
+{
     /*! Date and time (MMDDHHMM) */
-            CLIP_DATETIME = 0x01,
+    CLIP_DATETIME =                     0x01,
     /*! Caller number (AKA calling line identity) */
-            CLIP_CALLER_NUMBER = 0x02,
+    CLIP_CALLER_NUMBER =                0x02,
     /*! Dialed number (AKA called line identity) */
-            CLIP_DIALED_NUMBER = 0x03,
+    CLIP_DIALED_NUMBER =                0x03,
     /*! Caller number absent: 'O' or 'P' (AKA reason for absence of calling line identity) */
-            CLIP_ABSENCE1 = 0x04,
+    CLIP_ABSENCE1 =                     0x04,
     /*! Caller's name (AKA calling party name) */
-            CLIP_CALLER_NAME = 0x07,
+    CLIP_CALLER_NAME =                  0x07,
     /*! Caller's name absent: 'O' or 'P' (AKA reason for absence of calling party name) */
-            CLIP_ABSENCE2 = 0x08,
+    CLIP_ABSENCE2 =                     0x08,
     /*! Visual indicator */
-            CLIP_VISUAL_INDICATOR = 0x0B,
+    CLIP_VISUAL_INDICATOR =             0x0B,
     /*! Message ID */
-            CLIP_MESSAGE_ID = 0x0D,
+    CLIP_MESSAGE_ID =                   0x0D,
     /*! Complementary calling line identity */
-            CLIP_COMPLEMENTARY_CALLER_NUMBER = 0x10,
+    CLIP_COMPLEMENTARY_CALLER_NUMBER =  0x10,
     /*! Call type - voice call (1), ring-back-when-free call (2), calling name delivery (3) or msg waiting call(0x81) */
-            CLIP_CALLTYPE = 0x11,
+    CLIP_CALLTYPE =                     0x11,
     /*! Number of messages */
-            CLIP_NUM_MSG = 0x13,
+    CLIP_NUM_MSG =                      0x13,
     /*! Type of forwarded call */
-            CLIP_TYPE_OF_FORWARDED_CALL = 0x15,
+    CLIP_TYPE_OF_FORWARDED_CALL =       0x15,
     /*! Type of calling user */
-            CLIP_TYPE_OF_CALLING_USER = 0x16,
+    CLIP_TYPE_OF_CALLING_USER =         0x16,
     /*! Redirecting number */
-            CLIP_REDIR_NUMBER = 0x1A,
+    CLIP_REDIR_NUMBER =                 0x1A,
     /*! Charge */
-            CLIP_CHARGE = 0x20,
+    CLIP_CHARGE =                       0x20,
     /*! Duration of the call */
-            CLIP_DURATION = 0x23,
+    CLIP_DURATION =                     0x23,
     /*! Additional charge */
-            CLIP_ADD_CHARGE = 0x21,
+    CLIP_ADD_CHARGE =                   0x21,
     /*! Display information */
-            CLIP_DISPLAY_INFO = 0x50,
+    CLIP_DISPLAY_INFO =                 0x50,
     /*! Service information */
-            CLIP_SERVICE_INFO = 0x55
+    CLIP_SERVICE_INFO =                 0x55
 };
 
 /*! Definitions for A-CLIP (Analog Calling Line Identity Presentation) */
-enum {
+enum
+{
     /*! Single data message caller ID frame */
-            ACLIP_SDMF_CALLERID = 0x04,
+    ACLIP_SDMF_CALLERID =               0x04,
     /*! Multiple data message caller ID frame */
-            ACLIP_MDMF_CALLERID = 0x80
+    ACLIP_MDMF_CALLERID =               0x80
 };
 
 /*! A-CLIP MDM message IDs */
-enum {
+enum
+{
     /*! Date and time (MMDDHHMM) */
-            ACLIP_DATETIME = 0x01,
+    ACLIP_DATETIME =                    0x01,
     /*! Caller number */
-            ACLIP_CALLER_NUMBER = 0x02,
+    ACLIP_CALLER_NUMBER =               0x02,
     /*! Dialed number */
-            ACLIP_DIALED_NUMBER = 0x03,
+    ACLIP_DIALED_NUMBER =               0x03,
     /*! Caller number absent: 'O' or 'P' */
-            ACLIP_NUMBER_ABSENCE = 0x04,
+    ACLIP_NUMBER_ABSENCE =              0x04,
     /*! Call forward: universal, on busy, or on unanswered */
-            ACLIP_REDIRECT = 0x05,
+    ACLIP_REDIRECT =                    0x05,
     /*! Long distance call: 'L' */
-            ACLIP_QUALIFIER = 0x06,
+    ACLIP_QUALIFIER =                   0x06,
     /*! Caller's name */
-            ACLIP_CALLER_NAME = 0x07,
+    ACLIP_CALLER_NAME =                 0x07,
     /*! Caller's name absent: 'O' or 'P' */
-            ACLIP_NAME_ABSENCE = 0x08
+    ACLIP_NAME_ABSENCE =                0x08
 };
 
 /*! Definitions for J-CLIP (Japan Calling Line Identity Presentation) */
@@ -333,17 +340,18 @@ enum {
 #define JCLIP_MDMF_CALLERID             0x40
 
 /*! J-CLIP MDM message IDs */
-enum {
+enum
+{
     /*! Caller number */
-            JCLIP_CALLER_NUMBER = 0x02,
+    JCLIP_CALLER_NUMBER =               0x02,
     /*! Caller number data extension signal */
-            JCLIP_CALLER_NUM_DES = 0x21,
+    JCLIP_CALLER_NUM_DES =              0x21,
     /*! Dialed number */
-            JCLIP_DIALED_NUMBER = 0x09,
+    JCLIP_DIALED_NUMBER =               0x09,
     /*! Dialed number data extension signal */
-            JCLIP_DIALED_NUM_DES = 0x22,
+    JCLIP_DIALED_NUM_DES =              0x22,
     /*! Caller number absent: 'C', 'O', 'P' or 'S' */
-            JCLIP_ABSENCE = 0x04
+    JCLIP_ABSENCE =                     0x04
 };
 
 /* Definitions for CLIP-DTMF and its variants */
@@ -392,25 +400,22 @@ extern "C"
     \param user_data An opaque pointer for the callback routine.
     \return A pointer to the initialised context, or NULL if there was a problem.
 */
-SPAN_DECLARE(adsi_rx_state_t * ) adsi_rx_init(adsi_rx_state_t * s ,
-int standard,
-        put_msg_func_t
-put_msg ,
-void *user_data ) ;
+SPAN_DECLARE(adsi_rx_state_t *) adsi_rx_init(adsi_rx_state_t *s,
+                                             int standard,
+                                             put_msg_func_t put_msg,
+                                             void *user_data);
 
 /*! \brief Release an ADSI receive context.
     \param s The ADSI receive context.
     \return 0 for OK.
 */
-SPAN_DECLARE(int)
-adsi_rx_release(adsi_rx_state_t * s ) ;
+SPAN_DECLARE(int) adsi_rx_release(adsi_rx_state_t *s);
 
 /*! \brief Free the resources of an ADSI receive context.
     \param s The ADSI receive context.
     \return 0 for OK.
 */
-SPAN_DECLARE(int)
-adsi_rx_free(adsi_rx_state_t * s ) ;
+SPAN_DECLARE(int) adsi_rx_free(adsi_rx_state_t *s);
 
 /*! \brief Receive a chunk of ADSI audio.
     \param s The ADSI receive context.
@@ -418,30 +423,26 @@ adsi_rx_free(adsi_rx_state_t * s ) ;
     \param len The number of samples in the buffer.
     \return The number of samples unprocessed.
 */
-SPAN_DECLARE(int)
-adsi_rx(adsi_rx_state_t * s , const int16_t amp[],
-int len ) ;
+SPAN_DECLARE(int) adsi_rx(adsi_rx_state_t *s, const int16_t amp[], int len);
 
 /*! \brief Initialise an ADSI transmit context.
     \param s The ADSI transmit context.
     \param standard The code for the ADSI standard to be used.
     \return A pointer to the initialised context, or NULL if there was a problem.
 */
-SPAN_DECLARE(adsi_tx_state_t * ) adsi_tx_init(adsi_tx_state_t * s , int standard ) ;
+SPAN_DECLARE(adsi_tx_state_t *) adsi_tx_init(adsi_tx_state_t *s, int standard);
 
 /*! \brief Release an ADSI transmit context.
     \param s The ADSI transmit context.
     \return 0 for OK.
 */
-SPAN_DECLARE(int)
-adsi_tx_release(adsi_tx_state_t * s ) ;
+SPAN_DECLARE(int) adsi_tx_release(adsi_tx_state_t *s);
 
 /*! \brief Free the resources of an ADSI transmit context.
     \param s The ADSI transmit context.
     \return 0 for OK.
 */
-SPAN_DECLARE(int)
-adsi_tx_free(adsi_tx_state_t * s ) ;
+SPAN_DECLARE(int) adsi_tx_free(adsi_tx_state_t *s);
 
 /*! \brief Adjust the preamble associated with an ADSI transmit context.
     \param s The ADSI transmit context.
@@ -450,12 +451,11 @@ adsi_tx_free(adsi_tx_state_t * s ) ;
     \param postamble_ones_len The number of bits of continuous one after a message.
     \param stop_bits The number of stop bits per character.
 */
-SPAN_DECLARE(void)
-adsi_tx_set_preamble(adsi_tx_state_t * s ,
-int preamble_len,
-int preamble_ones_len,
-int postamble_ones_len,
-int stop_bits ) ;
+SPAN_DECLARE(void) adsi_tx_set_preamble(adsi_tx_state_t *s,
+                                        int preamble_len,
+                                        int preamble_ones_len,
+                                        int postamble_ones_len,
+                                        int stop_bits);
 
 /*! \brief Generate a block of ADSI audio samples.
     \param s The ADSI transmit context.
@@ -463,15 +463,12 @@ int stop_bits ) ;
     \param max_len The number of samples to be generated.
     \return The number of samples actually generated.
 */
-SPAN_DECLARE(int)
-adsi_tx(adsi_tx_state_t * s , int16_t amp[],
-int max_len ) ;
+SPAN_DECLARE(int) adsi_tx(adsi_tx_state_t *s, int16_t amp[], int max_len);
 
 /*! \brief Request generation of an ADSI alert tone.
     \param s The ADSI transmit context.
 */
-SPAN_DECLARE(void)
-adsi_tx_send_alert_tone(adsi_tx_state_t * s ) ;
+SPAN_DECLARE(void) adsi_tx_send_alert_tone(adsi_tx_state_t *s);
 
 /*! \brief Put a message into the input buffer of an ADSI transmit context.
     \param s The ADSI transmit context.
@@ -482,9 +479,7 @@ adsi_tx_send_alert_tone(adsi_tx_state_t * s ) ;
             not successfully add the message to the buffer. If the message is
             invalid (e.g. it is too long), this function will return -1.
 */
-SPAN_DECLARE(int)
-adsi_tx_put_message(adsi_tx_state_t * s , const uint8_t *msg,
-int len ) ;
+SPAN_DECLARE(int) adsi_tx_put_message(adsi_tx_state_t *s, const uint8_t *msg, int len);
 
 /*! \brief Get a field from an ADSI message.
     \param s The ADSI receive context.
@@ -495,11 +490,7 @@ int len ) ;
     \param field_body Pointer to the body of the field.
     \param field_len The length of the field, or -1 for no more fields, or -2 for message structure corrupt.
 */
-SPAN_DECLARE(int)
-adsi_next_field(adsi_rx_state_t * s , const uint8_t *msg,
-int msg_len,
-int pos, uint8_t * field_type , uint8_t const **field_body,
-int *field_len ) ;
+SPAN_DECLARE(int) adsi_next_field(adsi_rx_state_t *s, const uint8_t *msg, int msg_len, int pos, uint8_t *field_type, uint8_t const **field_body, int *field_len);
 
 /*! \brief Insert the header or a field into an ADSI message.
     \param s The ADSI transmit context.
@@ -509,18 +500,13 @@ int *field_len ) ;
     \param field_body Pointer to the body of the new field.
     \param field_len The length of the new field.
 */
-SPAN_DECLARE(int)
-adsi_add_field(adsi_tx_state_t * s , uint8_t *msg,
-int len, uint8_t
-field_type , uint8_t const *field_body,
-int field_len ) ;
+SPAN_DECLARE(int) adsi_add_field(adsi_tx_state_t *s, uint8_t *msg, int len, uint8_t field_type, uint8_t const *field_body, int field_len);
 
 /*! \brief Return a short name for an ADSI standard
     \param standard The code for the standard.
     \return A pointer to the name.
 */
-SPAN_DECLARE(const char *)
-adsi_standard_to_str(int standard);
+SPAN_DECLARE(const char *) adsi_standard_to_str(int standard);
 
 #if defined(__cplusplus)
 }

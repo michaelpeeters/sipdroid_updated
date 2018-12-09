@@ -38,7 +38,8 @@
 #define _SPANDSP_PRIVATE_G722_H_
 
 /*! The per band parameters for both encoding and decoding G.722 */
-typedef struct {
+typedef struct
+{
     int16_t nb;
     int16_t det;
     int16_t s;
@@ -53,7 +54,8 @@ typedef struct {
 /*!
     G.722 encode state
  */
-struct g722_encode_state_s {
+struct g722_encode_state_s
+{
     /*! TRUE if the operating in the special ITU test mode, with the band split filters
              disabled. */
     int itu_test_mode;
@@ -80,7 +82,8 @@ struct g722_encode_state_s {
 /*!
     G.722 decode state
  */
-struct g722_decode_state_s {
+struct g722_decode_state_s
+{
     /*! TRUE if the operating in the special ITU test mode, with the band split filters
              disabled. */
     int itu_test_mode;
@@ -97,7 +100,7 @@ struct g722_decode_state_s {
     int ptr;
 
     g722_band_t band[2];
-
+    
     uint32_t in_buffer;
     int in_bits;
     uint32_t out_buffer;

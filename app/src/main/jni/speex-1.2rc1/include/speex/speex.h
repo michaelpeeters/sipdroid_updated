@@ -245,47 +245,47 @@ typedef int (*decoder_ctl_func)(void *state, int request, void *ptr);
 /** Query function for a mode */
 typedef int (*mode_query_func)(const void *mode, int request, void *ptr);
 
-/** Struct defining a Speex mode */
+/** Struct defining a Speex mode */ 
 typedef struct SpeexMode {
-    /** Pointer to the low-level mode data */
-    const void *mode;
+   /** Pointer to the low-level mode data */
+   const void *mode;
 
-    /** Pointer to the mode query function */
-    mode_query_func query;
+   /** Pointer to the mode query function */
+   mode_query_func query;
+   
+   /** The name of the mode (you should not rely on this to identify the mode)*/
+   const char *modeName;
 
-    /** The name of the mode (you should not rely on this to identify the mode)*/
-    const char *modeName;
+   /**ID of the mode*/
+   int modeID;
 
-    /**ID of the mode*/
-    int modeID;
+   /**Version number of the bitstream (incremented every time we break
+    bitstream compatibility*/
+   int bitstream_version;
 
-    /**Version number of the bitstream (incremented every time we break
-     bitstream compatibility*/
-    int bitstream_version;
+   /** Pointer to encoder initialization function */
+   encoder_init_func enc_init;
 
-    /** Pointer to encoder initialization function */
-    encoder_init_func enc_init;
+   /** Pointer to encoder destruction function */
+   encoder_destroy_func enc_destroy;
 
-    /** Pointer to encoder destruction function */
-    encoder_destroy_func enc_destroy;
+   /** Pointer to frame encoding function */
+   encode_func enc;
 
-    /** Pointer to frame encoding function */
-    encode_func enc;
+   /** Pointer to decoder initialization function */
+   decoder_init_func dec_init;
 
-    /** Pointer to decoder initialization function */
-    decoder_init_func dec_init;
+   /** Pointer to decoder destruction function */
+   decoder_destroy_func dec_destroy;
 
-    /** Pointer to decoder destruction function */
-    decoder_destroy_func dec_destroy;
+   /** Pointer to frame decoding function */
+   decode_func dec;
 
-    /** Pointer to frame decoding function */
-    decode_func dec;
+   /** ioctl-like requests for encoder */
+   encoder_ctl_func enc_ctl;
 
-    /** ioctl-like requests for encoder */
-    encoder_ctl_func enc_ctl;
-
-    /** ioctl-like requests for decoder */
-    decoder_ctl_func dec_ctl;
+   /** ioctl-like requests for decoder */
+   decoder_ctl_func dec_ctl;
 
 } SpeexMode;
 
@@ -341,7 +341,7 @@ int speex_encoder_ctl(void *state, int request, void *ptr);
  *
  * @param mode Speex mode (one of speex_nb_mode or speex_wb_mode)
  * @return A newly created decoder state or NULL if state allocation fails
- */
+ */ 
 void *speex_decoder_init(const SpeexMode *mode);
 
 /** Frees all resources associated to an existing decoder state.
@@ -406,10 +406,10 @@ extern const SpeexMode speex_wb_mode;
 extern const SpeexMode speex_uwb_mode;
 
 /** List of all modes available */
-extern const SpeexMode *const speex_mode_list[SPEEX_NB_MODES];
+extern const SpeexMode * const speex_mode_list[SPEEX_NB_MODES];
 
 /** Obtain one of the modes available */
-const SpeexMode *speex_lib_get_mode(int mode);
+const SpeexMode * speex_lib_get_mode (int mode);
 
 #ifndef WIN32
 /* We actually override the function in the narrowband case so that we can avoid linking in the wideband stuff */

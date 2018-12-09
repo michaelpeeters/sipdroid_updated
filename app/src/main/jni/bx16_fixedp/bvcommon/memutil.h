@@ -26,9 +26,6 @@
 ******************************************************************************/
 
 Word16 *allocWord16(long nl, long nh);
-
 void deallocWord16(Word16 *v, long nl, long nh);
-
 Word32 *allocWord32(long nl, long nh);
-
 void deallocWord32(Word32 *v, long nl, long nh);

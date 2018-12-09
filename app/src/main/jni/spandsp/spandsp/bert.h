@@ -53,7 +53,8 @@ over 10/error rate bits. That is, to assess if the signal's BER is above or belo
 the software looks over 10*10^5 => 10^6 bits.
 */
 
-enum {
+enum
+{
     BERT_REPORT_SYNCED = 0,
     BERT_REPORT_UNSYNCED,
     BERT_REPORT_REGULAR,
@@ -71,7 +72,8 @@ enum {
     "ThE QuicK BrowN FoX JumpS OveR ThE LazY DoG 123 456 7890 + - * : = $ % ( )"
 */
 
-enum {
+enum
+{
     BERT_PATTERN_ZEROS = 0,
     BERT_PATTERN_ONES,
     BERT_PATTERN_7_TO_1,
@@ -91,7 +93,8 @@ enum {
     Bit error rate tester (BERT) results descriptor. This is used to report the
     results of a BER test.
 */
-typedef struct {
+typedef struct
+{
     int total_bits;
     int bad_bits;
     int resyncs;
@@ -113,8 +116,7 @@ extern "C"
 /*! Return a short description of a BERT event.
     \param event The event type.
     \return A pointer to a short text string describing the event. */
-SPAN_DECLARE(const char *)
-bert_event_to_str(int event);
+SPAN_DECLARE(const char *) bert_event_to_str(int event);
 
 /*! Initialise a BERT context.
     \param s The BERT context.
@@ -123,44 +125,34 @@ bert_event_to_str(int event);
     \param resync_len ???
     \param resync_percent The percentage of bad bits which will cause a resync.
     \return The BERT context. */
-SPAN_DECLARE(bert_state_t * ) bert_init(bert_state_t * s , int limit,
-int pattern,
-int resync_len,
-int resync_percent ) ;
+SPAN_DECLARE(bert_state_t *) bert_init(bert_state_t *s, int limit, int pattern, int resync_len, int resync_percent);
 
-SPAN_DECLARE(int)
-bert_release(bert_state_t * s ) ;
+SPAN_DECLARE(int) bert_release(bert_state_t *s);
 
-SPAN_DECLARE(int)
-bert_free(bert_state_t * s ) ;
+SPAN_DECLARE(int) bert_free(bert_state_t *s);
 
 /*! Get the next bit of the BERT sequence from the generator.
     \param s The BERT context.
     \return The bit. */
-SPAN_DECLARE(int)
-bert_get_bit(bert_state_t * s ) ;
+SPAN_DECLARE(int) bert_get_bit(bert_state_t *s);
 
 /*! Put the next bit of the BERT sequence to the analyser.
     \param s The BERT context.
     \param bit The bit. */
-SPAN_DECLARE(void)
-bert_put_bit(bert_state_t * s , int bit ) ;
+SPAN_DECLARE(void) bert_put_bit(bert_state_t *s, int bit);
 
 /*! Set the callback function for reporting the test status.
     \param s The BERT context.
     \param freq The required frequency of regular reports.
     \param reporter The callback function.
     \param user_data An opaque pointer passed to the reporter routine. */
-SPAN_DECLARE(void)
-bert_set_report(bert_state_t * s , int freq, bert_report_func_t
-reporter , void *user_data ) ;
+SPAN_DECLARE(void) bert_set_report(bert_state_t *s, int freq, bert_report_func_t reporter, void *user_data);
 
 /*! Get the results of the BERT.
     \param s The BERT context.
     \param results The results.
     \return The size of the result structure. */
-SPAN_DECLARE(int)
-bert_result(bert_state_t * s , bert_results_t *results ) ;
+SPAN_DECLARE(int) bert_result(bert_state_t *s, bert_results_t *results);
 
 #if defined(__cplusplus)
 }

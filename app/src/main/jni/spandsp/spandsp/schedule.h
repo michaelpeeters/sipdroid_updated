@@ -51,24 +51,16 @@ extern "C"
 {
 #endif
 
-SPAN_DECLARE(uint64_t)
-span_schedule_next(span_sched_state_t * s ) ;
-SPAN_DECLARE(uint64_t)
-span_schedule_time(span_sched_state_t * s ) ;
+SPAN_DECLARE(uint64_t) span_schedule_next(span_sched_state_t *s);
+SPAN_DECLARE(uint64_t) span_schedule_time(span_sched_state_t *s);
 
-SPAN_DECLARE(int)
-span_schedule_event(span_sched_state_t * s , int us, span_sched_callback_func_t
-function , void *user_data ) ;
-SPAN_DECLARE(void)
-span_schedule_update(span_sched_state_t * s , int us ) ;
-SPAN_DECLARE(void)
-span_schedule_del(span_sched_state_t * s , int id ) ;
+SPAN_DECLARE(int) span_schedule_event(span_sched_state_t *s, int us, span_sched_callback_func_t function, void *user_data);
+SPAN_DECLARE(void) span_schedule_update(span_sched_state_t *s, int us);
+SPAN_DECLARE(void) span_schedule_del(span_sched_state_t *s, int id);
 
-SPAN_DECLARE(span_sched_state_t * ) span_schedule_init(span_sched_state_t * s ) ;
-SPAN_DECLARE(int)
-span_schedule_release(span_sched_state_t * s ) ;
-SPAN_DECLARE(int)
-span_schedule_free(span_sched_state_t * s ) ;
+SPAN_DECLARE(span_sched_state_t *) span_schedule_init(span_sched_state_t *s);
+SPAN_DECLARE(int) span_schedule_release(span_sched_state_t *s);
+SPAN_DECLARE(int) span_schedule_free(span_sched_state_t *s);
 
 #if defined(__cplusplus)
 }

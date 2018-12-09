@@ -47,7 +47,8 @@ values +/-8031, and this square wave represents 0dBov.  This translates into 6.1
     Power meter descriptor. This defines the working state for a
     single instance of a power measurement device.
 */
-typedef struct {
+typedef struct
+{
     /*! The shift factor, which controls the damping of the power meter. */
     int shift;
 
@@ -55,7 +56,8 @@ typedef struct {
     int32_t reading;
 } power_meter_t;
 
-typedef struct {
+typedef struct
+{
     power_meter_t short_term;
     power_meter_t medium_term;
     int signal_present;
@@ -74,89 +76,75 @@ extern "C"
     \param s The power meter context.
     \param shift The shift to be used by the IIR filter.
     \return The power meter context. */
-SPAN_DECLARE(power_meter_t * ) power_meter_init(power_meter_t * s , int shift ) ;
+SPAN_DECLARE(power_meter_t *) power_meter_init(power_meter_t *s, int shift);
 
-SPAN_DECLARE(int)
-power_meter_release(power_meter_t * s ) ;
+SPAN_DECLARE(int) power_meter_release(power_meter_t *s);
 
-SPAN_DECLARE(int)
-power_meter_free(power_meter_t * s ) ;
+SPAN_DECLARE(int) power_meter_free(power_meter_t *s);
 
 /*! Change the damping factor of a power meter context.
     \brief Change the damping factor of a power meter context.
     \param s The power meter context.
     \param shift The new shift to be used by the IIR filter.
     \return The power meter context. */
-SPAN_DECLARE(power_meter_t * ) power_meter_damping(power_meter_t * s , int shift ) ;
+SPAN_DECLARE(power_meter_t *) power_meter_damping(power_meter_t *s, int shift);
 
 /*! Update a power meter.
     \brief Update a power meter.
     \param s The power meter context.
     \param amp The amplitude of the new audio sample.
     \return The current power meter reading. */
-SPAN_DECLARE(int32_t)
-power_meter_update(power_meter_t * s , int16_t amp ) ;
+SPAN_DECLARE(int32_t) power_meter_update(power_meter_t *s, int16_t amp);
 
 /*! Get the current power meter reading.
     \brief Get the current power meter reading.
     \param s The power meter context.
     \return The current power meter reading. */
-SPAN_DECLARE(int32_t)
-power_meter_current(power_meter_t * s ) ;
+SPAN_DECLARE(int32_t) power_meter_current(power_meter_t *s);
 
 /*! Get the current power meter reading, in dBm0.
     \brief Get the current power meter reading, in dBm0.
     \param s The power meter context.
     \return The current power meter reading, in dBm0. */
-SPAN_DECLARE(float)
-power_meter_current_dbm0(power_meter_t * s ) ;
+SPAN_DECLARE(float) power_meter_current_dbm0(power_meter_t *s);
 
 /*! Get the current power meter reading, in dBOv.
     \brief Get the current power meter reading, in dBOv.
     \param s The power meter context.
     \return The current power meter reading, in dBOv. */
-SPAN_DECLARE(float)
-power_meter_current_dbov(power_meter_t * s ) ;
+SPAN_DECLARE(float) power_meter_current_dbov(power_meter_t *s);
 
 /*! Get the power meter reading which represents a specified power level in dBm0.
     \brief Get the current power meter reading, in dBm0.
     \param level A power level, in dB0m.
     \return The equivalent power meter reading. */
-SPAN_DECLARE(int32_t)
-power_meter_level_dbm0(float level);
+SPAN_DECLARE(int32_t) power_meter_level_dbm0(float level);
 
 /*! Get the power meter reading which represents a specified power level in dBOv.
     \brief Get the current power meter reading, in dBOv.
     \param level A power level, in dBOv.
     \return The equivalent power meter reading. */
-SPAN_DECLARE(int32_t)
-power_meter_level_dbov(float level);
+SPAN_DECLARE(int32_t) power_meter_level_dbov(float level);
 
-SPAN_DECLARE(int32_t)
-power_surge_detector(power_surge_detector_state_t * s , int16_t amp ) ;
+SPAN_DECLARE(int32_t) power_surge_detector(power_surge_detector_state_t *s, int16_t amp);
 
 /*! Get the current surge detector short term meter reading, in dBm0.
     \brief Get the current surge detector meter reading, in dBm0.
     \param s The power surge detector context.
     \return The current power surge detector power reading, in dBm0. */
-SPAN_DECLARE(float)
-power_surge_detector_current_dbm0(power_surge_detector_state_t * s ) ;
+SPAN_DECLARE(float) power_surge_detector_current_dbm0(power_surge_detector_state_t *s);
 
 /*! Get the current surge detector short term meter reading, in dBOv.
     \brief Get the current surge detector meter reading, in dBOv.
     \param s The power surge detector context.
     \return The current power surge detector power reading, in dBOv. */
-SPAN_DECLARE(float)
-power_surge_detector_current_dbov(power_surge_detector_state_t * s ) ;
+SPAN_DECLARE(float) power_surge_detector_current_dbov(power_surge_detector_state_t *s);
 
-SPAN_DECLARE(power_surge_detector_state_t * ) power_surge_detector_init(power_surge_detector_state_t * s , float min,
-float surge ) ;
+SPAN_DECLARE(power_surge_detector_state_t *) power_surge_detector_init(power_surge_detector_state_t *s, float min, float surge);
 
-SPAN_DECLARE(int)
-power_surge_detector_release(power_surge_detector_state_t * s ) ;
+SPAN_DECLARE(int) power_surge_detector_release(power_surge_detector_state_t *s);
 
-SPAN_DECLARE(int)
-power_surge_detector_free(power_surge_detector_state_t * s ) ;
+SPAN_DECLARE(int) power_surge_detector_free(power_surge_detector_state_t *s);
 
 #if defined(__cplusplus)
 }

@@ -33,41 +33,42 @@
 #define BUFFERSIZE  (LPCO+160)
 
 void apfilter(
-        Word16 a[],     /* (i) Q12 : prediction coefficients  */
-        Word16 m,       /* (i)     : LPC order                */
-        Word16 x[],     /* (i) Q0  : input signal             */
-        Word16 y[],     /* (o) Q0  : output signal            */
-        Word16 lg,      /* (i)     : size of filtering        */
-        Word16 mem[],   /* (i/o) Q0: filter memory            */
-        Word16 update   /* (i)     : memory update flag       */
-) {
-    Word16 buf[BUFFERSIZE]; /* buffer for filter memory & signal */
-    Word32 a0;
-    Word16 *fp1;
-    Word16 i, n;
+              Word16 a[],     /* (i) Q12 : prediction coefficients  */
+              Word16 m,       /* (i)     : LPC order                */
+              Word16 x[],     /* (i) Q0  : input signal             */
+              Word16 y[],     /* (o) Q0  : output signal            */
+              Word16 lg,      /* (i)     : size of filtering        */
+              Word16 mem[],   /* (i/o) Q0: filter memory            */
+              Word16 update   /* (i)     : memory update flag       */
+              )
+{
+   Word16 buf[BUFFERSIZE]; /* buffer for filter memory & signal */
+   Word32 a0;
+   Word16 *fp1;
+   Word16 i, n;
+   
+   /* copy filter memory to beginning part of temporary buffer */
+   W16copy(buf, mem, m);
+   
+   /* loop through every element of the current vector */
+   for (n = 0; n < lg; n++) {
+      
+      /* perform multiply-adds along the delay line of filter */
+      fp1 = &buf[n];
+      a0 = L_mult0(4096, x[n]); // Q12
+      for (i = m; i > 0; i--)
+         a0 = L_msu0(a0, a[i], *fp1++); // Q12
+      
+      /* update temporary buffer for filter memory */
+      *fp1 = intround(L_shl(a0,4));
+   }
 
-    /* copy filter memory to beginning part of temporary buffer */
-    W16copy(buf, mem, m);
+   /* copy to output array */
+   W16copy(y, buf+m, lg);
+   
+   /* get the filter memory after filtering the current vector */
+   if(update)
+      W16copy(mem, buf+lg, m);
 
-    /* loop through every element of the current vector */
-    for (n = 0; n < lg; n++) {
-
-        /* perform multiply-adds along the delay line of filter */
-        fp1 = &buf[n];
-        a0 = L_mult0(4096, x[n]); // Q12
-        for (i = m; i > 0; i--)
-            a0 = L_msu0(a0, a[i], *fp1++); // Q12
-
-        /* update temporary buffer for filter memory */
-        *fp1 = intround(L_shl(a0, 4));
-    }
-
-    /* copy to output array */
-    W16copy(y, buf + m, lg);
-
-    /* get the filter memory after filtering the current vector */
-    if (update)
-        W16copy(mem, buf + lg, m);
-
-    return;
+   return;
 }

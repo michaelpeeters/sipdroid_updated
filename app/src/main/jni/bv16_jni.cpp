@@ -18,25 +18,36 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
+ 
 #include <jni.h>
 
-#define LOG_TAG "bv16" // text for log tag
+#include <string.h>
+#include <unistd.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <android/log.h> 
+
+#define LOG_TAG "bv16" // text for log tag 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "typedef.h"
+#include "bvcommon.h"
 #include "bv16cnst.h"
 #include "bv16strct.h"
 #include "bv16.h"
+#include "utility.h"
 #if G192BITSTREAM
 #include "g192.h"
 #else
 #include "bitpack.h"
 #endif
-#include "memutil.h"
+#include "memutil.h" 
 
 #ifdef __cplusplus
 }
@@ -45,9 +56,9 @@ extern "C" {
 
 
 // the header length of the RTP frame (must skip when en/decoding)
-#define    RTP_HDR_SIZE    12
+#define	RTP_HDR_SIZE	12
 // size of BV16 packed bitstream (RFC4298)
-#define    BITSTREAM_SIZE    10
+#define	BITSTREAM_SIZE	10	
 
 static int codec_open = 0;
 
@@ -69,103 +80,102 @@ const char *kInterfacePath = "org/sipdroid/pjlib/BV16Fixedp";
 
 extern "C"
 JNIEXPORT jint JNICALL Java_org_sipdroid_codecs_BV16_open
-        (JNIEnv *env, jobject obj) {
-    int tmp;
+  (JNIEnv *env, jobject obj) {
+	int tmp;
 
-    if (codec_open++ != 0)
-        return (jint) 0;
+	if (codec_open++ != 0)
+		return (jint)0;
 
     sizebitstream = sizeof(struct BV16_Bit_Stream);
-    frsz = FRSZ;
-
+	frsz = FRSZ;
+   
     sizestate = sizeof(struct BV16_Encoder_State);
-    enc_state = allocWord16(0, sizeof(struct BV16_Encoder_State) / 2 - 1);
-    Reset_BV16_Encoder((struct BV16_Encoder_State *) enc_state);
+    enc_state = allocWord16(0,sizeof(struct BV16_Encoder_State)/2-1);
+    Reset_BV16_Encoder((struct BV16_Encoder_State*)enc_state);
 
     sizestate = sizeof(struct BV16_Decoder_State);
-    dec_state = allocWord16(0, sizeof(struct BV16_Decoder_State) / 2 - 1);
-    Reset_BV16_Decoder((struct BV16_Decoder_State *) dec_state);
-
-    enc_bs = allocWord16(0, sizebitstream / 2 - 1);
-    dec_bs = allocWord16(0, sizebitstream / 2 - 1);
-
-    return (jint) 0;
+    dec_state = allocWord16(0,sizeof(struct BV16_Decoder_State)/2-1);
+    Reset_BV16_Decoder((struct BV16_Decoder_State*)dec_state);	
+	
+    enc_bs = allocWord16(0,sizebitstream/2-1);
+    dec_bs = allocWord16(0,sizebitstream/2-1);
+	
+	return (jint)0;
 }
 
 extern "C"
 JNIEXPORT jint JNICALL Java_org_sipdroid_codecs_BV16_encode
-        (JNIEnv *env, jobject obj, jshortArray lin, jint offset, jbyteArray encoded, jint size) {
+    (JNIEnv *env, jobject obj, jshortArray lin, jint offset, jbyteArray encoded, jint size) {
 
 
-    int i;
-    unsigned int lin_pos = 0;
+	int i;
+	unsigned int lin_pos = 0;
 
-    if (!codec_open)
-        return 0;
-
+	if (!codec_open)
+		return 0;
+		
 //    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, 
 //            "encoding frame size: %d\toffset: %d\n", size, offset); 		
 
-    for (i = 0; i < size; i += FRSZ) {
+	for (i = 0; i < size; i+=FRSZ) {
 //		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, 
 //            "encoding frame size: %d\toffset: %d i: %d\n", size, offset, i); 		
-
-        env->GetShortArrayRegion(lin, offset + i, frsz, enc_buffer);
-        BV16_Encode((struct BV16_Bit_Stream *) enc_bs, (struct BV16_Encoder_State *) enc_state,
-                    enc_buffer);
-        BV16_BitPack((UWord8 *) enc_output_buffer, (struct BV16_Bit_Stream *) enc_bs);
-        env->SetByteArrayRegion(encoded, RTP_HDR_SIZE + lin_pos, BITSTREAM_SIZE, enc_output_buffer);
-        lin_pos += BITSTREAM_SIZE;
-    }
+	
+		env->GetShortArrayRegion(lin, offset + i,frsz, enc_buffer);
+		BV16_Encode((struct BV16_Bit_Stream*) enc_bs,(struct BV16_Encoder_State*) enc_state, enc_buffer);
+		BV16_BitPack( (UWord8 *) enc_output_buffer, (struct BV16_Bit_Stream*) enc_bs );
+		env->SetByteArrayRegion(encoded, RTP_HDR_SIZE+ lin_pos, BITSTREAM_SIZE, enc_output_buffer);
+		lin_pos += BITSTREAM_SIZE;
+	}
 //	__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, 
 //        "encoding **END** frame size: %d\toffset: %d i: %d lin_pos: %d\n", size, offset, i, lin_pos); 	
-    return (jint) lin_pos;
+    return (jint)lin_pos;
 }
 
 extern "C"
 JNIEXPORT jint JNICALL Java_org_sipdroid_codecs_BV16_decode
-        (JNIEnv *env, jobject obj, jbyteArray encoded, jshortArray lin, jint size) {
+    (JNIEnv *env, jobject obj, jbyteArray encoded, jshortArray lin, jint size) {
 
-    unsigned int lin_pos = 0;
+	unsigned int lin_pos = 0;
+	
+	jbyte	i;
 
-    jbyte i;
-
-    if (!codec_open)
-        return 0;
+	if (!codec_open)
+		return 0;
 
 //	__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, 
 //        "**** BEGIN DECODE ********  decoding frame size: %d lin_pos %d last i: %d\n", size, lin_pos, i); 	
-
-    for (i = 0; i < size; i = i + BITSTREAM_SIZE) {
+	
+	for (i=0; i<size; i=i+BITSTREAM_SIZE) {
 //		__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, 
 //			"**** I DECODE ******  decoding frame size: %d lin_pos %d last i: %d\n", size, lin_pos, i); 
+			
+		env->GetByteArrayRegion(encoded, i+RTP_HDR_SIZE, BITSTREAM_SIZE,dec_buffer);
 
-        env->GetByteArrayRegion(encoded, i + RTP_HDR_SIZE, BITSTREAM_SIZE, dec_buffer);
+		BV16_BitUnPack((UWord8 *)dec_buffer, (struct BV16_Bit_Stream*)dec_bs ); 
+		BV16_Decode((struct BV16_Bit_Stream*) dec_bs,(struct BV16_Decoder_State*) dec_state,
+			(Word16 *) dec_output_buffer);   
 
-        BV16_BitUnPack((UWord8 *) dec_buffer, (struct BV16_Bit_Stream *) dec_bs);
-        BV16_Decode((struct BV16_Bit_Stream *) dec_bs, (struct BV16_Decoder_State *) dec_state,
-                    (Word16 *) dec_output_buffer);
+		env->SetShortArrayRegion(lin, lin_pos, size,dec_output_buffer);
+		lin_pos = lin_pos + size;
+	}
 
-        env->SetShortArrayRegion(lin, lin_pos, size, dec_output_buffer);
-        lin_pos = lin_pos + size;
-    }
-
-
+	
 //    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, 
 //        "decoding frame size: %d lin_pos %d last i: %d\n", size, lin_pos, i); 	
 
-    return (jint) lin_pos;
+	return (jint)lin_pos;
 }
 
 extern "C"
 JNIEXPORT void JNICALL Java_org_sipdroid_codecs_BV16_close
-        (JNIEnv *env, jobject obj) {
+    (JNIEnv *env, jobject obj) {
 
-    if (--codec_open != 0)
-        return;
+	if (--codec_open != 0)
+		return;
 
-    deallocWord16((Word16 *) enc_state, 0, sizestate / 2 - 1);
-    deallocWord16((Word16 *) dec_state, 0, sizestate / 2 - 1);
-    deallocWord16((Word16 *) dec_bs, 0, sizebitstream / 2 - 1);
-    deallocWord16((Word16 *) enc_bs, 0, sizebitstream / 2 - 1);
+    deallocWord16((Word16 *) enc_state, 0, sizestate/2-1);
+    deallocWord16((Word16 *) dec_state, 0, sizestate/2-1);
+    deallocWord16((Word16 *) dec_bs, 0, sizebitstream/2-1);
+    deallocWord16((Word16 *) enc_bs, 0, sizebitstream/2-1);
 }

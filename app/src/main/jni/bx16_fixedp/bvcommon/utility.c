@@ -27,19 +27,23 @@
 
 #include "typedef.h"
 
-void UW8copy(UWord8 *y, UWord8 *x, int size) {
-    while ((size--) > 0) *y++ = *x++;
+void UW8copy(UWord8 *y, UWord8 *x, int size)
+{
+   while ((size--)>0) *y++ = *x++;
 }
 
-void W16copy(Word16 *y, Word16 *x, int size) {
-    while ((size--) > 0) *y++ = *x++;
+void W16copy(Word16 *y, Word16 *x, int size)
+{
+   while ((size--)>0) *y++ = *x++;
 }
 
-void W16zero(Word16 *x, int size) {
-    while ((size--) > 0) *x++ = 0;
+void W16zero(Word16 *x, int size)
+{
+   while ((size--)>0) *x++ = 0;
 }
 
-void W32copy(Word32 *y, Word32 *x, int size) {
-    while ((size--) > 0) *y++ = *x++;
+void W32copy(Word32 *y, Word32 *x, int size)
+{
+   while ((size--)>0) *y++ = *x++;
 }
 

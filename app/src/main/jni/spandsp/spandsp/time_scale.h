@@ -71,28 +71,24 @@ extern "C"
     \param sample_rate The sample rate of the signal.
     \param playout_rate The ratio between the output speed and the input speed.
     \return A pointer to the context, or NULL if there was a problem. */
-SPAN_DECLARE(time_scale_state_t * ) time_scale_init(time_scale_state_t * s , int sample_rate,
-float playout_rate ) ;
+SPAN_DECLARE(time_scale_state_t *) time_scale_init(time_scale_state_t *s, int sample_rate, float playout_rate);
 
 /*! \brief Release a time scale context.
     \param s The time scale context.
     \return 0 for OK, else -1. */
-SPAN_DECLARE(int)
-time_scale_release(time_scale_state_t * s ) ;
+SPAN_DECLARE(int) time_scale_release(time_scale_state_t *s);
 
 /*! \brief Free a time scale context.
     \param s The time scale context.
     \return 0 for OK, else -1. */
-SPAN_DECLARE(int)
-time_scale_free(time_scale_state_t * s ) ;
+SPAN_DECLARE(int) time_scale_free(time_scale_state_t *s);
 
 /*! Change the time scale rate.
     \brief Change the time scale rate.
     \param s The time scale context.
     \param playout_rate The ratio between the output speed and the input speed.
     \return 0 if changed OK, else -1. */
-SPAN_DECLARE(int)
-time_scale_rate(time_scale_state_t * s , float playout_rate ) ;
+SPAN_DECLARE(int) time_scale_rate(time_scale_state_t *s, float playout_rate);
 
 /*! Find the maximum possible samples which could result from scaling the specified
     number of input samples, at the current playback rate.
@@ -100,8 +96,7 @@ time_scale_rate(time_scale_state_t * s , float playout_rate ) ;
     \param s The time scale context.
     \param input_len The number of input samples.
     \return The maximum possible output samples. */
-SPAN_DECLARE(int)
-time_scale_max_output_len(time_scale_state_t * s , int input_len ) ;
+SPAN_DECLARE(int) time_scale_max_output_len(time_scale_state_t *s, int input_len);
 
 /*! Time scale a chunk of audio samples.
     \brief Time scale a chunk of audio samples.
@@ -113,9 +108,7 @@ time_scale_max_output_len(time_scale_state_t * s , int input_len ) ;
     \param len The number of input samples.
     \return The number of output samples.
 */
-SPAN_DECLARE(int)
-time_scale(time_scale_state_t * s , int16_t out[], int16_t
-in [ ] , int len ) ;
+SPAN_DECLARE(int) time_scale(time_scale_state_t *s, int16_t out[], int16_t in[], int len);
 
 #if defined(__cplusplus)
 }

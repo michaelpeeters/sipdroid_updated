@@ -31,46 +31,50 @@
 
 /* allocate a Word16 vector with subscript range v[nl...nh] */
 /* from numerical recipes in C 2nd edition, page 943        */
-Word16 *allocWord16(long nl, long nh) {
-    Word16 *v;
-
-    v = (Word16 *) malloc((size_t) ((nh - nl + 1) * sizeof(Word16)));
-    if (!v) {
-        printf("Memory allocation error in allocWord16()\n");
-        exit(0);
-    }
-
-    return v - nl;
+Word16 *allocWord16(long nl, long nh)
+{
+   Word16 *v;
+   
+   v = (Word16 *)malloc((size_t)((nh-nl+1)*sizeof(Word16)));
+   if (!v){
+      printf("Memory allocation error in allocWord16()\n");
+      exit(0);
+   }
+   
+   return v-nl;
 }
 
 /* free a Word16 vector allocated by svector()              */
 /* from numerical recipes in C 2nd edition, page 946        */
-void deallocWord16(Word16 *v, long nl, long nh) {
-
-    free((char *) (v + nl));
-
-    return;
+void deallocWord16(Word16 *v, long nl, long nh)
+{
+   
+   free((char *)(v+nl));
+   
+   return;
 }
 
 /* allocate a Word32 vector with subscript range v[nl...nh] */
 /* from numerical recipes in C 2nd edition, page 943        */
-Word32 *allocWord32(long nl, long nh) {
-    Word32 *v;
-
-    v = (Word32 *) malloc((size_t) ((nh - nl + 1) * sizeof(Word32)));
-    if (!v) {
-        printf("Memory allocation error in allocWord32()\n");
-        exit(0);
-    }
-
-    return v - nl;
+Word32 *allocWord32(long nl, long nh)
+{
+   Word32 *v;
+   
+   v = (Word32 *)malloc((size_t)((nh-nl+1)*sizeof(Word32)));
+   if (!v){
+      printf("Memory allocation error in allocWord32()\n");
+      exit(0);
+   }
+   
+   return v-nl;
 }
 
 /* free a Word32 vector allocated by svector()              */
 /* from numerical recipes in C 2nd edition, page 946        */
-void deallocWord32(Word32 *v, long nl, long nh) {
-
-    free((char *) (v + nl));
-
-    return;
+void deallocWord32(Word32 *v, long nl, long nh)
+{
+   
+   free((char *)(v+nl));
+   
+   return;
 }

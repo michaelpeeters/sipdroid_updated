@@ -41,24 +41,15 @@ extern "C"
 {
 #endif
 
-SPAN_DECLARE(swept_tone_state_t * ) swept_tone_init(swept_tone_state_t * s , float start,
-float end,
-float level,
-int duration,
-int repeating ) ;
+SPAN_DECLARE(swept_tone_state_t *) swept_tone_init(swept_tone_state_t *s, float start, float end, float level, int duration, int repeating);
 
-SPAN_DECLARE(int)
-swept_tone(swept_tone_state_t * s , int16_t amp[],
-int len ) ;
+SPAN_DECLARE(int) swept_tone(swept_tone_state_t *s, int16_t amp[], int len);
 
-SPAN_DECLARE(float)
-swept_tone_current_frequency(swept_tone_state_t * s ) ;
+SPAN_DECLARE(float) swept_tone_current_frequency(swept_tone_state_t *s);
 
-SPAN_DECLARE(int)
-swept_tone_release(swept_tone_state_t * s ) ;
+SPAN_DECLARE(int) swept_tone_release(swept_tone_state_t *s);
 
-SPAN_DECLARE(int)
-swept_tone_free(swept_tone_state_t * s ) ;
+SPAN_DECLARE(int) swept_tone_free(swept_tone_state_t *s);
 
 #if defined(__cplusplus)
 }

@@ -89,11 +89,11 @@ typedef int (*speex_callback_func)(SpeexBits *bits, void *state, void *data);
 
 /** Callback information */
 typedef struct SpeexCallback {
-    int callback_id;             /**< ID associated to the callback */
-    speex_callback_func func;    /**< Callback handler function */
-    void *data;                  /**< Data that will be sent to the handler */
-    void *reserved1;             /**< Reserved for future use */
-    int reserved2;             /**< Reserved for future use */
+   int callback_id;             /**< ID associated to the callback */
+   speex_callback_func func;    /**< Callback handler function */
+   void *data;                  /**< Data that will be sent to the handler */
+   void *reserved1;             /**< Reserved for future use */
+   int   reserved2;             /**< Reserved for future use */
 } SpeexCallback;
 
 /** Handle in-band request */
@@ -110,6 +110,7 @@ int speex_std_char_handler(SpeexBits *bits, void *state, void *data);
 
 /** Default handler for user-defined requests: in this case, just ignore */
 int speex_default_user_handler(SpeexBits *bits, void *state, void *data);
+
 
 
 /** Standard handler for low mode request (change low mode, no questions asked) */

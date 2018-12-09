@@ -28,14 +28,14 @@
 #include "typedef.h"
 
 void vqdec(
-        Word16 *xq,    /* VQ output vector (quantized version of input vector) */
-        Word16 idx,   /* VQ codebook index for the nearest neighbor */
-        Word16 *cb,    /* VQ codebook */
-        Word16 vdim)   /* vector dimension */
+           Word16  *xq,    /* VQ output vector (quantized version of input vector) */
+           Word16  idx,   /* VQ codebook index for the nearest neighbor */
+           Word16  *cb,    /* VQ codebook */
+           Word16  vdim)   /* vector dimension */
 {
-
-    Word16 j, k;
-    j = idx * vdim;
-    for (k = 0; k < vdim; k++)
-        xq[k] = cb[j + k];
+   
+   Word16   j, k;
+   j = idx * vdim;
+   for (k = 0; k < vdim; k++) 
+      xq[k] = cb[j + k];
 }

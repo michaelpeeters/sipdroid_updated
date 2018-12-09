@@ -48,21 +48,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* First-order allpass filter */
 void SKP_Silk_allpass_int(
-        const SKP_int32 *in,    /* I:    Q25 input signal [len]               */
-        SKP_int32 *S,     /* I/O: Q25 state [1]                         */
-        SKP_int A,      /* I:    Q15 coefficient    (0 <= A < 32768)  */
-        SKP_int32 *out,   /* O:    Q25 output signal [len]              */
-        const SKP_int32 len     /* I:    Number of samples                    */
-) {
-    SKP_int32 Y2, X2, S0;
-    SKP_int k;
+    const SKP_int32      *in,    /* I:    Q25 input signal [len]               */
+    SKP_int32            *S,     /* I/O: Q25 state [1]                         */
+    SKP_int              A,      /* I:    Q15 coefficient    (0 <= A < 32768)  */
+    SKP_int32            *out,   /* O:    Q25 output signal [len]              */
+    const SKP_int32      len     /* I:    Number of samples                    */
+)
+{
+    SKP_int32    Y2, X2, S0;
+    SKP_int        k;
 
-    S0 = S[0];
-    for (k = len - 1; k >= 0; k--) {
-        Y2 = *in - S0;
-        X2 = (Y2 >> 15) * A + (((Y2 & 0x00007FFF) * A) >> 15);
-        (*out++) = S0 + X2;
-        S0 = (*in++) + X2;
+    S0 = S[ 0 ];
+    for( k = len - 1; k >= 0; k-- ) {
+        Y2         = *in - S0;
+        X2         = ( Y2 >> 15 ) * A + ( ( ( Y2 & 0x00007FFF ) * A ) >> 15 );
+        ( *out++ ) = S0 + X2;
+        S0         = ( *in++ ) + X2;
     }
-    S[0] = S0;
+    S[ 0 ] = S0;
 }

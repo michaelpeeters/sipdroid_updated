@@ -38,11 +38,8 @@
 #include "arch.h"
 
 spx_word16_t compute_rms(const spx_sig_t *x, int len);
-
 spx_word16_t compute_rms16(const spx_word16_t *x, int len);
-
 void signal_mul(const spx_sig_t *x, spx_sig_t *y, spx_word32_t scale, int len);
-
 void signal_div(const spx_word16_t *x, spx_word16_t *y, spx_word32_t scale, int len);
 
 #ifdef FIXED_POINT
@@ -61,49 +58,33 @@ int normalize16(const spx_sig_t *x, spx_word16_t *y, spx_sig_t max_scale, int le
 void highpass(const spx_word16_t *x, spx_word16_t *y, int len, int filtID, spx_mem_t *mem);
 
 
-void
-qmf_decomp(const spx_word16_t *xx, const spx_word16_t *aa, spx_word16_t *, spx_word16_t *y2, int N,
-           int M, spx_word16_t *mem, char *stack);
+void qmf_decomp(const spx_word16_t *xx, const spx_word16_t *aa, spx_word16_t *, spx_word16_t *y2, int N, int M, spx_word16_t *mem, char *stack);
+void qmf_synth(const spx_word16_t *x1, const spx_word16_t *x2, const spx_word16_t *a, spx_word16_t *y, int N, int M, spx_word16_t *mem1, spx_word16_t *mem2, char *stack);
 
-void
-qmf_synth(const spx_word16_t *x1, const spx_word16_t *x2, const spx_word16_t *a, spx_word16_t *y,
-          int N, int M, spx_word16_t *mem1, spx_word16_t *mem2, char *stack);
-
-void
-filter_mem16(const spx_word16_t *x, const spx_coef_t *num, const spx_coef_t *den, spx_word16_t *y,
-             int N, int ord, spx_mem_t *mem, char *stack);
-
-void iir_mem16(const spx_word16_t *x, const spx_coef_t *den, spx_word16_t *y, int N, int ord,
-               spx_mem_t *mem, char *stack);
-
-void fir_mem16(const spx_word16_t *x, const spx_coef_t *num, spx_word16_t *y, int N, int ord,
-               spx_mem_t *mem, char *stack);
+void filter_mem16(const spx_word16_t *x, const spx_coef_t *num, const spx_coef_t *den, spx_word16_t *y, int N, int ord, spx_mem_t *mem, char *stack);
+void iir_mem16(const spx_word16_t *x, const spx_coef_t *den, spx_word16_t *y, int N, int ord, spx_mem_t *mem, char *stack);
+void fir_mem16(const spx_word16_t *x, const spx_coef_t *num, spx_word16_t *y, int N, int ord, spx_mem_t *mem, char *stack);
 
 /* Apply bandwidth expansion on LPC coef */
-void bw_lpc(spx_word16_t, const spx_coef_t *lpc_in, spx_coef_t *lpc_out, int order);
-
+void bw_lpc(spx_word16_t , const spx_coef_t *lpc_in, spx_coef_t *lpc_out, int order);
 void sanitize_values32(spx_word32_t *vec, spx_word32_t min_val, spx_word32_t max_val, int len);
 
 
-void syn_percep_zero16(const spx_word16_t *xx, const spx_coef_t *ak, const spx_coef_t *awk1,
-                       const spx_coef_t *awk2, spx_word16_t *y, int N, int ord, char *stack);
+void syn_percep_zero16(const spx_word16_t *xx, const spx_coef_t *ak, const spx_coef_t *awk1, const spx_coef_t *awk2, spx_word16_t *y, int N, int ord, char *stack);
+void residue_percep_zero16(const spx_word16_t *xx, const spx_coef_t *ak, const spx_coef_t *awk1, const spx_coef_t *awk2, spx_word16_t *y, int N, int ord, char *stack);
 
-void residue_percep_zero16(const spx_word16_t *xx, const spx_coef_t *ak, const spx_coef_t *awk1,
-                           const spx_coef_t *awk2, spx_word16_t *y, int N, int ord, char *stack);
-
-void compute_impulse_response(const spx_coef_t *ak, const spx_coef_t *awk1, const spx_coef_t *awk2,
-                              spx_word16_t *y, int N, int ord, char *stack);
+void compute_impulse_response(const spx_coef_t *ak, const spx_coef_t *awk1, const spx_coef_t *awk2, spx_word16_t *y, int N, int ord, char *stack);
 
 void multicomb(
-        spx_word16_t *exc,          /*decoded excitation*/
-        spx_word16_t *new_exc,      /*enhanced excitation*/
-        spx_coef_t *ak,           /*LPC filter coefs*/
-        int p,               /*LPC order*/
-        int nsf,             /*sub-frame size*/
-        int pitch,           /*pitch period*/
-        int max_pitch,   /*pitch gain (3-tap)*/
-        spx_word16_t comb_gain,    /*gain of comb filter*/
-        char *stack
+spx_word16_t *exc,          /*decoded excitation*/
+spx_word16_t *new_exc,      /*enhanced excitation*/
+spx_coef_t *ak,           /*LPC filter coefs*/
+int p,               /*LPC order*/
+int nsf,             /*sub-frame size*/
+int pitch,           /*pitch period*/
+int max_pitch,   /*pitch gain (3-tap)*/
+spx_word16_t  comb_gain,    /*gain of comb filter*/
+char *stack
 );
 
 #endif

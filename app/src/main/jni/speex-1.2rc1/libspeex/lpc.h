@@ -38,16 +38,16 @@
 #include "arch.h"
 
 void _spx_autocorr(
-        const spx_word16_t *x,   /*  in: [0...n-1] samples x   */
-        spx_word16_t *ac,   /* out: [0...lag-1] ac values */
-        int lag, int n);
+              const spx_word16_t * x,   /*  in: [0...n-1] samples x   */
+              spx_word16_t *ac,   /* out: [0...lag-1] ac values */
+              int lag, int   n);
 
 spx_word32_t                      /* returns minimum mean square error    */
 _spx_lpc(
-        spx_coef_t *lpc, /*      [0...p-1] LPC coefficients      */
-        const spx_word16_t *ac,  /*  in: [0...p] autocorrelation values  */
-        int p
-);
+    spx_coef_t       * lpc, /*      [0...p-1] LPC coefficients      */
+    const spx_word16_t * ac,  /*  in: [0...p] autocorrelation values  */
+    int p
+    );
 
 
 #endif

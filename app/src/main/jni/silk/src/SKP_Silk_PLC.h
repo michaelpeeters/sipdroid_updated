@@ -43,36 +43,36 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PITCH_DRIFT_FAC_Q16             655             /* 0.01 in Q16                      */
 
 void SKP_Silk_PLC_Reset(
-        SKP_Silk_decoder_state *psDec              /* I/O Decoder state        */
+    SKP_Silk_decoder_state      *psDec              /* I/O Decoder state        */
 );
 
 void SKP_Silk_PLC(
-        SKP_Silk_decoder_state *psDec,             /* I/O Decoder state        */
-        SKP_Silk_decoder_control *psDecCtrl,         /* I/O Decoder control      */
-        SKP_int16 signal[],           /* I/O  signal              */
-        SKP_int length,             /* I length of residual     */
-        SKP_int lost                /* I Loss flag              */
+    SKP_Silk_decoder_state      *psDec,             /* I/O Decoder state        */
+    SKP_Silk_decoder_control    *psDecCtrl,         /* I/O Decoder control      */
+    SKP_int16                   signal[],           /* I/O  signal              */
+    SKP_int                     length,             /* I length of residual     */
+    SKP_int                     lost                /* I Loss flag              */
 );
 
 void SKP_Silk_PLC_update(
-        SKP_Silk_decoder_state *psDec,             /* I/O Decoder state        */
-        SKP_Silk_decoder_control *psDecCtrl,         /* I/O Decoder control      */
-        SKP_int16 signal[],
-        SKP_int length
+    SKP_Silk_decoder_state      *psDec,             /* I/O Decoder state        */
+    SKP_Silk_decoder_control    *psDecCtrl,         /* I/O Decoder control      */
+    SKP_int16                   signal[],
+    SKP_int                     length
 );
 
 void SKP_Silk_PLC_conceal(
-        SKP_Silk_decoder_state *psDec,             /* I/O Decoder state        */
-        SKP_Silk_decoder_control *psDecCtrl,         /* I/O Decoder control      */
-        SKP_int16 signal[],           /* O LPC residual signal    */
-        SKP_int length              /* I length of signal       */
+    SKP_Silk_decoder_state      *psDec,             /* I/O Decoder state        */
+    SKP_Silk_decoder_control    *psDecCtrl,         /* I/O Decoder control      */
+    SKP_int16                   signal[],           /* O LPC residual signal    */
+    SKP_int                     length              /* I length of signal       */
 );
 
 void SKP_Silk_PLC_glue_frames(
-        SKP_Silk_decoder_state *psDec,             /* I/O decoder state        */
-        SKP_Silk_decoder_control *psDecCtrl,         /* I/O Decoder control      */
-        SKP_int16 signal[],           /* I/O signal               */
-        SKP_int length              /* I length of signal       */
+    SKP_Silk_decoder_state      *psDec,             /* I/O decoder state        */
+    SKP_Silk_decoder_control    *psDecCtrl,         /* I/O Decoder control      */
+    SKP_int16                   signal[],           /* I/O signal               */
+    SKP_int                     length              /* I length of signal       */
 );
 
 #endif

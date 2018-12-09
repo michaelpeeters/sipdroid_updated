@@ -52,9 +52,7 @@ extern "C"
     \return The number of samples unprocessed. This should only be non-zero if
             the software has reached the end of the FAX call.
 */
-SPAN_DECLARE(int)
-fax_rx(fax_state_t * s , int16_t *amp,
-int len ) ;
+SPAN_DECLARE(int) fax_rx(fax_state_t *s, int16_t *amp, int len);
 
 /*! Apply fake T.30 receive processing when a block of audio samples is missing (e.g due
     to packet loss).
@@ -64,8 +62,7 @@ int len ) ;
     \return The number of samples unprocessed. This should only be non-zero if
             the software has reached the end of the FAX call.
 */
-SPAN_DECLARE(int)
-fax_rx_fillin(fax_state_t * s , int len ) ;
+SPAN_DECLARE(int) fax_rx_fillin(fax_state_t *s, int len);
 
 /*! Apply T.30 transmit processing to generate a block of audio samples.
     \brief Apply T.30 transmit processing to generate a block of audio samples.
@@ -75,9 +72,7 @@ fax_rx_fillin(fax_state_t * s , int len ) ;
     \return The number of samples actually generated. This will be zero when
             there is nothing to send.
 */
-SPAN_DECLARE(int)
-fax_tx(fax_state_t * s , int16_t *amp,
-int max_len ) ;
+SPAN_DECLARE(int) fax_tx(fax_state_t *s, int16_t *amp, int max_len);
 
 /*! Select whether silent audio will be sent when FAX transmit is idle.
     \brief Select whether silent audio will be sent when FAX transmit is idle.
@@ -86,30 +81,28 @@ int max_len ) ;
            idle. FALSE to transmit zero length audio when the FAX transmitter is idle. The default
            behaviour is FALSE.
 */
-SPAN_DECLARE(void)
-fax_set_transmit_on_idle(fax_state_t * s , int transmit_on_idle ) ;
+SPAN_DECLARE(void) fax_set_transmit_on_idle(fax_state_t *s, int transmit_on_idle);
 
 /*! Select whether talker echo protection tone will be sent for the image modems.
     \brief Select whether TEP will be sent for the image modems.
     \param s The FAX context.
     \param use_tep TRUE if TEP should be sent.
 */
-SPAN_DECLARE(void)
-fax_set_tep_mode(fax_state_t * s , int use_tep ) ;
+SPAN_DECLARE(void) fax_set_tep_mode(fax_state_t *s, int use_tep);
 
 /*! Get a pointer to the T.30 engine associated with a FAX context.
     \brief Get a pointer to the T.30 engine associated with a FAX context.
     \param s The FAX context.
     \return A pointer to the T.30 context, or NULL.
 */
-SPAN_DECLARE(t30_state_t * ) fax_get_t30_state(fax_state_t * s ) ;
+SPAN_DECLARE(t30_state_t *) fax_get_t30_state(fax_state_t *s);
 
 /*! Get a pointer to the logging context associated with a FAX context.
     \brief Get a pointer to the logging context associated with a FAX context.
     \param s The FAX context.
     \return A pointer to the logging context, or NULL.
 */
-SPAN_DECLARE(logging_state_t * ) fax_get_logging_state(fax_state_t * s ) ;
+SPAN_DECLARE(logging_state_t *) fax_get_logging_state(fax_state_t *s);
 
 /*! Initialise a FAX context.
     \brief Initialise a FAX context.
@@ -118,21 +111,19 @@ SPAN_DECLARE(logging_state_t * ) fax_get_logging_state(fax_state_t * s ) ;
            context is for an answering party.
     \return A pointer to the FAX context, or NULL if there was a problem.
 */
-SPAN_DECLARE(fax_state_t * ) fax_init(fax_state_t * s , int calling_party ) ;
+SPAN_DECLARE(fax_state_t *) fax_init(fax_state_t *s, int calling_party);
 
 /*! Release a FAX context.
     \brief Release a FAX context.
     \param s The FAX context.
     \return 0 for OK, else -1. */
-SPAN_DECLARE(int)
-fax_release(fax_state_t * s ) ;
+SPAN_DECLARE(int) fax_release(fax_state_t *s);
 
 /*! Free a FAX context.
     \brief Free a FAX context.
     \param s The FAX context.
     \return 0 for OK, else -1. */
-SPAN_DECLARE(int)
-fax_free(fax_state_t * s ) ;
+SPAN_DECLARE(int) fax_free(fax_state_t *s);
 
 #if defined(__cplusplus)
 }

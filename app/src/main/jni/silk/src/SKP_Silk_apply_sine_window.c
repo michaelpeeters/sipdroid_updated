@@ -34,58 +34,59 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*    2 -> sine window from pi/2 to pi                                      */
 /* every other sample of window is linearly interpolated, for speed         */
 void SKP_Silk_apply_sine_window(
-        SKP_int16 px_win[],            /* O    Pointer to windowed signal                  */
-        const SKP_int16 px[],                /* I    Pointer to input signal                     */
-        const SKP_int win_type,            /* I    Selects a window type                       */
-        const SKP_int length               /* I    Window length, multiple of 4                */
-) {
-    SKP_int k;
+    SKP_int16                        px_win[],            /* O    Pointer to windowed signal                  */
+    const SKP_int16                  px[],                /* I    Pointer to input signal                     */
+    const SKP_int                    win_type,            /* I    Selects a window type                       */
+    const SKP_int                    length               /* I    Window length, multiple of 4                */
+)
+{
+    SKP_int   k;
     SKP_int32 px32, f_Q16, c_Q20, S0_Q16, S1_Q16;
 
     /* Length must be multiple of 4 */
-    SKP_assert((length & 3) == 0);
+    SKP_assert( ( length & 3 ) == 0 );
 
     /* Input pointer must be 4-byte aligned */
-    SKP_assert(((SKP_int64) px & 3) == 0);
+    SKP_assert( ( (SKP_int64)px & 3 ) == 0 );
 
-    if (win_type == 0) {
-        f_Q16 = SKP_DIV32_16(411775, length + 1);        // 411775 = 2 * 65536 * pi
+    if( win_type == 0 ) {
+        f_Q16 = SKP_DIV32_16( 411775, length + 1 );        // 411775 = 2 * 65536 * pi
     } else {
-        f_Q16 = SKP_DIV32_16(205887, length + 1);        // 205887 = 65536 * pi
+        f_Q16 = SKP_DIV32_16( 205887, length + 1 );        // 205887 = 65536 * pi
     }
 
     /* factor used for cosine approximation */
-    c_Q20 = -SKP_RSHIFT(SKP_MUL(f_Q16, f_Q16), 12);
+    c_Q20 = -SKP_RSHIFT( SKP_MUL( f_Q16, f_Q16 ), 12 );
 
     /* c_Q20 becomes too large if length is too small */
-    SKP_assert(c_Q20 >= -32768);
+    SKP_assert( c_Q20 >= -32768 );
 
     /* initialize state */
-    if (win_type < 2) {
+    if( win_type < 2 ) {
         /* start from 0 */
         S0_Q16 = 0;
         /* approximation of sin(f) */
         S1_Q16 = f_Q16;
     } else {
         /* start from 1 */
-        S0_Q16 = (1 << 16);
+        S0_Q16 = ( 1 << 16 );
         /* approximation of cos(f) */
-        S1_Q16 = (1 << 16) + SKP_RSHIFT(c_Q20, 5);
+        S1_Q16 = ( 1 << 16 ) + SKP_RSHIFT( c_Q20, 5 );
     }
 
     /* Uses the recursive equation:   sin(n*f) = 2 * cos(f) * sin((n-1)*f) - sin((n-2)*f)    */
     /* 4 samples at a time */
-    for (k = 0; k < length; k += 4) {
-        px32 = *((SKP_int32 *) &px[k]);                        /* load two values at once */
-        px_win[k] = (SKP_int16) SKP_SMULWB(SKP_RSHIFT(S0_Q16 + S1_Q16, 1), px32);
-        px_win[k + 1] = (SKP_int16) SKP_SMULWT(S1_Q16, px32);
-        S0_Q16 = SKP_RSHIFT(SKP_MUL(c_Q20, S1_Q16), 20) + SKP_LSHIFT(S1_Q16, 1) - S0_Q16 + 1;
-        S0_Q16 = SKP_min(S0_Q16, (1 << 16));
+    for( k = 0; k < length; k += 4 ) {
+        px32 = *( (SKP_int32 *)&px[ k ] );                        /* load two values at once */
+        px_win[ k ]     = (SKP_int16)SKP_SMULWB( SKP_RSHIFT( S0_Q16 + S1_Q16, 1 ), px32 );
+        px_win[ k + 1 ] = (SKP_int16)SKP_SMULWT( S1_Q16, px32 );
+        S0_Q16 = SKP_RSHIFT( SKP_MUL( c_Q20, S1_Q16 ), 20 ) + SKP_LSHIFT( S1_Q16, 1 ) - S0_Q16 + 1;
+        S0_Q16 = SKP_min( S0_Q16, ( 1 << 16 ) );
 
-        px32 = *((SKP_int32 *) &px[k + 2]);                    /* load two values at once */
-        px_win[k + 2] = (SKP_int16) SKP_SMULWB(SKP_RSHIFT(S0_Q16 + S1_Q16, 1), px32);
-        px_win[k + 3] = (SKP_int16) SKP_SMULWT(S0_Q16, px32);
-        S1_Q16 = SKP_RSHIFT(SKP_MUL(c_Q20, S0_Q16), 20) + SKP_LSHIFT(S0_Q16, 1) - S1_Q16;
-        S1_Q16 = SKP_min(S1_Q16, (1 << 16));
+        px32 = *( (SKP_int32 *)&px[k + 2] );                    /* load two values at once */
+        px_win[ k + 2 ] = (SKP_int16)SKP_SMULWB( SKP_RSHIFT( S0_Q16 + S1_Q16, 1 ), px32 );
+        px_win[ k + 3 ] = (SKP_int16)SKP_SMULWT( S0_Q16, px32 );
+        S1_Q16 = SKP_RSHIFT( SKP_MUL( c_Q20, S0_Q16 ), 20 ) + SKP_LSHIFT( S0_Q16, 1 ) - S1_Q16;
+        S1_Q16 = SKP_min( S1_Q16, ( 1 << 16 ) );
     }
 }

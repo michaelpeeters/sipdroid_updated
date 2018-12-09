@@ -28,7 +28,7 @@
 #if !defined(_SPANDSP_TELEPHONY_H_)
 #define _SPANDSP_TELEPHONY_H_
 
-#if defined(_M_IX86) || defined(_M_X64)
+#if defined(_M_IX86)  ||  defined(_M_X64)
 #if defined(LIBSPANDSP_EXPORTS)
 #define SPAN_DECLARE(type)              __declspec(dllexport) type __stdcall
 #define SPAN_DECLARE_NONSTD(type)       __declspec(dllexport) type __cdecl
@@ -38,7 +38,7 @@
 #define SPAN_DECLARE_NONSTD(type)       __declspec(dllimport) type __cdecl
 #define SPAN_DECLARE_DATA               __declspec(dllimport)
 #endif
-#elif defined(SPANDSP_USE_EXPORT_CAPABILITY) && (defined(__GNUC__) || defined(__SUNCC__))
+#elif defined(SPANDSP_USE_EXPORT_CAPABILITY)  &&  (defined(__GNUC__)  ||  defined(__SUNCC__))
 #define SPAN_DECLARE(type)              __attribute__((visibility("default"))) type
 #define SPAN_DECLARE_NONSTD(type)       __attribute__((visibility("default"))) type
 #define SPAN_DECLARE_DATA               __attribute__((visibility("default")))

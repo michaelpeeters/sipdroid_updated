@@ -44,7 +44,8 @@ extern "C"
 {
 #endif
 
-static __inline__ int16_t saturate(int32_t amp) {
+static __inline__ int16_t saturate(int32_t amp)
+{
     int16_t amp16;
 
     /* Hopefully this is optimised for the common case - not clipping */
@@ -58,27 +59,28 @@ static __inline__ int16_t saturate(int32_t amp) {
 /*- End of function --------------------------------------------------------*/
 
 /*! Saturate to 15 bits, rather than the usual 16 bits. This is often a useful function. */
-static __inline__ int16_t saturate15(int32_t amp) {
+static __inline__ int16_t saturate15(int32_t amp)
+{
     if (amp > 16383)
         return 16383;
     if (amp < -16384)
         return -16384;
     return (int16_t) amp;
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int16_t fsaturatef(float famp) {
+static __inline__ int16_t fsaturatef(float famp)
+{
     if (famp > (float) INT16_MAX)
         return INT16_MAX;
     if (famp < (float) INT16_MIN)
         return INT16_MIN;
     return (int16_t) lrintf(famp);
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int16_t fsaturate(double damp) {
+static __inline__ int16_t fsaturate(double damp)
+{
     if (damp > (double) INT16_MAX)
         return INT16_MAX;
     if (damp < (double) INT16_MIN)
@@ -88,7 +90,8 @@ static __inline__ int16_t fsaturate(double damp) {
 /*- End of function --------------------------------------------------------*/
 
 /* Saturate to a 16 bit integer, using the fastest float to int conversion */
-static __inline__ int16_t ffastsaturatef(float famp) {
+static __inline__ int16_t ffastsaturatef(float famp)
+{
     if (famp > (float) INT16_MAX)
         return INT16_MAX;
     if (famp < (float) INT16_MIN)
@@ -98,7 +101,8 @@ static __inline__ int16_t ffastsaturatef(float famp) {
 /*- End of function --------------------------------------------------------*/
 
 /* Saturate to a 16 bit integer, using the fastest double to int conversion */
-static __inline__ int16_t ffastsaturate(double damp) {
+static __inline__ int16_t ffastsaturate(double damp)
+{
     if (damp > (double) INT16_MAX)
         return INT16_MAX;
     if (damp < (double) INT16_MIN)
@@ -108,7 +112,8 @@ static __inline__ int16_t ffastsaturate(double damp) {
 /*- End of function --------------------------------------------------------*/
 
 /* Saturate to a 16 bit integer, using the closest float to int conversion */
-static __inline__ float ffsaturatef(float famp) {
+static __inline__ float ffsaturatef(float famp)
+{
     if (famp > (float) INT16_MAX)
         return (float) INT16_MAX;
     if (famp < (float) INT16_MIN)
@@ -118,18 +123,19 @@ static __inline__ float ffsaturatef(float famp) {
 /*- End of function --------------------------------------------------------*/
 
 /* Saturate to a 16 bit integer, using the closest double to int conversion */
-static __inline__ double ffsaturate(double famp) {
+static __inline__ double ffsaturate(double famp)
+{
     if (famp > (double) INT16_MAX)
         return (double) INT16_MAX;
     if (famp < (double) INT16_MIN)
         return (double) INT16_MIN;
     return famp;
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int16_t saturated_add16(int16_t a, int16_t b) {
-#if defined(__GNUC__) && defined(__i386__)
+static __inline__ int16_t saturated_add16(int16_t a, int16_t b)
+{
+#if defined(__GNUC__)  &&  defined(__i386__)
     __asm__ __volatile__(
         " addw %2,%0;\n"
         " jno 0f;\n"
@@ -145,11 +151,11 @@ static __inline__ int16_t saturated_add16(int16_t a, int16_t b) {
     return saturate((int32_t) a + (int32_t) b);
 #endif
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int32_t saturated_add32(int32_t a, int32_t b) {
-#if defined(__GNUC__) && defined(__i386__)
+static __inline__ int32_t saturated_add32(int32_t a, int32_t b)
+{
+#if defined(__GNUC__)  &&  defined(__i386__)
     __asm__ __volatile__(
         " addl %2,%0;\n"
         " jno 0f;\n"
@@ -164,47 +170,48 @@ static __inline__ int32_t saturated_add32(int32_t a, int32_t b) {
 #else
     uint32_t A;
 
-    if (a < 0) {
+    if (a < 0)
+    {
         if (b >= 0)
-            return a + b;
+            return  a + b;
         /*endif*/
-        A = (uint32_t) - (a + 1) + (uint32_t) - (b + 1);
-        return (A >= INT32_MAX) ? INT32_MIN : -(int32_t) A - 2;
+        A = (uint32_t) -(a + 1) + (uint32_t) -(b + 1);
+        return (A >= INT32_MAX)  ?  INT32_MIN  :  -(int32_t) A - 2;
     }
     /*endif*/
     if (b <= 0)
-        return a + b;
+        return  a + b;
     /*endif*/
     A = (uint32_t) a + (uint32_t) b;
-    return (A > INT32_MAX) ? INT32_MAX : A;
+    return (A > INT32_MAX)  ?  INT32_MAX  :  A;
 #endif
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int16_t saturated_sub16(int16_t a, int16_t b) {
+static __inline__ int16_t saturated_sub16(int16_t a, int16_t b)
+{
     return saturate((int32_t) a - (int32_t) b);
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int16_t saturated_mul16(int16_t a, int16_t b) {
-    if (a == INT16_MIN && b == INT16_MIN)
+static __inline__ int16_t saturated_mul16(int16_t a, int16_t b)
+{
+    if (a == INT16_MIN  &&  b == INT16_MIN)
         return INT16_MAX;
     /*endif*/
-    return (int16_t)(((int32_t) a * (int32_t) b) >> 15);
+    return (int16_t) (((int32_t) a*(int32_t) b) >> 15);
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int32_t saturated_mul_16_32(int16_t a, int16_t b) {
-    return ((int32_t) a * (int32_t) b) << 1;
+static __inline__ int32_t saturated_mul_16_32(int16_t a, int16_t b)
+{
+    return ((int32_t) a*(int32_t) b) << 1;
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int16_t saturated_abs16(int16_t a) {
-    return (a == INT16_MIN) ? INT16_MAX : (int16_t) abs(a);
+static __inline__ int16_t saturated_abs16(int16_t a)
+{
+    return (a == INT16_MIN)  ?  INT16_MAX  :  (int16_t) abs(a);
 }
 /*- End of function --------------------------------------------------------*/
 

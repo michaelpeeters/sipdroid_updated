@@ -50,7 +50,8 @@ or 1200bps if one or both ends to not acknowledge that 2400bps is OK.
 #if !defined(_SPANDSP_V22BIS_H_)
 #define _SPANDSP_V22BIS_H_
 
-enum {
+enum
+{
     V22BIS_GUARD_TONE_NONE,
     V22BIS_GUARD_TONE_550HZ,
     V22BIS_GUARD_TONE_1800HZ
@@ -75,9 +76,7 @@ extern "C"
     \param amp The audio sample buffer.
     \param len The number of samples in the buffer.
     \return The number of samples unprocessed. */
-SPAN_DECLARE_NONSTD(int)
-v22bis_rx(v22bis_state_t * s , const int16_t amp[],
-int len ) ;
+SPAN_DECLARE_NONSTD(int) v22bis_rx(v22bis_state_t *s, const int16_t amp[], int len);
 
 /*! Fake processing of a missing block of received V.22bis modem audio samples.
     (e.g due to packet loss).
@@ -85,47 +84,39 @@ int len ) ;
     \param s The modem context.
     \param len The number of samples to fake.
     \return The number of samples unprocessed. */
-SPAN_DECLARE(int)
-v22bis_rx_fillin(v22bis_state_t * s , int len ) ;
+SPAN_DECLARE(int) v22bis_rx_fillin(v22bis_state_t *s, int len);
 
 /*! Get a snapshot of the current equalizer coefficients.
     \brief Get a snapshot of the current equalizer coefficients.
     \param coeffs The vector of complex coefficients.
     \return The number of coefficients in the vector. */
-SPAN_DECLARE(int)
-v22bis_rx_equalizer_state(v22bis_state_t * s , complexf_t **coeffs ) ;
+SPAN_DECLARE(int) v22bis_rx_equalizer_state(v22bis_state_t *s, complexf_t **coeffs);
 
 /*! Get the current received carrier frequency.
     \param s The modem context.
     \return The frequency, in Hertz. */
-SPAN_DECLARE(float)
-v22bis_rx_carrier_frequency(v22bis_state_t * s ) ;
+SPAN_DECLARE(float) v22bis_rx_carrier_frequency(v22bis_state_t *s);
 
 /*! Get the current symbol timing correction since startup.
     \param s The modem context.
     \return The correction. */
-SPAN_DECLARE(float)
-v22bis_rx_symbol_timing_correction(v22bis_state_t * s ) ;
+SPAN_DECLARE(float) v22bis_rx_symbol_timing_correction(v22bis_state_t *s);
 
 /*! Get a current received signal power.
     \param s The modem context.
     \return The signal power, in dBm0. */
-SPAN_DECLARE(float)
-v22bis_rx_signal_power(v22bis_state_t * s ) ;
+SPAN_DECLARE(float) v22bis_rx_signal_power(v22bis_state_t *s);
 
 /*! Set the power level at which the carrier detection will cut in
     \param s The modem context.
     \param cutoff The signal cutoff power, in dBm0. */
-SPAN_DECLARE(void)
-v22bis_rx_signal_cutoff(v22bis_state_t * s , float cutoff ) ;
+SPAN_DECLARE(void) v22bis_rx_signal_cutoff(v22bis_state_t *s, float cutoff);
 
 /*! Set a handler routine to process QAM status reports
     \param s The modem context.
     \param handler The handler routine.
     \param user_data An opaque pointer passed to the handler routine. */
-SPAN_DECLARE(void)
-v22bis_rx_set_qam_report_handler(v22bis_state_t * s , qam_report_handler_t handler,
-void *user_data ) ;
+SPAN_DECLARE(void) v22bis_rx_set_qam_report_handler(v22bis_state_t *s, qam_report_handler_t handler, void *user_data);
 
 /*! Generate a block of V.22bis modem audio samples.
     \brief Generate a block of V.22bis modem audio samples.
@@ -133,46 +124,39 @@ void *user_data ) ;
     \param amp The audio sample buffer.
     \param len The number of samples to be generated.
     \return The number of samples actually generated. */
-SPAN_DECLARE_NONSTD(int)
-v22bis_tx(v22bis_state_t * s , int16_t amp[],
-int len ) ;
+SPAN_DECLARE_NONSTD(int) v22bis_tx(v22bis_state_t *s, int16_t amp[], int len);
 
 /*! Adjust a V.22bis modem transmit context's power output.
     \brief Adjust a V.22bis modem transmit context's output power.
     \param s The modem context.
     \param power The power level, in dBm0 */
-SPAN_DECLARE(void)
-v22bis_tx_power(v22bis_state_t * s , float power ) ;
+SPAN_DECLARE(void) v22bis_tx_power(v22bis_state_t *s, float power);
 
 /*! Reinitialise an existing V.22bis modem context, so it may be reused.
     \brief Reinitialise an existing V.22bis modem context.
     \param s The modem context.
     \param bit_rate The bit rate of the modem. Valid values are 1200 and 2400.
     \return 0 for OK, -1 for bad parameter. */
-SPAN_DECLARE(int)
-v22bis_restart(v22bis_state_t * s , int bit_rate ) ;
+SPAN_DECLARE(int) v22bis_restart(v22bis_state_t *s, int bit_rate);
 
 /*! Request a retrain for a V.22bis modem context. A rate change may also be requested.
     \brief Request a retrain for a V.22bis modem context.
     \param s The modem context.
     \param bit_rate The bit rate of the modem. Valid values are 1200 and 2400.
     \return 0 for OK, -1 for request rejected. */
-SPAN_DECLARE(int)
-v22bis_request_retrain(v22bis_state_t * s , int bit_rate ) ;
+SPAN_DECLARE(int) v22bis_request_retrain(v22bis_state_t *s, int bit_rate);
 
 /*! Request a loopback 2 for a V.22bis modem context.
     \brief Request a loopback 2 for a V.22bis modem context.
     \param s The modem context.
     \param enable TRUE to enable loopback, or FALSE to disable it.
     \return 0 for OK, -1 for request reject. */
-SPAN_DECLARE(int)
-v22bis_remote_loopback(v22bis_state_t * s , int enable ) ;
+SPAN_DECLARE(int) v22bis_remote_loopback(v22bis_state_t *s, int enable);
 
 /*! Report the current operating bit rate of a V.22bis modem context.
     \brief Report the current operating bit rate of a V.22bis modem context
     \param s The modem context. */
-SPAN_DECLARE(int)
-v22bis_current_bit_rate(v22bis_state_t * s ) ;
+SPAN_DECLARE(int) v22bis_current_bit_rate(v22bis_state_t *s);
 
 /*! Initialise a V.22bis modem context. This must be called before the first
     use of the context, to initialise its contents.
@@ -185,63 +169,53 @@ v22bis_current_bit_rate(v22bis_state_t * s ) ;
     \param put_bit The callback routine used to get the data to be transmitted.
     \param user_data An opaque pointer, passed in calls to the get and put routines.
     \return A pointer to the modem context, or NULL if there was a problem. */
-SPAN_DECLARE(v22bis_state_t * ) v22bis_init(v22bis_state_t * s ,
-int bit_rate,
-int guard,
-int calling_party,
-        get_bit_func_t
-get_bit ,
-void *get_bit_user_data,
-        put_bit_func_t
-put_bit ,
-void *put_bit_user_data ) ;
+SPAN_DECLARE(v22bis_state_t *) v22bis_init(v22bis_state_t *s,
+                                           int bit_rate,
+                                           int guard,
+                                           int calling_party,
+                                           get_bit_func_t get_bit,
+                                           void *get_bit_user_data,
+                                           put_bit_func_t put_bit,
+                                           void *put_bit_user_data);
 
 /*! Release a V.22bis modem receive context.
     \brief Release a V.22bis modem receive context.
     \param s The modem context.
     \return 0 for OK */
-SPAN_DECLARE(int)
-v22bis_release(v22bis_state_t * s ) ;
+SPAN_DECLARE(int) v22bis_release(v22bis_state_t *s);
 
 /*! Free a V.22bis modem receive context.
     \brief Free a V.22bis modem receive context.
     \param s The modem context.
     \return 0 for OK */
-SPAN_DECLARE(int)
-v22bis_free(v22bis_state_t * s ) ;
+SPAN_DECLARE(int) v22bis_free(v22bis_state_t *s);
 
 /*! Get the logging context associated with a V.22bis modem context.
     \brief Get the logging context associated with a V.22bis modem context.
     \param s The modem context.
     \return A pointer to the logging context */
-SPAN_DECLARE(logging_state_t * ) v22bis_get_logging_state(v22bis_state_t * s ) ;
+SPAN_DECLARE(logging_state_t *) v22bis_get_logging_state(v22bis_state_t *s);
 
 /*! Change the get_bit function associated with a V.22bis modem context.
     \brief Change the get_bit function associated with a V.22bis modem context.
     \param s The modem context.
     \param get_bit The callback routine used to get the data to be transmitted.
     \param user_data An opaque pointer. */
-SPAN_DECLARE(void)
-v22bis_set_get_bit(v22bis_state_t * s , get_bit_func_t get_bit,
-void *user_data ) ;
+SPAN_DECLARE(void) v22bis_set_get_bit(v22bis_state_t *s, get_bit_func_t get_bit, void *user_data);
 
 /*! Change the get_bit function associated with a V.22bis modem context.
     \brief Change the put_bit function associated with a V.22bis modem context.
     \param s The modem context.
     \param put_bit The callback routine used to process the data received.
     \param user_data An opaque pointer. */
-SPAN_DECLARE(void)
-v22bis_set_put_bit(v22bis_state_t * s , put_bit_func_t put_bit,
-void *user_data ) ;
+SPAN_DECLARE(void) v22bis_set_put_bit(v22bis_state_t *s, put_bit_func_t put_bit, void *user_data);
 
 /*! Change the modem status report function associated with a V.22bis modem receive context.
     \brief Change the modem status report function associated with a V.22bis modem receive context.
     \param s The modem context.
     \param handler The callback routine used to report modem status changes.
     \param user_data An opaque pointer. */
-SPAN_DECLARE(void)
-v22bis_set_modem_status_handler(v22bis_state_t * s , modem_rx_status_func_t handler,
-void *user_data ) ;
+SPAN_DECLARE(void) v22bis_set_modem_status_handler(v22bis_state_t *s, modem_rx_status_func_t handler, void *user_data);
 
 #if defined(__cplusplus)
 }

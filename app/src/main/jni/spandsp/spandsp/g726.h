@@ -45,13 +45,15 @@ It passes the ITU tests.
 ???.
 */
 
-enum {
+enum
+{
     G726_ENCODING_LINEAR = 0,   /* Interworking with 16 bit signed linear */
     G726_ENCODING_ULAW,         /* Interworking with u-law */
     G726_ENCODING_ALAW          /* Interworking with A-law */
 };
 
-enum {
+enum
+{
     G726_PACKING_NONE = 0,
     G726_PACKING_LEFT = 1,
     G726_PACKING_RIGHT = 2
@@ -78,21 +80,17 @@ extern "C"
     \param ext_coding The coding used outside G.726.
     \param packing One of the G.726_PACKING_xxx options.
     \return A pointer to the G.726 context, or NULL for error. */
-SPAN_DECLARE(g726_state_t * ) g726_init(g726_state_t * s , int bit_rate,
-int ext_coding,
-int packing ) ;
+SPAN_DECLARE(g726_state_t *) g726_init(g726_state_t *s, int bit_rate, int ext_coding, int packing);
 
 /*! Release a G.726 encode or decode context.
     \param s The G.726 context.
     \return 0 for OK. */
-SPAN_DECLARE(int)
-g726_release(g726_state_t * s ) ;
+SPAN_DECLARE(int) g726_release(g726_state_t *s);
 
 /*! Free a G.726 encode or decode context.
     \param s The G.726 context.
     \return 0 for OK. */
-SPAN_DECLARE(int)
-g726_free(g726_state_t * s ) ;
+SPAN_DECLARE(int) g726_free(g726_state_t *s);
 
 /*! Decode a buffer of G.726 ADPCM data to linear PCM, a-law or u-law.
     \param s The G.726 context.
@@ -100,11 +98,10 @@ g726_free(g726_state_t * s ) ;
     \param g726_data
     \param g726_bytes
     \return The number of samples returned. */
-SPAN_DECLARE(int)
-g726_decode(g726_state_t * s ,
-int16_t amp[],
-const uint8_t g726_data[],
-int g726_bytes ) ;
+SPAN_DECLARE(int) g726_decode(g726_state_t *s,
+                              int16_t amp[],
+                              const uint8_t g726_data[],
+                              int g726_bytes);
 
 /*! Encode a buffer of linear PCM data to G.726 ADPCM.
     \param s The G.726 context.
@@ -112,11 +109,10 @@ int g726_bytes ) ;
     \param amp The audio sample buffer.
     \param len The number of samples in the buffer.
     \return The number of bytes of G.726 data produced. */
-SPAN_DECLARE(int)
-g726_encode(g726_state_t * s ,
-uint8_t g726_data[],
-const int16_t amp[],
-int len ) ;
+SPAN_DECLARE(int) g726_encode(g726_state_t *s,
+                              uint8_t g726_data[],
+                              const int16_t amp[],
+                              int len);
 
 #if defined(__cplusplus)
 }

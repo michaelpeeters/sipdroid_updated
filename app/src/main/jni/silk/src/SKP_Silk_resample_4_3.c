@@ -42,35 +42,36 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Resamples by a factor 4/3 */
 void SKP_Silk_resample_4_3(
-        SKP_int16 *out,       /* O:   Fs_low signal    [inLen * 4/3]           */
-        SKP_int32 *S,         /* I/O: State vector    [7+4+4]                  */
-        const SKP_int16 *in,        /* I:   Fs_high signal    [inLen]                */
-        const SKP_int inLen       /* I:   input length, must be a multiple of 3    */
-) {
-    SKP_int outLen, LSubFrameIn, LSubFrameOut;
-    SKP_int16 outH[3 * OUT_SUBFR_LEN];
-    SKP_int16 outHH[6 * OUT_SUBFR_LEN];
-    SKP_int32 scratch[9 * OUT_SUBFR_LEN / 2];
+    SKP_int16            *out,       /* O:   Fs_low signal    [inLen * 4/3]           */
+    SKP_int32            *S,         /* I/O: State vector    [7+4+4]                  */
+    const SKP_int16      *in,        /* I:   Fs_high signal    [inLen]                */
+    const SKP_int        inLen       /* I:   input length, must be a multiple of 3    */
+) 
+{
+    SKP_int      outLen, LSubFrameIn, LSubFrameOut;
+    SKP_int16    outH[    3 * OUT_SUBFR_LEN ];
+    SKP_int16    outHH[   6 * OUT_SUBFR_LEN ];
+    SKP_int32    scratch[ 9 * OUT_SUBFR_LEN / 2 ];
 
     /* Check that input is multiple of 3 */
-    SKP_assert(inLen % 3 == 0);
+    SKP_assert( inLen % 3 == 0 );
 
-    outLen = SKP_DIV32_16(SKP_LSHIFT(inLen, 2), 3);
-    while (outLen > 0) {
-        LSubFrameOut = SKP_min_int(OUT_SUBFR_LEN, outLen);
-        LSubFrameIn = SKP_SMULWB(49152, LSubFrameOut);
+    outLen = SKP_DIV32_16( SKP_LSHIFT( inLen, 2 ), 3 );
+    while( outLen > 0 ) {
+        LSubFrameOut = SKP_min_int( OUT_SUBFR_LEN, outLen );
+        LSubFrameIn  = SKP_SMULWB( 49152, LSubFrameOut );
 
         /* Upsample two times by a factor 2 */
         /* Scratch size needs to be: 3 * LSubFrameIn * sizeof( SKP_int32 ) */
-        SKP_Silk_resample_2_1_coarse(in, &S[0], outH, scratch, LSubFrameIn);
+        SKP_Silk_resample_2_1_coarse( in,   &S[ 0 ], outH,  scratch,             LSubFrameIn      );
         /* Scratch size needs to be: 6 * LSubFrameIn * sizeof( SKP_int32 ) */
-        SKP_Silk_resample_2_1_coarse(outH, &S[4], outHH, scratch, SKP_LSHIFT(LSubFrameIn, 1));
-
+        SKP_Silk_resample_2_1_coarse( outH, &S[ 4 ], outHH, scratch, SKP_LSHIFT( LSubFrameIn, 1 ) );
+        
         /* Downsample by a factor 3 */
-        SKP_Silk_resample_1_3(out, &S[8], outHH, SKP_LSHIFT(LSubFrameIn, 2));
+        SKP_Silk_resample_1_3( out, &S[ 8 ], outHH, SKP_LSHIFT( LSubFrameIn, 2 ) );
 
-        in += LSubFrameIn;
-        out += LSubFrameOut;
+        in     += LSubFrameIn;
+        out    += LSubFrameOut;
         outLen -= LSubFrameOut;
     }
 }

@@ -72,7 +72,8 @@ step following the non-ECM data.
 */
 
 /*! T.38 indicator types */
-enum t30_indicator_types_e {
+enum t30_indicator_types_e
+{
     T38_IND_NO_SIGNAL = 0,
     T38_IND_CNG,
     T38_IND_CED,
@@ -99,7 +100,8 @@ enum t30_indicator_types_e {
 };
 
 /*! T.38 data types */
-enum t38_data_types_e {
+enum t38_data_types_e
+{
     T38_DATA_NONE = -1,
     T38_DATA_V21 = 0,
     T38_DATA_V27TER_2400,
@@ -119,7 +121,8 @@ enum t38_data_types_e {
 };
 
 /*! T.38 data field types */
-enum t38_field_types_e {
+enum t38_field_types_e
+{
     T38_FIELD_HDLC_DATA = 0,
     T38_FIELD_HDLC_SIG_END,
     T38_FIELD_HDLC_FCS_OK,
@@ -135,51 +138,57 @@ enum t38_field_types_e {
 };
 
 /*! T.38 field classes */
-enum t38_field_classes_e {
+enum t38_field_classes_e
+{
     T38_FIELD_CLASS_NONE = 0,
     T38_FIELD_CLASS_HDLC,
     T38_FIELD_CLASS_NON_ECM
 };
 
 /*! T.38 message types */
-enum t38_message_types_e {
+enum t38_message_types_e
+{
     T38_TYPE_OF_MSG_T30_INDICATOR = 0,
     T38_TYPE_OF_MSG_T30_DATA
 };
 
 /*! T.38 transport types */
-enum t38_transport_types_e {
+enum t38_transport_types_e
+{
     T38_TRANSPORT_UDPTL = 0,
     T38_TRANSPORT_RTP,
     T38_TRANSPORT_TCP
 };
 
 /*! T.38 TCF management types */
-enum t38_data_rate_management_types_e {
+enum t38_data_rate_management_types_e
+{
     T38_DATA_RATE_MANAGEMENT_LOCAL_TCF = 1,
     T38_DATA_RATE_MANAGEMENT_TRANSFERRED_TCF = 2
 };
 
 /*! T.38 Packet categories used for setting the redundancy level and packet repeat
     counts on a packet by packet basis. */
-enum t38_packet_categories_e {
+enum t38_packet_categories_e
+{
     /*! \brief Indicator packet */
-            T38_PACKET_CATEGORY_INDICATOR = 0,
+    T38_PACKET_CATEGORY_INDICATOR = 0,
     /*! \brief Control data packet */
-            T38_PACKET_CATEGORY_CONTROL_DATA = 1,
+    T38_PACKET_CATEGORY_CONTROL_DATA = 1,
     /*! \brief Terminating control data packet */
-            T38_PACKET_CATEGORY_CONTROL_DATA_END = 2,
+    T38_PACKET_CATEGORY_CONTROL_DATA_END = 2,
     /*! \brief Image data packet */
-            T38_PACKET_CATEGORY_IMAGE_DATA = 3,
+    T38_PACKET_CATEGORY_IMAGE_DATA = 3,
     /*! \brief Terminating image data packet */
-            T38_PACKET_CATEGORY_IMAGE_DATA_END = 4
+    T38_PACKET_CATEGORY_IMAGE_DATA_END = 4
 };
 
 #define T38_RX_BUF_LEN  2048
 #define T38_TX_BUF_LEN  16384
 
 /*! T.38 data field */
-typedef struct {
+typedef struct
+{
     /*! Field type */
     int field_type;
     /*! Field contents */
@@ -193,16 +202,11 @@ typedef struct {
 */
 typedef struct t38_core_state_s t38_core_state_t;
 
-typedef int (t38_tx_packet_handler_t)(t38_core_state_t *s, void *user_data, const uint8_t *buf,
-                                      int len, int count);
+typedef int (t38_tx_packet_handler_t)(t38_core_state_t *s, void *user_data, const uint8_t *buf, int len, int count);
 
 typedef int (t38_rx_indicator_handler_t)(t38_core_state_t *s, void *user_data, int indicator);
-
-typedef int (t38_rx_data_handler_t)(t38_core_state_t *s, void *user_data, int data_type,
-                                    int field_type, const uint8_t *buf, int len);
-
-typedef int (t38_rx_missing_handler_t)(t38_core_state_t *s, void *user_data, int rx_seq_no,
-                                       int expected_seq_no);
+typedef int (t38_rx_data_handler_t)(t38_core_state_t *s, void *user_data, int data_type, int field_type, const uint8_t *buf, int len);
+typedef int (t38_rx_missing_handler_t)(t38_core_state_t *s, void *user_data, int rx_seq_no, int expected_seq_no);
 
 #if defined(__cplusplus)
 extern "C"
@@ -212,54 +216,46 @@ extern "C"
 /*! \brief Convert the code for an indicator to a short text name.
     \param indicator The type of indicator.
     \return A pointer to a short text name for the indicator. */
-SPAN_DECLARE(const char *)
-t38_indicator_to_str(int indicator);
+SPAN_DECLARE(const char *) t38_indicator_to_str(int indicator);
 
 /*! \brief Convert the code for a type of data to a short text name.
     \param data_type The data type.
     \return A pointer to a short text name for the data type. */
-SPAN_DECLARE(const char *)
-t38_data_type_to_str(int data_type);
+SPAN_DECLARE(const char *) t38_data_type_to_str(int data_type);
 
 /*! \brief Convert the code for a type of data field to a short text name.
     \param field_type The field type.
     \return A pointer to a short text name for the field type. */
-SPAN_DECLARE(const char *)
-t38_field_type_to_str(int field_type);
+SPAN_DECLARE(const char *) t38_field_type_to_str(int field_type);
 
 /*! \brief Convert the code for a CM profile code to text description.
     \param profile The profile code from a CM message.
     \return A pointer to a short text description of the profile. */
-SPAN_DECLARE(const char *)
-t38_cm_profile_to_str(int profile);
+SPAN_DECLARE(const char *) t38_cm_profile_to_str(int profile);
 
 /*! \brief Convert a JM message code to text description.
     \param data The data field of the message.
     \param len The length of the data field.
     \return A pointer to a short text description of the profile. */
-SPAN_DECLARE(const char *)
-t38_jm_to_str(const uint8_t *data, int len);
+SPAN_DECLARE(const char *) t38_jm_to_str(const uint8_t *data, int len);
 
 /*! \brief Convert a V34rate message to an actual bit rate.
     \param data The data field of the message.
     \param len The length of the data field.
     \return The bit rate, or -1 for a bad message. */
-SPAN_DECLARE(int)
-t38_v34rate_to_bps(const uint8_t *data, int len);
+SPAN_DECLARE(int) t38_v34rate_to_bps(const uint8_t *data, int len);
 
 /*! \brief Send an indicator packet
     \param s The T.38 context.
     \param indicator The indicator to send.
     \return The delay to allow after this indicator is sent. */
-SPAN_DECLARE(int)
-t38_core_send_indicator(t38_core_state_t * s , int indicator ) ;
+SPAN_DECLARE(int) t38_core_send_indicator(t38_core_state_t *s, int indicator);
 
 /*! \brief Find the delay to allow for HDLC flags after sending an indicator
     \param s The T.38 context.
     \param indicator The indicator to send.
     \return The delay to allow for initial HDLC flags after this indicator is sent. */
-SPAN_DECLARE(int)
-t38_core_send_flags_delay(t38_core_state_t * s , int indicator ) ;
+SPAN_DECLARE(int) t38_core_send_flags_delay(t38_core_state_t *s, int indicator);
 
 /*! \brief Send a data packet
     \param s The T.38 context.
@@ -269,12 +265,7 @@ t38_core_send_flags_delay(t38_core_state_t * s , int indicator ) ;
     \param field_len The length of the message data, in bytes.
     \param category The category of the packet being sent. This should be one of the values defined for t38_packet_categories_e.
     \return ??? */
-SPAN_DECLARE(int)
-t38_core_send_data(t38_core_state_t * s , int data_type,
-int field_type,
-const uint8_t field[],
-int field_len,
-int category ) ;
+SPAN_DECLARE(int) t38_core_send_data(t38_core_state_t *s, int data_type, int field_type, const uint8_t field[], int field_len, int category);
 
 /*! \brief Send a data packet
     \param s The T.38 context.
@@ -283,11 +274,7 @@ int category ) ;
     \param fields The number of fields in the list.
     \param category The category of the packet being sent. This should be one of the values defined for t38_packet_categories_e.
     \return ??? */
-SPAN_DECLARE(int)
-t38_core_send_data_multi_field(t38_core_state_t * s , int data_type,
-const t38_data_field_t field[],
-int fields,
-int category ) ;
+SPAN_DECLARE(int) t38_core_send_data_multi_field(t38_core_state_t *s, int data_type, const t38_data_field_t field[], int fields, int category);
 
 /*! \brief Process a received T.38 IFP packet.
     \param s The T.38 context.
@@ -295,59 +282,49 @@ int category ) ;
     \param len The length of the packet contents.
     \param seq_no The packet sequence number.
     \return 0 for OK, else -1. */
-SPAN_DECLARE(int)
-t38_core_rx_ifp_packet(t38_core_state_t * s , const uint8_t *buf,
-int len, uint16_t
-seq_no ) ;
+SPAN_DECLARE(int) t38_core_rx_ifp_packet(t38_core_state_t *s, const uint8_t *buf, int len, uint16_t seq_no);
 
 /*! Set the method to be used for data rate management, as per the T.38 spec.
     \param s The T.38 context.
     \param method 1 for pass TCF across the T.38 link, 2 for handle TCF locally.
 */
-SPAN_DECLARE(void)
-t38_set_data_rate_management_method(t38_core_state_t * s , int method ) ;
+SPAN_DECLARE(void) t38_set_data_rate_management_method(t38_core_state_t *s, int method);
 
 /*! Set the data transport protocol.
     \param s The T.38 context.
     \param data_transport_protocol UDPTL, RTP or TPKT.
 */
-SPAN_DECLARE(void)
-t38_set_data_transport_protocol(t38_core_state_t * s , int data_transport_protocol ) ;
+SPAN_DECLARE(void) t38_set_data_transport_protocol(t38_core_state_t *s, int data_transport_protocol);
 
 /*! Set the non-ECM fill bit removal mode.
     \param s The T.38 context.
     \param fill_bit_removal TRUE to remove fill bits across the T.38 link, else FALSE.
 */
-SPAN_DECLARE(void)
-t38_set_fill_bit_removal(t38_core_state_t * s , int fill_bit_removal ) ;
+SPAN_DECLARE(void) t38_set_fill_bit_removal(t38_core_state_t *s, int fill_bit_removal);
 
 /*! Set the MMR transcoding mode.
     \param s The T.38 context.
     \param mmr_transcoding TRUE to transcode to MMR across the T.38 link, else FALSE.
 */
-SPAN_DECLARE(void)
-t38_set_mmr_transcoding(t38_core_state_t * s , int mmr_transcoding ) ;
+SPAN_DECLARE(void) t38_set_mmr_transcoding(t38_core_state_t *s, int mmr_transcoding);
 
 /*! Set the JBIG transcoding mode.
     \param s The T.38 context.
     \param jbig_transcoding TRUE to transcode to JBIG across the T.38 link, else FALSE.
 */
-SPAN_DECLARE(void)
-t38_set_jbig_transcoding(t38_core_state_t * s , int jbig_transcoding ) ;
+SPAN_DECLARE(void) t38_set_jbig_transcoding(t38_core_state_t *s, int jbig_transcoding);
 
 /*! Set the maximum buffer size for received data at the far end.
     \param s The T.38 context.
     \param max_buffer_size The maximum buffer size.
 */
-SPAN_DECLARE(void)
-t38_set_max_buffer_size(t38_core_state_t * s , int max_buffer_size ) ;
+SPAN_DECLARE(void) t38_set_max_buffer_size(t38_core_state_t *s, int max_buffer_size);
 
 /*! Set the maximum size of an IFP packet that is acceptable by the far end.
     \param s The T.38 context.
     \param max_datagram_size The maximum IFP packet length, in bytes.
 */
-SPAN_DECLARE(void)
-t38_set_max_datagram_size(t38_core_state_t * s , int max_datagram_size ) ;
+SPAN_DECLARE(void) t38_set_max_datagram_size(t38_core_state_t *s, int max_datagram_size);
 
 /*! \brief Send a data packet
     \param s The T.38 context.
@@ -356,44 +333,37 @@ t38_set_max_datagram_size(t38_core_state_t * s , int max_datagram_size ) ;
                    Zero is valid for indicator packets, as it suppresses the sending of indicator packets, as an application using
                    TCP for the transport would require. As the setting is passed through to the transmission channel, additional
                    information may be encoded in it, such as the redundancy depth for the particular packet category. */
-SPAN_DECLARE(void)
-t38_set_redundancy_control(t38_core_state_t * s , int category,
-int setting ) ;
+SPAN_DECLARE(void) t38_set_redundancy_control(t38_core_state_t *s, int category, int setting);
 
-SPAN_DECLARE(void)
-t38_set_fastest_image_data_rate(t38_core_state_t * s , int max_rate ) ;
+SPAN_DECLARE(void) t38_set_fastest_image_data_rate(t38_core_state_t *s, int max_rate);
 
-SPAN_DECLARE(int)
-t38_get_fastest_image_data_rate(t38_core_state_t * s ) ;
+SPAN_DECLARE(int) t38_get_fastest_image_data_rate(t38_core_state_t *s);
 
 /*! Set the T.38 version to be emulated.
     \param s The T.38 context.
     \param t38_version Version number, as in the T.38 spec.
 */
-SPAN_DECLARE(void)
-t38_set_t38_version(t38_core_state_t * s , int t38_version ) ;
+SPAN_DECLARE(void) t38_set_t38_version(t38_core_state_t *s, int t38_version);
 
 /*! Set the sequence number handling option.
     \param s The T.38 context.
     \param check TRUE to check sequence numbers, and handle gaps reasonably. FALSE
            for no sequence number processing (e.g. for TPKT over TCP transport).
 */
-SPAN_DECLARE(void)
-t38_set_sequence_number_handling(t38_core_state_t * s , int check ) ;
+SPAN_DECLARE(void) t38_set_sequence_number_handling(t38_core_state_t *s, int check);
 
 /*! Set the TEP handling option.
     \param s The T.38 context.
     \param allow_for_tep TRUE to allow for TEP playout, else FALSE.
 */
-SPAN_DECLARE(void)
-t38_set_tep_handling(t38_core_state_t * s , int allow_for_tep ) ;
+SPAN_DECLARE(void) t38_set_tep_handling(t38_core_state_t *s, int allow_for_tep);
 
 /*! Get a pointer to the logging context associated with a T.38 context.
     \brief Get a pointer to the logging context associated with a T.38 context.
     \param s The T.38 context.
     \return A pointer to the logging context, or NULL.
 */
-SPAN_DECLARE(logging_state_t * ) t38_core_get_logging_state(t38_core_state_t * s ) ;
+SPAN_DECLARE(logging_state_t *) t38_core_get_logging_state(t38_core_state_t *s);
 
 /*! Initialise a T.38 core context.
     \brief Initialise a T.38 core context.
@@ -405,27 +375,25 @@ SPAN_DECLARE(logging_state_t * ) t38_core_get_logging_state(t38_core_state_t * s
     \param tx_packet_handler Packet transmit handling routine.
     \param tx_packet_user_data An opaque pointer passed to the tx_packet_handler.
     \return A pointer to the T.38 context, or NULL if there was a problem. */
-SPAN_DECLARE(t38_core_state_t * ) t38_core_init(t38_core_state_t * s ,
-t38_rx_indicator_handler_t *rx_indicator_handler,
-        t38_rx_data_handler_t * rx_data_handler ,
-t38_rx_missing_handler_t *rx_missing_handler,
-void *rx_user_data,
-        t38_tx_packet_handler_t * tx_packet_handler ,
-void *tx_packet_user_data ) ;
+SPAN_DECLARE(t38_core_state_t *) t38_core_init(t38_core_state_t *s,
+                                               t38_rx_indicator_handler_t *rx_indicator_handler,
+                                               t38_rx_data_handler_t *rx_data_handler,
+                                               t38_rx_missing_handler_t *rx_missing_handler,
+                                               void *rx_user_data,
+                                               t38_tx_packet_handler_t *tx_packet_handler,
+                                               void *tx_packet_user_data);
 
 /*! Release a signaling tone transmitter context.
     \brief Release a signaling tone transmitter context.
     \param s The T.38 context.
     \return 0 for OK */
-SPAN_DECLARE(int)
-t38_core_release(t38_core_state_t * s ) ;
+SPAN_DECLARE(int) t38_core_release(t38_core_state_t *s);
 
 /*! Free a signaling tone transmitter context.
     \brief Free a signaling tone transmitter context.
     \param s The T.38 context.
     \return 0 for OK */
-SPAN_DECLARE(int)
-t38_core_free(t38_core_state_t * s ) ;
+SPAN_DECLARE(int) t38_core_free(t38_core_state_t *s);
 
 #if defined(__cplusplus)
 }

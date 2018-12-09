@@ -49,8 +49,7 @@ extern "C"
            the application). It is previous returned CRC value for the continuation of a block.
     \return The CRC value.
 */
-SPAN_DECLARE(uint32_t)
-crc_itu32_calc(const uint8_t *buf, int len, uint32_t crc);
+SPAN_DECLARE(uint32_t) crc_itu32_calc(const uint8_t *buf, int len, uint32_t crc);
 
 /*! \brief Append an ITU/CCITT CRC-32 value to a frame.
     \param buf The buffer containing the frame. This must be at least 2 bytes longer than
@@ -58,16 +57,14 @@ crc_itu32_calc(const uint8_t *buf, int len, uint32_t crc);
     \param len The length of the frame.
     \return The new length of the frame.
 */
-SPAN_DECLARE(int)
-crc_itu32_append(uint8_t * buf , int len ) ;
+SPAN_DECLARE(int) crc_itu32_append(uint8_t *buf, int len);
 
 /*! \brief Check the ITU/CCITT CRC-32 value in a frame.
     \param buf The buffer containing the frame.
     \param len The length of the frame.
     \return TRUE if the CRC is OK, else FALSE.
 */
-SPAN_DECLARE(int)
-crc_itu32_check(const uint8_t *buf, int len);
+SPAN_DECLARE(int) crc_itu32_check(const uint8_t *buf, int len);
 
 /*! \brief Calculate the ITU/CCITT CRC-16 value in buffer.
     \param buf The buffer containing the data.
@@ -76,8 +73,7 @@ crc_itu32_check(const uint8_t *buf, int len);
            the application). It is previous returned CRC value for the continuation of a block.
     \return The CRC value.
 */
-SPAN_DECLARE(uint16_t)
-crc_itu16_calc(const uint8_t *buf, int len, uint16_t crc);
+SPAN_DECLARE(uint16_t) crc_itu16_calc(const uint8_t *buf, int len, uint16_t crc);
 
 /*! \brief Append an ITU/CCITT CRC-16 value to a frame.
     \param buf The buffer containing the frame. This must be at least 2 bytes longer than
@@ -85,16 +81,14 @@ crc_itu16_calc(const uint8_t *buf, int len, uint16_t crc);
     \param len The length of the frame.
     \return The new length of the frame.
 */
-SPAN_DECLARE(int)
-crc_itu16_append(uint8_t * buf , int len ) ;
+SPAN_DECLARE(int) crc_itu16_append(uint8_t *buf, int len);
 
 /*! \brief Check the ITU/CCITT CRC-16 value in a frame.
     \param buf The buffer containing the frame.
     \param len The length of the frame.
     \return TRUE if the CRC is OK, else FALSE.
 */
-SPAN_DECLARE(int)
-crc_itu16_check(const uint8_t *buf, int len);
+SPAN_DECLARE(int) crc_itu16_check(const uint8_t *buf, int len);
 
 #if defined(__cplusplus)
 }

@@ -26,7 +26,7 @@
  *
  * $Id: modem_connect_tones.h,v 1.24 2009/06/02 16:03:56 steveu Exp $
  */
-
+ 
 /*! \file */
 
 #if !defined(_SPANDSP_MODEM_CONNECT_TONES_H_)
@@ -55,28 +55,29 @@ bandpass implemented as an IIR filter rings badly. The reciprocal notch filter
 is very well behaved for our purpose. 
 */
 
-enum {
+enum
+{
     /*! \brief This is reported when a tone stops. */
-            MODEM_CONNECT_TONES_NONE = 0,
+    MODEM_CONNECT_TONES_NONE = 0,
     /*! \brief CNG tone is a pure 1100Hz tone, in 0.5s bursts, with 3s silences in between. The
                bursts repeat for as long as is required. */
-            MODEM_CONNECT_TONES_FAX_CNG = 1,
+    MODEM_CONNECT_TONES_FAX_CNG = 1,
     /*! \brief ANS tone is a pure continuous 2100Hz+-15Hz tone for 3.3s+-0.7s. */
-            MODEM_CONNECT_TONES_ANS = 2,
+    MODEM_CONNECT_TONES_ANS = 2,
     /*! \brief ANS with phase reversals tone is a 2100Hz+-15Hz tone for 3.3s+-0.7s, with a 180 degree
                phase jump every 450ms+-25ms. */
-            MODEM_CONNECT_TONES_ANS_PR = 3,
+    MODEM_CONNECT_TONES_ANS_PR = 3,
     /*! \brief The ANSam tone is a version of ANS with 20% of 15Hz+-0.1Hz AM modulation, as per V.8 */
-            MODEM_CONNECT_TONES_ANSAM = 4,
+    MODEM_CONNECT_TONES_ANSAM = 4,
     /*! \brief The ANSam with phase reversals tone is a version of ANS_PR with 20% of 15Hz+-0.1Hz AM
                modulation, as per V.8 */
-            MODEM_CONNECT_TONES_ANSAM_PR = 5,
+    MODEM_CONNECT_TONES_ANSAM_PR = 5,
     /*! \brief FAX preamble in a string of V.21 HDLC flag octets. */
-            MODEM_CONNECT_TONES_FAX_PREAMBLE = 6,
+    MODEM_CONNECT_TONES_FAX_PREAMBLE = 6,
     /*! \brief CED tone is the same as ANS tone. FAX preamble in a string of V.21 HDLC flag octets.
                This is only valid as a tone type to receive. It is never reported as a detected tone
                type. The report will either be for FAX preamble or CED/ANS tone. */
-            MODEM_CONNECT_TONES_FAX_CED_OR_PREAMBLE = 7
+    MODEM_CONNECT_TONES_FAX_CED_OR_PREAMBLE = 7
 };
 
 /*! \brief FAX CED tone is the same as ANS tone. */
@@ -102,22 +103,20 @@ extern "C"
 /*! \brief Initialise an instance of the modem connect tones generator.
     \param s The context.
 */
-SPAN_DECLARE(modem_connect_tones_tx_state_t * ) modem_connect_tones_tx_init(modem_connect_tones_tx_state_t * s ,
-int tone_type ) ;
+SPAN_DECLARE(modem_connect_tones_tx_state_t *) modem_connect_tones_tx_init(modem_connect_tones_tx_state_t *s,
+                                                                           int tone_type);
 
 /*! \brief Release an instance of the modem connect tones generator.
     \param s The context.
     \return 0 for OK, else -1.
 */
-SPAN_DECLARE(int)
-modem_connect_tones_tx_release(modem_connect_tones_tx_state_t * s ) ;
+SPAN_DECLARE(int) modem_connect_tones_tx_release(modem_connect_tones_tx_state_t *s);
 
 /*! \brief Free an instance of the modem connect tones generator.
     \param s The context.
     \return 0 for OK, else -1.
 */
-SPAN_DECLARE(int)
-modem_connect_tones_tx_free(modem_connect_tones_tx_state_t * s ) ;
+SPAN_DECLARE(int) modem_connect_tones_tx_free(modem_connect_tones_tx_state_t *s);
 
 /*! \brief Generate a block of modem connect tones samples.
     \param s The context.
@@ -125,10 +124,9 @@ modem_connect_tones_tx_free(modem_connect_tones_tx_state_t * s ) ;
     \param len The number of samples to generate.
     \return The number of samples generated.
 */
-SPAN_DECLARE_NONSTD(int)
-modem_connect_tones_tx(modem_connect_tones_tx_state_t * s ,
-int16_t amp[],
-int len ) ;
+SPAN_DECLARE_NONSTD(int) modem_connect_tones_tx(modem_connect_tones_tx_state_t *s,
+                                                int16_t amp[],
+                                                int len);
 
 /*! \brief Process a block of samples through an instance of the modem connect
            tones detector.
@@ -137,17 +135,15 @@ int len ) ;
     \param len The number of samples in the array.
     \return The number of unprocessed samples.
 */
-SPAN_DECLARE_NONSTD(int)
-modem_connect_tones_rx(modem_connect_tones_rx_state_t * s ,
-const int16_t amp[],
-int len ) ;
-
+SPAN_DECLARE_NONSTD(int) modem_connect_tones_rx(modem_connect_tones_rx_state_t *s,
+                                                const int16_t amp[],
+                                                int len);
+                             
 /*! \brief Test if a modem_connect tone has been detected.
     \param s The context.
     \return TRUE if tone is detected, else FALSE.
 */
-SPAN_DECLARE(int)
-modem_connect_tones_rx_get(modem_connect_tones_rx_state_t * s ) ;
+SPAN_DECLARE(int) modem_connect_tones_rx_get(modem_connect_tones_rx_state_t *s);
 
 /*! \brief Initialise an instance of the modem connect tones detector.
     \param s The context.
@@ -156,26 +152,22 @@ modem_connect_tones_rx_get(modem_connect_tones_rx_state_t * s ) ;
     \param user_data An opaque pointer passed to the callback routine,
     \return A pointer to the context.
 */
-SPAN_DECLARE(modem_connect_tones_rx_state_t * ) modem_connect_tones_rx_init(modem_connect_tones_rx_state_t * s ,
-int tone_type,
-        tone_report_func_t
-tone_callback ,
-void *user_data ) ;
+SPAN_DECLARE(modem_connect_tones_rx_state_t *) modem_connect_tones_rx_init(modem_connect_tones_rx_state_t *s,
+                                                                           int tone_type,
+                                                                           tone_report_func_t tone_callback,
+                                                                           void *user_data);
 
 /*! \brief Release an instance of the modem connect tones detector.
     \param s The context.
     \return 0 for OK, else -1. */
-SPAN_DECLARE(int)
-modem_connect_tones_rx_release(modem_connect_tones_rx_state_t * s ) ;
+SPAN_DECLARE(int) modem_connect_tones_rx_release(modem_connect_tones_rx_state_t *s);
 
 /*! \brief Free an instance of the modem connect tones detector.
     \param s The context.
     \return 0 for OK, else -1. */
-SPAN_DECLARE(int)
-modem_connect_tones_rx_free(modem_connect_tones_rx_state_t * s ) ;
+SPAN_DECLARE(int) modem_connect_tones_rx_free(modem_connect_tones_rx_state_t *s);
 
-SPAN_DECLARE(const char *)
-modem_connect_tone_to_str(int tone);
+SPAN_DECLARE(const char *) modem_connect_tone_to_str(int tone);
 
 #if defined(__cplusplus)
 }

@@ -46,20 +46,21 @@ extern "C"
 #endif
 
 /* This returns its answer as a signed 32 bit integer phase value. */
-static __inline__ int32_t arctan2(float y, float x) {
+static __inline__ int32_t arctan2(float y, float x)
+{
     float abs_y;
     float angle;
 
-    if (x == 0.0f || y == 0.0f)
+    if (x == 0.0f  ||  y == 0.0f)
         return 0;
-
+    
     abs_y = fabsf(y);
 
     /* If we are in quadrant II or III, flip things around */
     if (x < 0.0f)
-        angle = 3.0f - (x + abs_y) / (abs_y - x);
+        angle = 3.0f - (x + abs_y)/(abs_y - x);
     else
-        angle = 1.0f - (x - abs_y) / (abs_y + x);
+        angle = 1.0f - (x - abs_y)/(abs_y + x);
     angle *= 536870912.0f;
 
     /* If we are in quadrant III or IV, negate to return an

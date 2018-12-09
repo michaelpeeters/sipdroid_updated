@@ -29,22 +29,22 @@
 #define  BV16CNST_H
 
 /* ----- Basic Codec Parameters ----- */
-#define FRSZ    40        /* frame size */
-#define WINSZ    160        /* lpc analysis WINdow SiZe  */
+#define FRSZ 	40 		/* frame size */
+#define WINSZ	160		/* lpc analysis WINdow SiZe  */
 #define MAXPP  137      /* MAXimum Pitch Period         		  */
 #define MINPP  10       /* MINimum Pitch Period          		  */
-#define PWSZ    120       /* Pitch analysis Window SiZe   */
+#define PWSZ	120	   /* Pitch analysis Window SiZe   */
 #define MAXPP1 (MAXPP+1)/* MAXimum Pitch Period + 1  	  */
 
 /* Quantization parameters */
-#define VDIM          4    /* excitation vector dimension */
-#define CBSZ         16    /* excitation codebook size */
-#define PPCBSZ     32    /* pitch predictor codebook size */
-#define LGPORDER      8    /* Log-Gain Predictor OODER */
-#define LGPECBSZ     16    /* Log-Gain Prediction Error CodeBook SiZe */
-#define LSPPORDER   8    /* LSP MA Predictor ORDER */
-#define LSPECBSZ1 128    /* codebook size of 1st-stage LSP VQ */
-#define LSPECBSZ2  64    /* codebook size of 2nd-stage LSP VQ; 1-bit for sign */
+#define VDIM		  4	/* excitation vector dimension */		
+#define CBSZ		 16	/* excitation codebook size */
+#define PPCBSZ     32	/* pitch predictor codebook size */
+#define LGPORDER	  8	/* Log-Gain Predictor OODER */
+#define LGPECBSZ	 16	/* Log-Gain Prediction Error CodeBook SiZe */
+#define LSPPORDER   8	/* LSP MA Predictor ORDER */
+#define LSPECBSZ1 128	/* codebook size of 1st-stage LSP VQ */
+#define LSPECBSZ2  64	/* codebook size of 2nd-stage LSP VQ; 1-bit for sign */
 
 /* Excitation gain quantization */
 #define GPO       8     /* order of MA prediction       */
@@ -86,7 +86,7 @@
 #define LX      (XOFF+FRSZ)  /* Length of x() buffer      */
 #define XQOFF   (MAXPP1)     /* xq() offset before current subframe */
 #define LXQ     (XQOFF+FRSZ) /* Length of xq() buffer */
-#define LTMOFF     (MAXPP1)      /* Long-Term filter Memory OFFset */
+#define LTMOFF	 (MAXPP1)	  /* Long-Term filter Memory OFFset */
 
 /* Long-term postfilter */
 #define DPPQNS     4 /* Delta pitch period for search             */
@@ -120,7 +120,7 @@
 #define M2      MAXPPD1
 #define HDECF   (DECF/2)
 
-/* Front-end 150 Hz highpass filter */
+/* Front-end 150 Hz highpass filter */ 
 #define HPO 2 /* High-pass filter order */
 
 /* LPC weighting filter */

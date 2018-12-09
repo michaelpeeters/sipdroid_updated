@@ -46,11 +46,11 @@ typedef struct {
     SKP_int packetSize;
 
     /* I:   Bitrate during active speech in bits/second; internally limited                 */
-    SKP_int32 bitRate;
+    SKP_int32 bitRate;                        
 
     /* I:   Uplink Packet loss in pct (0...100)                                             */
     SKP_int packetLossPercentage;
-
+    
     /* I:   Complexity mode; 0 is lowest; 1 is medium and 2 is highest complexity           */
     SKP_int complexity;
 

@@ -29,28 +29,29 @@
 #include "basop32.h"
 
 void azfilter(
-        Word16 a[],    /* (i) Q12 : prediction coefficients          */
-        Word16 m,      /* (i)     : LPC order                        */
-        Word16 x[],    /* (i) Q0  : input signal samples, incl. past */
-        Word16 y[],    /* (o) Q0  : filtered output signal           */
-        Word16 lg      /* (i)     : size of filtering                */
-) {
-    Word16 i, n;
-    Word32 a0;
-    Word16 *fp1;
+              Word16 a[],    /* (i) Q12 : prediction coefficients          */
+              Word16 m,      /* (i)     : LPC order                        */
+              Word16 x[],    /* (i) Q0  : input signal samples, incl. past */
+              Word16 y[],    /* (o) Q0  : filtered output signal           */
+              Word16 lg      /* (i)     : size of filtering                */
+              )
+{
+   Word16 i, n;
+   Word32 a0;
+   Word16 *fp1;
 
-    /* loop through every element of the current vector */
-    for (n = 0; n < lg; n++) {
+   /* loop through every element of the current vector */
+   for (n = 0; n < lg; n++) {
+      
+      /* perform multiply-adds along the delay line of filter */
+      fp1 = x + n;
+      a0 = L_mult0(a[0], *fp1--); // Q12
+      for (i = 1; i <= m; i++)
+         a0 = L_mac0(a0, a[i], *fp1--); // Q12
+      
+      /* get the output with rounding */
+      y[n] = intround(L_shl(a0, 4)); // Q0
+   }
 
-        /* perform multiply-adds along the delay line of filter */
-        fp1 = x + n;
-        a0 = L_mult0(a[0], *fp1--); // Q12
-        for (i = 1; i <= m; i++)
-            a0 = L_mac0(a0, a[i], *fp1--); // Q12
-
-        /* get the output with rounding */
-        y[n] = intround(L_shl(a0, 4)); // Q0
-    }
-
-    return;
+   return;
 }

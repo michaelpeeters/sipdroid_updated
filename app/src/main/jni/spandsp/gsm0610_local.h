@@ -33,12 +33,13 @@
 
 #define GSM0610_FRAME_LEN               160
 
-#define    GSM0610_MAGIC                   0xD
+#define	GSM0610_MAGIC                   0xD
 
 #include "spandsp/private/gsm0610.h"
 
-static __inline__ int16_t gsm_add(int16_t a, int16_t b) {
-#if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+static __inline__ int16_t gsm_add(int16_t a, int16_t b)
+{
+#if defined(__GNUC__)  &&  (defined(__i386__)  ||  defined(__x86_64__))
     __asm__ __volatile__(
         " addw %2,%0;\n"
         " jno 0f;\n"
@@ -54,14 +55,14 @@ static __inline__ int16_t gsm_add(int16_t a, int16_t b) {
     int32_t sum;
 
     sum = (int32_t) a + (int32_t) b;
-    return saturate(sum);
+    return  saturate(sum);
 #endif
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int32_t gsm_l_add(int32_t a, int32_t b) {
-#if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+static __inline__ int32_t gsm_l_add(int32_t a, int32_t b)
+{
+#if defined(__GNUC__)  &&  (defined(__i386__)  ||  defined(__x86_64__))
     __asm__ __volatile__(
         " addl %2,%0;\n"
         " jno 0f;\n"
@@ -76,96 +77,96 @@ static __inline__ int32_t gsm_l_add(int32_t a, int32_t b) {
 #else
     uint32_t A;
 
-    if (a < 0) {
+    if (a < 0)
+    {
         if (b >= 0)
-            return a + b;
+            return  a + b;
         /*endif*/
         A = (uint32_t) -(a + 1) + (uint32_t) -(b + 1);
-        return (A >= INT32_MAX) ? INT32_MIN : -(int32_t) A - 2;
+        return  (A >= INT32_MAX)  ?  INT32_MIN  :  -(int32_t) A - 2;
     }
     /*endif*/
     if (b <= 0)
-        return a + b;
+        return  a + b;
     /*endif*/
     A = (uint32_t) a + (uint32_t) b;
-    return (A > INT32_MAX) ? INT32_MAX : A;
+    return  (A > INT32_MAX)  ?  INT32_MAX  :  A;
 #endif
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int16_t gsm_sub(int16_t a, int16_t b) {
+static __inline__ int16_t gsm_sub(int16_t a, int16_t b)
+{
     int32_t diff;
 
     diff = (int32_t) a - (int32_t) b;
-    return saturate(diff);
+    return  saturate(diff);
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int16_t gsm_mult(int16_t a, int16_t b) {
-    if (a == INT16_MIN && b == INT16_MIN)
-        return INT16_MAX;
+static __inline__ int16_t gsm_mult(int16_t a, int16_t b)
+{
+    if (a == INT16_MIN  &&  b == INT16_MIN)
+        return  INT16_MAX;
     /*endif*/
-    return (int16_t) (((int32_t) a * (int32_t) b) >> 15);
+    return  (int16_t) (((int32_t) a * (int32_t) b) >> 15);
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int32_t gsm_l_mult(int16_t a, int16_t b) {
-    assert(a != INT16_MIN || b != INT16_MIN);
-    return ((int32_t) a * (int32_t) b) << 1;
+static __inline__ int32_t gsm_l_mult(int16_t a, int16_t b)
+{
+    assert (a != INT16_MIN  ||  b != INT16_MIN);
+    return  ((int32_t) a * (int32_t) b) << 1;
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int16_t gsm_mult_r(int16_t a, int16_t b) {
+static __inline__ int16_t gsm_mult_r(int16_t a, int16_t b)
+{
     int32_t prod;
 
-    if (b == INT16_MIN && a == INT16_MIN)
-        return INT16_MAX;
+    if (b == INT16_MIN  &&  a == INT16_MIN)
+        return  INT16_MAX;
     /*endif*/
     prod = (int32_t) a * (int32_t) b + 16384;
     prod >>= 15;
-    return (int16_t) (prod & 0xFFFF);
+    return  (int16_t) (prod & 0xFFFF);
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int16_t gsm_abs(int16_t a) {
-    return (a == INT16_MIN) ? INT16_MAX : (int16_t) abs(a);
+static __inline__ int16_t gsm_abs(int16_t a)
+{
+    return  (a == INT16_MIN)  ?  INT16_MAX  :  (int16_t) abs(a);
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int16_t gsm_asr(int16_t a, int n) {
+static __inline__ int16_t gsm_asr(int16_t a, int n)
+{
     if (n >= 16)
-        return (int16_t) (-(a < 0));
+        return  (int16_t) (-(a < 0));
     /*endif*/
     if (n <= -16)
-        return 0;
+        return  0;
     /*endif*/
     if (n < 0)
         return (int16_t) (a << -n);
     /*endif*/
-    return (int16_t) (a >> n);
+    return  (int16_t) (a >> n);
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int16_t gsm_asl(int16_t a, int n) {
+static __inline__ int16_t gsm_asl(int16_t a, int n)
+{
     if (n >= 16)
-        return 0;
+        return  0;
     /*endif*/
     if (n <= -16)
-        return (int16_t) (-(a < 0));
+        return  (int16_t) (-(a < 0));
     /*endif*/
     if (n < 0)
-        return gsm_asr(a, -n);
+        return  gsm_asr(a, -n);
     /*endif*/
-    return (int16_t) (a << n);
+    return  (int16_t) (a << n);
 }
-
 /*- End of function --------------------------------------------------------*/
 
 extern void gsm0610_long_term_predictor(gsm0610_state_t *s,

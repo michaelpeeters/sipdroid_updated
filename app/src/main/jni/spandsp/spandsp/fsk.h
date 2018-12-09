@@ -85,7 +85,8 @@ Two modes of symbol synchronisation are provided:
     FSK modem specification. This defines the frequencies, signal levels and
     baud rate (== bit rate for simple FSK) for a single channel of an FSK modem.
 */
-typedef struct {
+typedef struct
+{
     /*! Short text name for the modem. */
     const char *name;
     /*! The frequency of the zero bit state, in Hz */
@@ -101,7 +102,8 @@ typedef struct {
 } fsk_spec_t;
 
 /* Predefined FSK modem channels */
-enum {
+enum
+{
     FSK_V21CH1 = 0,
     FSK_V21CH2,
     FSK_V23CH1,
@@ -113,7 +115,8 @@ enum {
     FSK_WEITBRECHT50    /* 50 baud version, used for TDD (Telecom Device for the Deaf) */
 };
 
-enum {
+enum
+{
     FSK_FRAME_MODE_ASYNC = 0,
     FSK_FRAME_MODE_SYNC = 1,
     FSK_FRAME_MODE_5N1_FRAMES = 7,      /* 5 bits of data + start bit + stop bit */
@@ -121,8 +124,7 @@ enum {
     FSK_FRAME_MODE_8N1_FRAMES = 10      /* 8 bits of data + start bit + stop bit */
 };
 
-SPAN_DECLARE_DATA extern const fsk_spec_t
-preset_fsk_specs[];
+SPAN_DECLARE_DATA extern const fsk_spec_t preset_fsk_specs[];
 
 /*!
     FSK modem transmit descriptor. This defines the state of a single working
@@ -151,40 +153,31 @@ extern "C"
     \param get_bit The callback routine used to get the data to be transmitted.
     \param user_data An opaque pointer.
     \return A pointer to the modem context, or NULL if there was a problem. */
-SPAN_DECLARE(fsk_tx_state_t * ) fsk_tx_init(fsk_tx_state_t * s ,
-const fsk_spec_t *spec,
-        get_bit_func_t
-get_bit ,
-void *user_data ) ;
+SPAN_DECLARE(fsk_tx_state_t *) fsk_tx_init(fsk_tx_state_t *s,
+                                           const fsk_spec_t *spec,
+                                           get_bit_func_t get_bit,
+                                           void *user_data);
 
-SPAN_DECLARE(int)
-fsk_tx_restart(fsk_tx_state_t * s , const fsk_spec_t *spec ) ;
+SPAN_DECLARE(int) fsk_tx_restart(fsk_tx_state_t *s, const fsk_spec_t *spec);
+    
+SPAN_DECLARE(int) fsk_tx_release(fsk_tx_state_t *s);
 
-SPAN_DECLARE(int)
-fsk_tx_release(fsk_tx_state_t * s ) ;
-
-SPAN_DECLARE(int)
-fsk_tx_free(fsk_tx_state_t * s ) ;
+SPAN_DECLARE(int) fsk_tx_free(fsk_tx_state_t *s);
 
 /*! Adjust an FSK modem transmit context's power output.
     \brief Adjust an FSK modem transmit context's power output.
     \param s The modem context.
     \param power The power level, in dBm0 */
-SPAN_DECLARE(void)
-fsk_tx_power(fsk_tx_state_t * s , float power ) ;
+SPAN_DECLARE(void) fsk_tx_power(fsk_tx_state_t *s, float power);
 
-SPAN_DECLARE(void)
-fsk_tx_set_get_bit(fsk_tx_state_t * s , get_bit_func_t get_bit,
-void *user_data ) ;
+SPAN_DECLARE(void) fsk_tx_set_get_bit(fsk_tx_state_t *s, get_bit_func_t get_bit, void *user_data);
 
 /*! Change the modem status report function associated with an FSK modem transmit context.
     \brief Change the modem status report function associated with an FSK modem transmit context.
     \param s The modem context.
     \param handler The callback routine used to report modem status changes.
     \param user_data An opaque pointer. */
-SPAN_DECLARE(void)
-fsk_tx_set_modem_status_handler(fsk_tx_state_t * s , modem_tx_status_func_t handler,
-void *user_data ) ;
+SPAN_DECLARE(void) fsk_tx_set_modem_status_handler(fsk_tx_state_t *s, modem_tx_status_func_t handler, void *user_data);
 
 /*! Generate a block of FSK modem audio samples.
     \brief Generate a block of FSK modem audio samples.
@@ -193,22 +186,18 @@ void *user_data ) ;
     \param len The number of samples to be generated.
     \return The number of samples actually generated.
 */
-SPAN_DECLARE_NONSTD(int)
-fsk_tx(fsk_tx_state_t * s , int16_t amp[],
-int len ) ;
+SPAN_DECLARE_NONSTD(int) fsk_tx(fsk_tx_state_t *s, int16_t amp[], int len);
 
 /*! Get the current received signal power.
     \param s The modem context.
     \return The signal power, in dBm0. */
-SPAN_DECLARE(float)
-fsk_rx_signal_power(fsk_rx_state_t * s ) ;
+SPAN_DECLARE(float) fsk_rx_signal_power(fsk_rx_state_t *s);
 
 /*! Adjust an FSK modem receive context's carrier detect power threshold.
     \brief Adjust an FSK modem receive context's carrier detect power threshold.
     \param s The modem context.
     \param cutoff The power level, in dBm0 */
-SPAN_DECLARE(void)
-fsk_rx_signal_cutoff(fsk_rx_state_t * s , float cutoff ) ;
+SPAN_DECLARE(void) fsk_rx_signal_cutoff(fsk_rx_state_t *s, float cutoff);
 
 /*! Initialise an FSK modem receive context.
     \brief Initialise an FSK modem receive context.
@@ -219,22 +208,17 @@ fsk_rx_signal_cutoff(fsk_rx_state_t * s , float cutoff ) ;
     \param put_bit The callback routine used to put the received data.
     \param user_data An opaque pointer.
     \return A pointer to the modem context, or NULL if there was a problem. */
-SPAN_DECLARE(fsk_rx_state_t * ) fsk_rx_init(fsk_rx_state_t * s ,
-const fsk_spec_t *spec,
-int framing_mode,
-        put_bit_func_t
-put_bit ,
-void *user_data ) ;
+SPAN_DECLARE(fsk_rx_state_t *) fsk_rx_init(fsk_rx_state_t *s,
+                                           const fsk_spec_t *spec,
+                                           int framing_mode,
+                                           put_bit_func_t put_bit,
+                                           void *user_data);
 
-SPAN_DECLARE(int)
-fsk_rx_restart(fsk_rx_state_t * s , const fsk_spec_t *spec,
-int framing_mode ) ;
+SPAN_DECLARE(int) fsk_rx_restart(fsk_rx_state_t *s, const fsk_spec_t *spec, int framing_mode);
 
-SPAN_DECLARE(int)
-fsk_rx_release(fsk_rx_state_t * s ) ;
+SPAN_DECLARE(int) fsk_rx_release(fsk_rx_state_t *s);
 
-SPAN_DECLARE(int)
-fsk_rx_free(fsk_rx_state_t * s ) ;
+SPAN_DECLARE(int) fsk_rx_free(fsk_rx_state_t *s);
 
 /*! Process a block of received FSK modem audio samples.
     \brief Process a block of received FSK modem audio samples.
@@ -243,9 +227,7 @@ fsk_rx_free(fsk_rx_state_t * s ) ;
     \param len The number of samples in the buffer.
     \return The number of samples unprocessed.
 */
-SPAN_DECLARE_NONSTD(int)
-fsk_rx(fsk_rx_state_t * s , const int16_t *amp,
-int len ) ;
+SPAN_DECLARE_NONSTD(int) fsk_rx(fsk_rx_state_t *s, const int16_t *amp, int len);
 
 /*! Fake processing of a missing block of received FSK modem audio samples
     (e.g due to packet loss).
@@ -254,21 +236,16 @@ int len ) ;
     \param len The number of samples to fake.
     \return The number of samples unprocessed.
 */
-SPAN_DECLARE(int)
-fsk_rx_fillin(fsk_rx_state_t * s , int len ) ;
+SPAN_DECLARE(int) fsk_rx_fillin(fsk_rx_state_t *s, int len);
 
-SPAN_DECLARE(void)
-fsk_rx_set_put_bit(fsk_rx_state_t * s , put_bit_func_t put_bit,
-void *user_data ) ;
+SPAN_DECLARE(void) fsk_rx_set_put_bit(fsk_rx_state_t *s, put_bit_func_t put_bit, void *user_data);
 
 /*! Change the modem status report function associated with an FSK modem receive context.
     \brief Change the modem status report function associated with an FSK modem receive context.
     \param s The modem context.
     \param handler The callback routine used to report modem status changes.
     \param user_data An opaque pointer. */
-SPAN_DECLARE(void)
-fsk_rx_set_modem_status_handler(fsk_rx_state_t * s , modem_rx_status_func_t handler,
-void *user_data ) ;
+SPAN_DECLARE(void) fsk_rx_set_modem_status_handler(fsk_rx_state_t *s, modem_rx_status_func_t handler, void *user_data);
 
 #if defined(__cplusplus)
 }

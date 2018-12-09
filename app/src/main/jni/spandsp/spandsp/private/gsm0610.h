@@ -32,7 +32,8 @@
     GSM 06.10 FR codec state descriptor. This defines the state of
     a single working instance of the GSM 06.10 FR encoder or decoder.
 */
-struct gsm0610_state_s {
+struct gsm0610_state_s
+{
     /*! \brief One of the packing modes */
     int packing;
 
@@ -55,7 +56,7 @@ struct gsm0610_state_s {
     int16_t v[9];
     /*! Decoder postprocessing */
     int16_t msr;
-
+    
     /*! Encoder data */
     int16_t e[50];
 };

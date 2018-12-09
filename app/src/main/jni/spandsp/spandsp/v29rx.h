@@ -120,8 +120,7 @@ scrambler register) cannot be trusted for the test. The receive modem,
 therefore, only tests that bits starting at bit 24 are really ones. 
 */
 
-typedef void (*qam_report_handler_t)(void *user_data, const complexf_t *constel,
-                                     const complexf_t *target, int symbol);
+typedef void (*qam_report_handler_t)(void *user_data, const complexf_t *constel, const complexf_t *target, int symbol);
 
 /*!
     V.29 modem receive side descriptor. This defines the working state for a
@@ -141,8 +140,7 @@ extern "C"
     \param put_bit The callback routine used to put the received data.
     \param user_data An opaque pointer passed to the put_bit routine.
     \return A pointer to the modem context, or NULL if there was a problem. */
-SPAN_DECLARE(v29_rx_state_t * ) v29_rx_init(v29_rx_state_t * s , int bit_rate, put_bit_func_t
-put_bit , void *user_data ) ;
+SPAN_DECLARE(v29_rx_state_t *) v29_rx_init(v29_rx_state_t *s, int bit_rate, put_bit_func_t put_bit, void *user_data);
 
 /*! Reinitialise an existing V.29 modem receive context.
     \brief Reinitialise an existing V.29 modem receive context.
@@ -150,47 +148,39 @@ put_bit , void *user_data ) ;
     \param bit_rate The bit rate of the modem. Valid values are 4800, 7200 and 9600.
     \param old_train TRUE if a previous trained values are to be reused.
     \return 0 for OK, -1 for bad parameter */
-SPAN_DECLARE(int)
-v29_rx_restart(v29_rx_state_t * s , int bit_rate,
-int old_train ) ;
+SPAN_DECLARE(int) v29_rx_restart(v29_rx_state_t *s, int bit_rate, int old_train);
 
 /*! Release a V.29 modem receive context.
     \brief Release a V.29 modem receive context.
     \param s The modem context.
     \return 0 for OK */
-SPAN_DECLARE(int)
-v29_rx_release(v29_rx_state_t * s ) ;
+SPAN_DECLARE(int) v29_rx_release(v29_rx_state_t *s);
 
 /*! Free a V.29 modem receive context.
     \brief Free a V.29 modem receive context.
     \param s The modem context.
     \return 0 for OK */
-SPAN_DECLARE(int)
-v29_rx_free(v29_rx_state_t * s ) ;
+SPAN_DECLARE(int) v29_rx_free(v29_rx_state_t *s);
 
 /*! Get the logging context associated with a V.29 modem receive context.
     \brief Get the logging context associated with a V.29 modem receive context.
     \param s The modem context.
     \return A pointer to the logging context */
-SPAN_DECLARE(logging_state_t * ) v29_rx_get_logging_state(v29_rx_state_t * s ) ;
+SPAN_DECLARE(logging_state_t *) v29_rx_get_logging_state(v29_rx_state_t *s);
 
 /*! Change the put_bit function associated with a V.29 modem receive context.
     \brief Change the put_bit function associated with a V.29 modem receive context.
     \param s The modem context.
     \param put_bit The callback routine used to handle received bits.
     \param user_data An opaque pointer. */
-SPAN_DECLARE(void)
-v29_rx_set_put_bit(v29_rx_state_t * s , put_bit_func_t put_bit,
-void *user_data ) ;
+SPAN_DECLARE(void) v29_rx_set_put_bit(v29_rx_state_t *s, put_bit_func_t put_bit, void *user_data);
 
 /*! Change the modem status report function associated with a V.29 modem receive context.
     \brief Change the modem status report function associated with a V.29 modem receive context.
     \param s The modem context.
     \param handler The callback routine used to report modem status changes.
     \param user_data An opaque pointer. */
-SPAN_DECLARE(void)
-v29_rx_set_modem_status_handler(v29_rx_state_t * s , modem_rx_status_func_t handler,
-void *user_data ) ;
+SPAN_DECLARE(void) v29_rx_set_modem_status_handler(v29_rx_state_t *s, modem_rx_status_func_t handler, void *user_data);
 
 /*! Process a block of received V.29 modem audio samples.
     \brief Process a block of received V.29 modem audio samples.
@@ -198,9 +188,7 @@ void *user_data ) ;
     \param amp The audio sample buffer.
     \param len The number of samples in the buffer.
     \return The number of samples unprocessed. */
-SPAN_DECLARE_NONSTD(int)
-v29_rx(v29_rx_state_t * s , const int16_t amp[],
-int len ) ;
+SPAN_DECLARE_NONSTD(int) v29_rx(v29_rx_state_t *s, const int16_t amp[], int len);
 
 /*! Fake processing of a missing block of received V.29 modem audio samples.
     (e.g due to packet loss).
@@ -208,8 +196,7 @@ int len ) ;
     \param s The modem context.
     \param len The number of samples to fake.
     \return The number of samples unprocessed. */
-SPAN_DECLARE(int)
-v29_rx_fillin(v29_rx_state_t * s , int len ) ;
+SPAN_DECLARE(int) v29_rx_fillin(v29_rx_state_t *s, int len);
 
 /*! Get a snapshot of the current equalizer coefficients.
     \brief Get a snapshot of the current equalizer coefficients.
@@ -219,41 +206,34 @@ v29_rx_fillin(v29_rx_state_t * s , int len ) ;
 #if defined(SPANDSP_USE_FIXED_POINT)
 SPAN_DECLARE(int) v29_rx_equalizer_state(v29_rx_state_t *s, complexi16_t **coeffs);
 #else
-SPAN_DECLARE(int)
-v29_rx_equalizer_state(v29_rx_state_t * s , complexf_t **coeffs ) ;
+SPAN_DECLARE(int) v29_rx_equalizer_state(v29_rx_state_t *s, complexf_t **coeffs);
 #endif
 
 /*! Get the current received carrier frequency.
     \param s The modem context.
     \return The frequency, in Hertz. */
-SPAN_DECLARE(float)
-v29_rx_carrier_frequency(v29_rx_state_t * s ) ;
+SPAN_DECLARE(float) v29_rx_carrier_frequency(v29_rx_state_t *s);
 
 /*! Get the current symbol timing correction since startup.
     \param s The modem context.
     \return The correction. */
-SPAN_DECLARE(float)
-v29_rx_symbol_timing_correction(v29_rx_state_t * s ) ;
+SPAN_DECLARE(float) v29_rx_symbol_timing_correction(v29_rx_state_t *s);
 
 /*! Get the current received signal power.
     \param s The modem context.
     \return The signal power, in dBm0. */
-SPAN_DECLARE(float)
-v29_rx_signal_power(v29_rx_state_t * s ) ;
+SPAN_DECLARE(float) v29_rx_signal_power(v29_rx_state_t *s);
 
 /*! Set the power level at which the carrier detection will cut in
     \param s The modem context.
     \param cutoff The signal cutoff power, in dBm0. */
-SPAN_DECLARE(void)
-v29_rx_signal_cutoff(v29_rx_state_t * s , float cutoff ) ;
+SPAN_DECLARE(void) v29_rx_signal_cutoff(v29_rx_state_t *s, float cutoff);
 
 /*! Set a handler routine to process QAM status reports
     \param s The modem context.
     \param handler The handler routine.
     \param user_data An opaque pointer passed to the handler routine. */
-SPAN_DECLARE(void)
-v29_rx_set_qam_report_handler(v29_rx_state_t * s , qam_report_handler_t handler,
-void *user_data ) ;
+SPAN_DECLARE(void) v29_rx_set_qam_report_handler(v29_rx_state_t *s, qam_report_handler_t handler, void *user_data);
 
 #if defined(__cplusplus)
 }

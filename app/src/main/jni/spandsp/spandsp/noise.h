@@ -71,7 +71,7 @@ Freq (Hz)  Spectral     Bandwidth       Total power in
 6300        -1.3        31.7            30.4
 8000        -6.6        32.7            26.0
 
-The tolerance for each 1/3rd octave band is ï¿½ï¿½3dB.
+The tolerance for each 1/3rd octave band is ¡Ó3dB.
 
 \section awgn_page_sec_2 How does it work?
 The central limit theorem says if you add a few random numbers together,
@@ -81,7 +81,8 @@ It should not be trusted as a high quality AWGN generator, for elaborate
 modelling purposes.
 */
 
-enum {
+enum
+{
     NOISE_CLASS_AWGN = 1,
     NOISE_CLASS_HOTH
 };
@@ -107,29 +108,20 @@ extern "C"
            generation to be adjusted.
     \return A pointer to the noise generator context.
 */
-SPAN_DECLARE(noise_state_t * ) noise_init_dbm0(noise_state_t * s , int seed,
-float level,
-int class_of_noise,
-int quality ) ;
+SPAN_DECLARE(noise_state_t *) noise_init_dbm0(noise_state_t *s, int seed, float level, int class_of_noise, int quality);
 
-SPAN_DECLARE(noise_state_t * ) noise_init_dbov(noise_state_t * s , int seed,
-float level,
-int class_of_noise,
-int quality ) ;
+SPAN_DECLARE(noise_state_t *) noise_init_dbov(noise_state_t *s, int seed, float level, int class_of_noise, int quality);
 
-SPAN_DECLARE(int)
-noise_release(noise_state_t * s ) ;
+SPAN_DECLARE(int) noise_release(noise_state_t *s);
 
-SPAN_DECLARE(int)
-noise_free(noise_state_t * s ) ;
+SPAN_DECLARE(int) noise_free(noise_state_t *s);
 
 /*! Generate a sample of audio noise.
     \brief Generate a sample of audio noise.
     \param s The noise generator context.
     \return The generated sample.
 */
-SPAN_DECLARE(int16_t)
-noise(noise_state_t * s ) ;
+SPAN_DECLARE(int16_t) noise(noise_state_t *s);
 
 #if defined(__cplusplus)
 }

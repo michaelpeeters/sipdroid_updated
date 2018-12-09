@@ -63,9 +63,7 @@ extern "C"
            If the model is not identified, NULL will be returned.
     \return TRUE if the machine was identified, otherwise FALSE.
 */
-SPAN_DECLARE(int)
-t35_decode(const uint8_t *msg, int len, const char **country, const char **vendor,
-           const char **model);
+SPAN_DECLARE(int) t35_decode(const uint8_t *msg, int len, const char **country, const char **vendor, const char **model);
 
 #if defined(__cplusplus)
 }

@@ -36,16 +36,20 @@
 
 #include <assert.h>
 #include <inttypes.h>
-
 #if defined(HAVE_TGMATH_H)
 #include <tgmath.h>
 #endif
 #if defined(HAVE_MATH_H)
 #include <math.h>
 #endif
-
+#include "floating_fudge.h"
 #include <stdlib.h>
 
+#include "mmx_sse_decs.h"
+
+#include "spandsp/telephony.h"
+#include "spandsp/fast_convert.h"
+#include "spandsp/bitstream.h"
 #include "spandsp/saturated.h"
 #include "spandsp/gsm0610.h"
 
@@ -57,7 +61,7 @@
 static void weighting_filter(int16_t x[40],
                              const int16_t *e)      // signal [-5..0.39.44] IN)
 {
-#if defined(__GNUC__) && defined(SPANDSP_USE_MMX) && defined(__x86_64__)
+#if defined(__GNUC__)  &&  defined(SPANDSP_USE_MMX)  &&  defined(__x86_64__)
     /* Table 4.4   Coefficients of the weighting filter */
     /* This must be padded to a multiple of 4 for MMX to work */
     static const union
@@ -112,7 +116,7 @@ static void weighting_filter(int16_t x[40],
         : "c" (e), "D" (x), [gsm_H] "X" (gsm_H)
         : "rax", "rdx", "rsi", "memory"
     );
-#elif defined(__GNUC__) && defined(SPANDSP_USE_MMX) && defined(__i386__)
+#elif defined(__GNUC__)  &&  defined(SPANDSP_USE_MMX)  &&  defined(__i386__)
     /* Table 4.4   Coefficients of the weighting filter */
     /* This must be padded to a multiple of 4 for MMX to work */
     static const union
@@ -188,7 +192,8 @@ static void weighting_filter(int16_t x[40],
     e -= 5;
 
     /* Compute the signal x[0..39] */
-    for (k = 0; k < 40; k++) {
+    for (k = 0;  k < 40;  k++)
+    {
         L_result = 8192 >> 1;
 
         /* for (i = 0; i <= 10; i++)
@@ -199,23 +204,23 @@ static void weighting_filter(int16_t x[40],
          */
 
 #undef STEP
-#define STEP(i, H) (e[k + i] * (int32_t) H)
+#define STEP(i,H) (e[k + i] * (int32_t) H)
 
         /* Every one of these multiplications is done twice,
            but I don't see an elegant way to optimize this. 
            Do you?
         */
-        L_result += STEP(0, -134);
-        L_result += STEP(1, -374);
-        /* += STEP( 2,  0   ); */
-        L_result += STEP(3, 2054);
-        L_result += STEP(4, 5741);
-        L_result += STEP(5, 8192);
-        L_result += STEP(6, 5741);
-        L_result += STEP(7, 2054);
-        /* += STEP( 8,  0   ); */
-        L_result += STEP(9, -374);
-        L_result += STEP(10, -134);
+        L_result += STEP( 0,  -134);
+        L_result += STEP( 1,  -374);
+              /* += STEP( 2,  0   ); */
+        L_result += STEP( 3,  2054);
+        L_result += STEP( 4,  5741);
+        L_result += STEP( 5,  8192);
+        L_result += STEP( 6,  5741);
+        L_result += STEP( 7,  2054);
+              /* += STEP( 8,  0   ); */
+        L_result += STEP( 9,  -374);
+        L_result += STEP(10,  -134);
 
         /* 2 adds vs. >> 16 => 14, minus one shift to compensate for
            those we lost when replacing L_MULT by '*'. */
@@ -228,7 +233,8 @@ static void weighting_filter(int16_t x[40],
 /*- End of function --------------------------------------------------------*/
 
 /* 4.2.14 */
-static void rpe_grid_selection(int16_t x[40], int16_t xM[13], int16_t *Mc_out) {
+static void rpe_grid_selection(int16_t x[40], int16_t xM[13], int16_t *Mc_out)
+{
     int i;
     int32_t L_result;
     int32_t L_temp;
@@ -243,7 +249,7 @@ static void rpe_grid_selection(int16_t x[40], int16_t xM[13], int16_t *Mc_out) {
     Mc = 0;
 
 #undef STEP
-#define STEP(m, i)                           \
+#define STEP(m,i)                           \
     L_temp = x[m + 3*i] >> 2;               \
     L_result += L_temp*L_temp;
 
@@ -286,7 +292,8 @@ static void rpe_grid_selection(int16_t x[40], int16_t xM[13], int16_t *Mc_out) {
     STEP(1, 11);
     STEP(1, 12);
     L_result <<= 1;
-    if (L_result > EM) {
+    if (L_result > EM)
+    {
         Mc = 1;
         EM = L_result;
     }
@@ -309,7 +316,8 @@ static void rpe_grid_selection(int16_t x[40], int16_t xM[13], int16_t *Mc_out) {
     STEP(2, 11);
     STEP(2, 12);
     L_result <<= 1;
-    if (L_result > EM) {
+    if (L_result > EM)
+    {
         Mc = 2;
         EM = L_result;
     }
@@ -320,7 +328,8 @@ static void rpe_grid_selection(int16_t x[40], int16_t xM[13], int16_t *Mc_out) {
     L_result = L_common_0_3;
     STEP(3, 12);
     L_result <<= 1;
-    if (L_result > EM) {
+    if (L_result > EM)
+    {
         Mc = 3;
         EM = L_result;
     }
@@ -328,8 +337,8 @@ static void rpe_grid_selection(int16_t x[40], int16_t xM[13], int16_t *Mc_out) {
 
     /* Down-sampling by a factor 3 to get the selected xM[0..12]
        RPE sequence. */
-    for (i = 0; i < 13; i++)
-        xM[i] = x[Mc + 3 * i];
+    for (i = 0;  i < 13;  i++)
+        xM[i] = x[Mc + 3*i];
     /*endfor*/
     *Mc_out = Mc;
 }
@@ -338,7 +347,8 @@ static void rpe_grid_selection(int16_t x[40], int16_t xM[13], int16_t *Mc_out) {
 /* 4.12.15 */
 static void apcm_quantization_xmaxc_to_exp_mant(int16_t xmaxc,
                                                 int16_t *exp_out,
-                                                int16_t *mant_out) {
+                                                int16_t *mant_out)
+{
     int16_t exp;
     int16_t mant;
 
@@ -349,11 +359,15 @@ static void apcm_quantization_xmaxc_to_exp_mant(int16_t xmaxc,
     /*endif*/
     mant = xmaxc - (exp << 3);
 
-    if (mant == 0) {
+    if (mant == 0)
+    {
         exp = -4;
         mant = 7;
-    } else {
-        while (mant <= 7) {
+    }
+    else
+    {
+        while (mant <= 7)
+        {
             mant = (int16_t) (mant << 1 | 1);
             exp--;
         }
@@ -362,25 +376,25 @@ static void apcm_quantization_xmaxc_to_exp_mant(int16_t xmaxc,
     }
     /*endif*/
 
-    assert(exp >= -4 && exp <= 6);
-    assert(mant >= 0 && mant <= 7);
+    assert(exp >= -4  &&  exp <= 6);
+    assert(mant >= 0  &&  mant <= 7);
 
-    *exp_out = exp;
+    *exp_out  = exp;
     *mant_out = mant;
 }
-
 /*- End of function --------------------------------------------------------*/
 
 static void apcm_quantization(int16_t xM[13],
                               int16_t xMc[13],
                               int16_t *mant_out,
                               int16_t *exp_out,
-                              int16_t *xmaxc_out) {
+                              int16_t *xmaxc_out)
+{
     /* Table 4.5   Normalized inverse mantissa used to compute xM/xmax */
     static const int16_t gsm_NRFAC[8] =
-            {
-                    29128, 26215, 23832, 21846, 20165, 18725, 17476, 16384
-            };
+    {
+        29128, 26215, 23832, 21846, 20165, 18725, 17476, 16384
+    };
     int i;
     int itest;
     int16_t xmax;
@@ -393,7 +407,8 @@ static void apcm_quantization(int16_t xM[13],
 
     /* Find the maximum absolute value xmax of xM[0..12]. */
     xmax = 0;
-    for (i = 0; i < 13; i++) {
+    for (i = 0;  i < 13;  i++)
+    {
         temp = xM[i];
         temp = saturated_abs16(temp);
         if (temp > xmax)
@@ -407,7 +422,8 @@ static void apcm_quantization(int16_t xM[13],
     temp = xmax >> 9;
     itest = 0;
 
-    for (i = 0; i <= 5; i++) {
+    for (i = 0;  i <= 5;  i++)
+    {
         itest |= (temp <= 0);
         temp >>= 1;
 
@@ -418,10 +434,10 @@ static void apcm_quantization(int16_t xM[13],
     }
     /*endfor*/
 
-    assert(exp <= 6 && exp >= 0);
+    assert(exp <= 6  &&  exp >= 0);
     temp = (int16_t) (exp + 5);
 
-    assert(temp <= 11 && temp >= 0);
+    assert(temp <= 11  &&  temp >= 0);
     xmaxc = saturated_add16((xmax >> temp), exp << 3);
 
     /* Quantizing and coding of the xM[0..12] RPE sequence
@@ -438,14 +454,15 @@ static void apcm_quantization(int16_t xM[13],
        of the RPE samples.
     */
     /* Direct computation of xMc[0..12] using table 4.5 */
-    assert(exp <= 4096 && exp >= -4096);
-    assert(mant >= 0 && mant <= 7);
+    assert(exp <= 4096  &&  exp >= -4096);
+    assert(mant >= 0  &&  mant <= 7); 
 
     temp1 = (int16_t) (6 - exp);    /* Normalization by the exponent */
     temp2 = gsm_NRFAC[mant];        /* Inverse mantissa */
 
-    for (i = 0; i < 13; i++) {
-        assert(temp1 >= 0 && temp1 < 16);
+    for (i = 0;  i < 13;  i++)
+    {
+        assert(temp1 >= 0  &&  temp1 < 16);
 
         temp = xM[i] << temp1;
         temp = saturated_mul16(temp, temp2);
@@ -455,8 +472,8 @@ static void apcm_quantization(int16_t xM[13],
     /*endfor*/
 
     /* NOTE: This equation is used to make all the xMc[i] positive. */
-    *mant_out = mant;
-    *exp_out = exp;
+    *mant_out  = mant;
+    *exp_out   = exp;
     *xmaxc_out = xmaxc;
 }
 /*- End of function --------------------------------------------------------*/
@@ -465,12 +482,13 @@ static void apcm_quantization(int16_t xM[13],
 static void apcm_inverse_quantization(int16_t xMc[13],
                                       int16_t mant,
                                       int16_t exp,
-                                      int16_t xMp[13]) {
+                                      int16_t xMp[13])
+{
     /* Table 4.6   Normalized direct mantissa used to compute xM/xmax */
     static const int16_t gsm_FAC[8] =
-            {
-                    18431, 20479, 22527, 24575, 26623, 28671, 30719, 32767
-            };
+    {
+        18431, 20479, 22527, 24575, 26623, 28671, 30719, 32767
+    };
     int i;
     int16_t temp;
     int16_t temp1;
@@ -489,11 +507,12 @@ static void apcm_inverse_quantization(int16_t xMc[13],
     temp2 = saturated_sub16(6, exp);        /* See 4.2-15 for exp */
     temp3 = gsm_asl(1, saturated_sub16(temp2, 1));
 
-    for (i = 0; i < 13; i++) {
-        assert(xMc[i] >= 0 && xMc[i] <= 7);   /* 3 bit unsigned */
+    for (i = 0;  i < 13;  i++)
+    {
+        assert(xMc[i] >= 0  &&  xMc[i] <= 7);   /* 3 bit unsigned */
 
         temp = (int16_t) ((xMc[i] << 1) - 7);   /* Restore sign */
-        assert(temp <= 7 && temp >= -7);      /* 4 bit signed */
+        assert(temp <= 7  &&  temp >= -7);      /* 4 bit signed */
 
         temp <<= 12;                            /* 16 bit signed */
         temp = gsm_mult_r(temp1, temp);
@@ -507,7 +526,8 @@ static void apcm_inverse_quantization(int16_t xMc[13],
 /* 4.2.17 */
 static void rpe_grid_positioning(int16_t Mc,
                                  int16_t xMp[13],
-                                 int16_t ep[40]) {
+                                 int16_t ep[40])
+{
     int i = 13;
 
     /* This procedure computes the reconstructed long term residual signal
@@ -516,33 +536,36 @@ static void rpe_grid_positioning(int16_t Mc,
        RPE samples which are upsampled by a factor of 3 by inserting zero
        values.
     */
-    assert(0 <= Mc && Mc <= 3);
+    assert(0 <= Mc  &&  Mc <= 3);
 
-    switch (Mc) {
-        case 3:
+    switch (Mc)
+    {
+    case 3:
+        *ep++ = 0;
+    case 2:
+        do
+        {
             *ep++ = 0;
-        case 2:
-            do {
-                *ep++ = 0;
-                case 1:
-                    *ep++ = 0;
-                case 0:
-                    *ep++ = *xMp++;
-            } while (--i);
+    case 1:
+            *ep++ = 0;
+    case 0:
+            *ep++ = *xMp++;
+        }
+        while (--i);
     }
     /*endswitch*/
     while (++Mc < 4)
         *ep++ = 0;
     /*endwhile*/
 }
-
 /*- End of function --------------------------------------------------------*/
 
 void gsm0610_rpe_encoding(gsm0610_state_t *s,
                           int16_t *e,          // [-5..-1][0..39][40..44]
                           int16_t *xmaxc,
                           int16_t *Mc,
-                          int16_t xMc[13]) {
+                          int16_t xMc[13])
+{
     int16_t x[40];
     int16_t xM[13];
     int16_t xMp[13];
@@ -557,14 +580,14 @@ void gsm0610_rpe_encoding(gsm0610_state_t *s,
 
     rpe_grid_positioning(*Mc, xMp, e);
 }
-
 /*- End of function --------------------------------------------------------*/
 
 void gsm0610_rpe_decoding(gsm0610_state_t *s,
                           int16_t xmaxc,
                           int16_t Mcr,
                           int16_t xMcr[13],
-                          int16_t erp[40]) {
+                          int16_t erp[40])
+{
     int16_t exp;
     int16_t mant;
     int16_t xMp[13];

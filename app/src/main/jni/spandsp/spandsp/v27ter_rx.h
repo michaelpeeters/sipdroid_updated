@@ -64,8 +64,7 @@ extern "C"
     \param put_bit The callback routine used to put the received data.
     \param user_data An opaque pointer passed to the put_bit routine.
     \return A pointer to the modem context, or NULL if there was a problem. */
-SPAN_DECLARE(v27ter_rx_state_t * ) v27ter_rx_init(v27ter_rx_state_t * s , int bit_rate, put_bit_func_t
-put_bit , void *user_data ) ;
+SPAN_DECLARE(v27ter_rx_state_t *) v27ter_rx_init(v27ter_rx_state_t *s, int bit_rate, put_bit_func_t put_bit, void *user_data);
 
 /*! Reinitialise an existing V.27ter modem receive context.
     \brief Reinitialise an existing V.27ter modem receive context.
@@ -73,47 +72,39 @@ put_bit , void *user_data ) ;
     \param bit_rate The bit rate of the modem. Valid values are 2400 and 4800.
     \param old_train TRUE if a previous trained values are to be reused.
     \return 0 for OK, -1 for bad parameter */
-SPAN_DECLARE(int)
-v27ter_rx_restart(v27ter_rx_state_t * s , int bit_rate,
-int old_train ) ;
+SPAN_DECLARE(int) v27ter_rx_restart(v27ter_rx_state_t *s, int bit_rate, int old_train);
 
 /*! Release a V.27ter modem receive context.
     \brief Release a V.27ter modem receive context.
     \param s The modem context.
     \return 0 for OK */
-SPAN_DECLARE(int)
-v27ter_rx_release(v27ter_rx_state_t * s ) ;
+SPAN_DECLARE(int) v27ter_rx_release(v27ter_rx_state_t *s);
 
 /*! Free a V.27ter modem receive context.
     \brief Free a V.27ter modem receive context.
     \param s The modem context.
     \return 0 for OK */
-SPAN_DECLARE(int)
-v27ter_rx_free(v27ter_rx_state_t * s ) ;
+SPAN_DECLARE(int) v27ter_rx_free(v27ter_rx_state_t *s);
 
 /*! Get the logging context associated with a V.27ter modem receive context.
     \brief Get the logging context associated with a V.27ter modem receive context.
     \param s The modem context.
     \return A pointer to the logging context */
-SPAN_DECLARE(logging_state_t * ) v27ter_rx_get_logging_state(v27ter_rx_state_t * s ) ;
+SPAN_DECLARE(logging_state_t *) v27ter_rx_get_logging_state(v27ter_rx_state_t *s);
 
 /*! Change the put_bit function associated with a V.27ter modem receive context.
     \brief Change the put_bit function associated with a V.27ter modem receive context.
     \param s The modem context.
     \param put_bit The callback routine used to handle received bits.
     \param user_data An opaque pointer. */
-SPAN_DECLARE(void)
-v27ter_rx_set_put_bit(v27ter_rx_state_t * s , put_bit_func_t put_bit,
-void *user_data ) ;
+SPAN_DECLARE(void) v27ter_rx_set_put_bit(v27ter_rx_state_t *s, put_bit_func_t put_bit, void *user_data);
 
 /*! Change the modem status report function associated with a V.27ter modem receive context.
     \brief Change the modem status report function associated with a V.27ter modem receive context.
     \param s The modem context.
     \param handler The callback routine used to report modem status changes.
     \param user_data An opaque pointer. */
-SPAN_DECLARE(void)
-v27ter_rx_set_modem_status_handler(v27ter_rx_state_t * s , modem_rx_status_func_t handler,
-void *user_data ) ;
+SPAN_DECLARE(void) v27ter_rx_set_modem_status_handler(v27ter_rx_state_t *s, modem_rx_status_func_t handler, void *user_data);
 
 /*! Process a block of received V.27ter modem audio samples.
     \brief Process a block of received V.27ter modem audio samples.
@@ -122,9 +113,7 @@ void *user_data ) ;
     \param len The number of samples in the buffer.
     \return The number of samples unprocessed.
 */
-SPAN_DECLARE_NONSTD(int)
-v27ter_rx(v27ter_rx_state_t * s , const int16_t amp[],
-int len ) ;
+SPAN_DECLARE_NONSTD(int) v27ter_rx(v27ter_rx_state_t *s, const int16_t amp[], int len);
 
 /*! Fake processing of a missing block of received V.27ter modem audio samples.
     (e.g due to packet loss).
@@ -133,47 +122,39 @@ int len ) ;
     \param len The number of samples to fake.
     \return The number of samples unprocessed.
 */
-SPAN_DECLARE(int)
-v27ter_rx_fillin(v27ter_rx_state_t * s , int len ) ;
+SPAN_DECLARE(int) v27ter_rx_fillin(v27ter_rx_state_t *s, int len);
 
 /*! Get a snapshot of the current equalizer coefficients.
     \brief Get a snapshot of the current equalizer coefficients.
     \param coeffs The vector of complex coefficients.
     \return The number of coefficients in the vector. */
-SPAN_DECLARE(int)
-v27ter_rx_equalizer_state(v27ter_rx_state_t * s , complexf_t **coeffs ) ;
+SPAN_DECLARE(int) v27ter_rx_equalizer_state(v27ter_rx_state_t *s, complexf_t **coeffs);
 
 /*! Get the current received carrier frequency.
     \param s The modem context.
     \return The frequency, in Hertz. */
-SPAN_DECLARE(float)
-v27ter_rx_carrier_frequency(v27ter_rx_state_t * s ) ;
+SPAN_DECLARE(float) v27ter_rx_carrier_frequency(v27ter_rx_state_t *s);
 
 /*! Get the current symbol timing correction since startup.
     \param s The modem context.
     \return The correction. */
-SPAN_DECLARE(float)
-v27ter_rx_symbol_timing_correction(v27ter_rx_state_t * s ) ;
+SPAN_DECLARE(float) v27ter_rx_symbol_timing_correction(v27ter_rx_state_t *s);
 
 /*! Get a current received signal power.
     \param s The modem context.
     \return The signal power, in dBm0. */
-SPAN_DECLARE(float)
-v27ter_rx_signal_power(v27ter_rx_state_t * s ) ;
+SPAN_DECLARE(float) v27ter_rx_signal_power(v27ter_rx_state_t *s);
 
 /*! Set the power level at which the carrier detection will cut in
     \param s The modem context.
     \param cutoff The signal cutoff power, in dBm0. */
-SPAN_DECLARE(void)
-v27ter_rx_signal_cutoff(v27ter_rx_state_t * s , float cutoff ) ;
+SPAN_DECLARE(void) v27ter_rx_signal_cutoff(v27ter_rx_state_t *s, float cutoff);
 
 /*! Set a handler routine to process QAM status reports
     \param s The modem context.
     \param handler The handler routine.
     \param user_data An opaque pointer passed to the handler routine. */
-SPAN_DECLARE(void)
-v27ter_rx_set_qam_report_handler(v27ter_rx_state_t * s , qam_report_handler_t handler,
-void *user_data ) ;
+SPAN_DECLARE(void) v27ter_rx_set_qam_report_handler(v27ter_rx_state_t *s, qam_report_handler_t handler, void *user_data);
 
 #if defined(__cplusplus)
 }

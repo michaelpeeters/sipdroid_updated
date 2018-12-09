@@ -36,19 +36,22 @@
 
 #include <assert.h>
 #include <inttypes.h>
-
 #if defined(HAVE_TGMATH_H)
 #include <tgmath.h>
 #endif
 #if defined(HAVE_MATH_H)
 #include <math.h>
 #endif
-
+#include "floating_fudge.h"
 #include <stdlib.h>
 #include <memory.h>
 
+#include "spandsp/telephony.h"
+#include "spandsp/fast_convert.h"
+#include "spandsp/bitstream.h"
 #include "spandsp/bit_operations.h"
 #include "spandsp/saturated.h"
+#include "spandsp/vector_int.h"
 #include "spandsp/gsm0610.h"
 
 #include "gsm0610_local.h"
@@ -70,12 +73,14 @@
    (That's 'ffs', only from the left, not the right..)
 */
 
-int16_t gsm0610_norm(int32_t x) {
+int16_t gsm0610_norm(int32_t x)
+{
     assert(x != 0);
 
-    if (x < 0) {
+    if (x < 0)
+    {
         if (x <= -1073741824)
-            return 0;
+            return  0;
         /*endif*/
         x = ~x;
     }
@@ -92,7 +97,8 @@ int16_t gsm0610_norm(int32_t x) {
          which is the integer division of num by denom: with
          denom >= num > 0
 */
-static int16_t gsm_div(int16_t num, int16_t denom) {
+static int16_t gsm_div(int16_t num, int16_t denom)
+{
     int32_t num32;
     int32_t denom32;
     int16_t div;
@@ -102,19 +108,21 @@ static int16_t gsm_div(int16_t num, int16_t denom) {
        Although this is explicitly guarded against in 4.2.5,
        we assume that the result should then be zero as well. */
 
-    assert(num >= 0 && denom >= num);
+    assert(num >= 0  &&  denom >= num);
     if (num == 0)
-        return 0;
+        return  0;
     /*endif*/
     num32 = num;
     denom32 = denom;
     div = 0;
     k = 15;
-    while (k--) {
+    while (k--)
+    {
         div <<= 1;
         num32 <<= 1;
 
-        if (num32 >= denom32) {
+        if (num32 >= denom32)
+        {
             num32 -= denom32;
             div++;
         }
@@ -122,11 +130,11 @@ static int16_t gsm_div(int16_t num, int16_t denom) {
     }
     /*endwhile*/
 
-    return div;
+    return  div;
 }
 /*- End of function --------------------------------------------------------*/
 
-#if defined(__GNUC__) && defined(SPANDSP_USE_MMX)
+#if defined(__GNUC__)  &&  defined(SPANDSP_USE_MMX)
 static void gsm0610_vec_vsraw(const int16_t *p, int n, int bits)
 {
     static const int64_t ones = 0x0001000100010001LL;
@@ -266,26 +274,28 @@ static void gsm0610_vec_vsraw(const int16_t *p, int n, int bits)
 #endif
 
 /* 4.2.4 */
-static void autocorrelation(int16_t amp[GSM0610_FRAME_LEN], int32_t L_ACF[9]) {
+static void autocorrelation(int16_t amp[GSM0610_FRAME_LEN], int32_t L_ACF[9])
+{
     int k;
     int16_t smax;
     int16_t scalauto;
-#if !(defined(__GNUC__) && defined(SPANDSP_USE_MMX))
+#if !(defined(__GNUC__)  &&  defined(SPANDSP_USE_MMX))
     int i;
     int temp;
     int16_t *sp;
     int16_t sl;
 #endif
-
+    
     /* The goal is to compute the array L_ACF[k].  The signal s[i] must
        be scaled in order to avoid an overflow situation. */
 
     /* Dynamic scaling of the array  s[0..159] */
     /* Search for the maximum. */
-#if defined(__GNUC__) && defined(SPANDSP_USE_MMX)
+#if defined(__GNUC__)  &&  defined(SPANDSP_USE_MMX)
     smax = saturate(vec_min_maxi16(amp, GSM0610_FRAME_LEN, NULL));
 #else
-    for (smax = 0, k = 0; k < GSM0610_FRAME_LEN; k++) {
+    for (smax = 0, k = 0;  k < GSM0610_FRAME_LEN;  k++)
+    {
         temp = saturated_abs16(amp[k]);
         if (temp > smax)
             smax = (int16_t) temp;
@@ -295,22 +305,26 @@ static void autocorrelation(int16_t amp[GSM0610_FRAME_LEN], int32_t L_ACF[9]) {
 #endif
 
     /* Computation of the scaling factor. */
-    if (smax == 0) {
+    if (smax == 0)
+    {
         scalauto = 0;
-    } else {
+    }
+    else
+    {
         assert(smax > 0);
         scalauto = (int16_t) (4 - gsm0610_norm((int32_t) smax << 16));
     }
     /*endif*/
 
     /* Scaling of the array s[0...159] */
-#if defined(__GNUC__) && defined(SPANDSP_USE_MMX)
+#if defined(__GNUC__)  &&  defined(SPANDSP_USE_MMX)
     if (scalauto > 0)
         gsm0610_vec_vsraw(amp, GSM0610_FRAME_LEN, scalauto);
     /*endif*/
 #else
-    if (scalauto > 0) {
-        for (k = 0; k < GSM0610_FRAME_LEN; k++)
+    if (scalauto > 0)
+    {
+        for (k = 0;  k < GSM0610_FRAME_LEN;  k++)
             amp[k] = gsm_mult_r(amp[k], 16384 >> (scalauto - 1));
         /*endfor*/
     }
@@ -318,87 +332,89 @@ static void autocorrelation(int16_t amp[GSM0610_FRAME_LEN], int32_t L_ACF[9]) {
 #endif
 
     /* Compute the L_ACF[..]. */
-#if defined(__GNUC__) && defined(SPANDSP_USE_MMX)
+#if defined(__GNUC__)  &&  defined(SPANDSP_USE_MMX)
     for (k = 0;  k < 9;  k++)
         L_ACF[k] = vec_dot_prodi16(amp, amp + k, GSM0610_FRAME_LEN - k) << 1;
     /*endfor*/
 #else
     sp = amp;
     sl = *sp;
-    L_ACF[0] = ((int32_t) sl * (int32_t) sp[0]);
+    L_ACF[0] = ((int32_t) sl*(int32_t) sp[0]);
     sl = *++sp;
-    L_ACF[0] += ((int32_t) sl * (int32_t) sp[0]);
-    L_ACF[1] = ((int32_t) sl * (int32_t) sp[-1]);
+    L_ACF[0] += ((int32_t) sl*(int32_t) sp[0]);
+    L_ACF[1] = ((int32_t) sl*(int32_t) sp[-1]);
     sl = *++sp;
-    L_ACF[0] += ((int32_t) sl * (int32_t) sp[0]);
-    L_ACF[1] += ((int32_t) sl * (int32_t) sp[-1]);
-    L_ACF[2] = ((int32_t) sl * (int32_t) sp[-2]);
+    L_ACF[0] += ((int32_t) sl*(int32_t) sp[0]);
+    L_ACF[1] += ((int32_t) sl*(int32_t) sp[-1]);
+    L_ACF[2] = ((int32_t) sl*(int32_t) sp[-2]);
     sl = *++sp;
-    L_ACF[0] += ((int32_t) sl * (int32_t) sp[0]);
-    L_ACF[1] += ((int32_t) sl * (int32_t) sp[-1]);
-    L_ACF[2] += ((int32_t) sl * (int32_t) sp[-2]);
-    L_ACF[3] = ((int32_t) sl * (int32_t) sp[-3]);
+    L_ACF[0] += ((int32_t) sl*(int32_t) sp[0]);
+    L_ACF[1] += ((int32_t) sl*(int32_t) sp[-1]);
+    L_ACF[2] += ((int32_t) sl*(int32_t) sp[-2]);
+    L_ACF[3] = ((int32_t) sl*(int32_t) sp[-3]);
     sl = *++sp;
-    L_ACF[0] += ((int32_t) sl * (int32_t) sp[0]);
-    L_ACF[1] += ((int32_t) sl * (int32_t) sp[-1]);
-    L_ACF[2] += ((int32_t) sl * (int32_t) sp[-2]);
-    L_ACF[3] += ((int32_t) sl * (int32_t) sp[-3]);
-    L_ACF[4] = ((int32_t) sl * (int32_t) sp[-4]);
+    L_ACF[0] += ((int32_t) sl*(int32_t) sp[0]);
+    L_ACF[1] += ((int32_t) sl*(int32_t) sp[-1]);
+    L_ACF[2] += ((int32_t) sl*(int32_t) sp[-2]);
+    L_ACF[3] += ((int32_t) sl*(int32_t) sp[-3]);
+    L_ACF[4] = ((int32_t) sl*(int32_t) sp[-4]);
     sl = *++sp;
-    L_ACF[0] += ((int32_t) sl * (int32_t) sp[0]);
-    L_ACF[1] += ((int32_t) sl * (int32_t) sp[-1]);
-    L_ACF[2] += ((int32_t) sl * (int32_t) sp[-2]);
-    L_ACF[3] += ((int32_t) sl * (int32_t) sp[-3]);
-    L_ACF[4] += ((int32_t) sl * (int32_t) sp[-4]);
-    L_ACF[5] = ((int32_t) sl * (int32_t) sp[-5]);
+    L_ACF[0] += ((int32_t) sl*(int32_t) sp[0]);
+    L_ACF[1] += ((int32_t) sl*(int32_t) sp[-1]);
+    L_ACF[2] += ((int32_t) sl*(int32_t) sp[-2]);
+    L_ACF[3] += ((int32_t) sl*(int32_t) sp[-3]);
+    L_ACF[4] += ((int32_t) sl*(int32_t) sp[-4]);
+    L_ACF[5] = ((int32_t) sl*(int32_t) sp[-5]);
     sl = *++sp;
-    L_ACF[0] += ((int32_t) sl * (int32_t) sp[0]);
-    L_ACF[1] += ((int32_t) sl * (int32_t) sp[-1]);
-    L_ACF[2] += ((int32_t) sl * (int32_t) sp[-2]);
-    L_ACF[3] += ((int32_t) sl * (int32_t) sp[-3]);
-    L_ACF[4] += ((int32_t) sl * (int32_t) sp[-4]);
-    L_ACF[5] += ((int32_t) sl * (int32_t) sp[-5]);
-    L_ACF[6] = ((int32_t) sl * (int32_t) sp[-6]);
+    L_ACF[0] += ((int32_t) sl*(int32_t) sp[0]);
+    L_ACF[1] += ((int32_t) sl*(int32_t) sp[-1]);
+    L_ACF[2] += ((int32_t) sl*(int32_t) sp[-2]);
+    L_ACF[3] += ((int32_t) sl*(int32_t) sp[-3]);
+    L_ACF[4] += ((int32_t) sl*(int32_t) sp[-4]);
+    L_ACF[5] += ((int32_t) sl*(int32_t) sp[-5]);
+    L_ACF[6] = ((int32_t) sl*(int32_t) sp[-6]);
     sl = *++sp;
-    L_ACF[0] += ((int32_t) sl * (int32_t) sp[0]);
-    L_ACF[1] += ((int32_t) sl * (int32_t) sp[-1]);
-    L_ACF[2] += ((int32_t) sl * (int32_t) sp[-2]);
-    L_ACF[3] += ((int32_t) sl * (int32_t) sp[-3]);
-    L_ACF[4] += ((int32_t) sl * (int32_t) sp[-4]);
-    L_ACF[5] += ((int32_t) sl * (int32_t) sp[-5]);
-    L_ACF[6] += ((int32_t) sl * (int32_t) sp[-6]);
-    L_ACF[7] = ((int32_t) sl * (int32_t) sp[-7]);
+    L_ACF[0] += ((int32_t) sl*(int32_t) sp[0]);
+    L_ACF[1] += ((int32_t) sl*(int32_t) sp[-1]);
+    L_ACF[2] += ((int32_t) sl*(int32_t) sp[-2]);
+    L_ACF[3] += ((int32_t) sl*(int32_t) sp[-3]);
+    L_ACF[4] += ((int32_t) sl*(int32_t) sp[-4]);
+    L_ACF[5] += ((int32_t) sl*(int32_t) sp[-5]);
+    L_ACF[6] += ((int32_t) sl*(int32_t) sp[-6]);
+    L_ACF[7] = ((int32_t) sl*(int32_t) sp[-7]);
     sl = *++sp;
-    L_ACF[0] += ((int32_t) sl * (int32_t) sp[0]);
-    L_ACF[1] += ((int32_t) sl * (int32_t) sp[-1]);
-    L_ACF[2] += ((int32_t) sl * (int32_t) sp[-2]);
-    L_ACF[3] += ((int32_t) sl * (int32_t) sp[-3]);
-    L_ACF[4] += ((int32_t) sl * (int32_t) sp[-4]);
-    L_ACF[5] += ((int32_t) sl * (int32_t) sp[-5]);
-    L_ACF[6] += ((int32_t) sl * (int32_t) sp[-6]);
-    L_ACF[7] += ((int32_t) sl * (int32_t) sp[-7]);
-    L_ACF[8] = ((int32_t) sl * (int32_t) sp[-8]);
-    for (i = 9; i < GSM0610_FRAME_LEN; i++) {
+    L_ACF[0] += ((int32_t) sl*(int32_t) sp[0]);
+    L_ACF[1] += ((int32_t) sl*(int32_t) sp[-1]);
+    L_ACF[2] += ((int32_t) sl*(int32_t) sp[-2]);
+    L_ACF[3] += ((int32_t) sl*(int32_t) sp[-3]);
+    L_ACF[4] += ((int32_t) sl*(int32_t) sp[-4]);
+    L_ACF[5] += ((int32_t) sl*(int32_t) sp[-5]);
+    L_ACF[6] += ((int32_t) sl*(int32_t) sp[-6]);
+    L_ACF[7] += ((int32_t) sl*(int32_t) sp[-7]);
+    L_ACF[8] = ((int32_t) sl*(int32_t) sp[-8]);
+    for (i = 9;  i < GSM0610_FRAME_LEN;  i++)
+    {
         sl = *++sp;
-        L_ACF[0] += ((int32_t) sl * (int32_t) sp[0]);
-        L_ACF[1] += ((int32_t) sl * (int32_t) sp[-1]);
-        L_ACF[2] += ((int32_t) sl * (int32_t) sp[-2]);
-        L_ACF[3] += ((int32_t) sl * (int32_t) sp[-3]);
-        L_ACF[4] += ((int32_t) sl * (int32_t) sp[-4]);
-        L_ACF[5] += ((int32_t) sl * (int32_t) sp[-5]);
-        L_ACF[6] += ((int32_t) sl * (int32_t) sp[-6]);
-        L_ACF[7] += ((int32_t) sl * (int32_t) sp[-7]);
-        L_ACF[8] += ((int32_t) sl * (int32_t) sp[-8]);
+        L_ACF[0] += ((int32_t) sl*(int32_t) sp[0]);
+        L_ACF[1] += ((int32_t) sl*(int32_t) sp[-1]);
+        L_ACF[2] += ((int32_t) sl*(int32_t) sp[-2]);
+        L_ACF[3] += ((int32_t) sl*(int32_t) sp[-3]);
+        L_ACF[4] += ((int32_t) sl*(int32_t) sp[-4]);
+        L_ACF[5] += ((int32_t) sl*(int32_t) sp[-5]);
+        L_ACF[6] += ((int32_t) sl*(int32_t) sp[-6]);
+        L_ACF[7] += ((int32_t) sl*(int32_t) sp[-7]);
+        L_ACF[8] += ((int32_t) sl*(int32_t) sp[-8]);
     }
     /*endfor*/
-    for (k = 0; k < 9; k++)
+    for (k = 0;  k < 9;  k++)
         L_ACF[k] <<= 1;
     /*endfor*/
 #endif
     /* Rescaling of the array s[0..159] */
-    if (scalauto > 0) {
-        assert(scalauto <= 4);
-        for (k = 0; k < GSM0610_FRAME_LEN; k++)
+    if (scalauto > 0)
+    {
+        assert(scalauto <= 4); 
+        for (k = 0;  k < GSM0610_FRAME_LEN;  k++)
             amp[k] <<= scalauto;
         /*endfor*/
     }
@@ -407,7 +423,8 @@ static void autocorrelation(int16_t amp[GSM0610_FRAME_LEN], int32_t L_ACF[9]) {
 /*- End of function --------------------------------------------------------*/
 
 /* 4.2.5 */
-static void reflection_coefficients(int32_t L_ACF[9], int16_t r[8]) {
+static void reflection_coefficients(int32_t L_ACF[9], int16_t r[8])
+{
     int i;
     int m;
     int n;
@@ -417,8 +434,10 @@ static void reflection_coefficients(int32_t L_ACF[9], int16_t r[8]) {
     int16_t K[9];
 
     /* Schur recursion with 16 bits arithmetic. */
-    if (L_ACF[0] == 0) {
-        for (i = 8; i--; *r++ = 0);
+    if (L_ACF[0] == 0)
+    {
+        for (i = 8;  i--;  *r++ = 0)
+            ;
         /*endfor*/
         return;
     }
@@ -427,26 +446,28 @@ static void reflection_coefficients(int32_t L_ACF[9], int16_t r[8]) {
     assert(L_ACF[0] != 0);
     temp = gsm0610_norm(L_ACF[0]);
 
-    assert(temp >= 0 && temp < 32);
+    assert(temp >= 0  &&  temp < 32);
 
     /* ? overflow ? */
-    for (i = 0; i <= 8; i++)
+    for (i = 0;  i <= 8;  i++)
         ACF[i] = (int16_t) ((L_ACF[i] << temp) >> 16);
     /*endfor*/
 
     /* Initialize array P[..] and K[..] for the recursion. */
-    for (i = 1; i <= 7; i++)
+    for (i = 1;  i <= 7;  i++)
         K[i] = ACF[i];
     /*endfor*/
-    for (i = 0; i <= 8; i++)
+    for (i = 0;  i <= 8;  i++)
         P[i] = ACF[i];
     /*endfor*/
     /* Compute reflection coefficients */
-    for (n = 1; n <= 8; n++, r++) {
+    for (n = 1;  n <= 8;  n++, r++)
+    {
         temp = P[1];
         temp = saturated_abs16(temp);
-        if (P[0] < temp) {
-            for (i = n; i <= 8; i++)
+        if (P[0] < temp)
+        {
+            for (i = n;  i <= 8;  i++)
                 *r++ = 0;
             /*endfor*/
             return;
@@ -461,14 +482,15 @@ static void reflection_coefficients(int32_t L_ACF[9], int16_t r[8]) {
         /*endif*/
         assert(*r != INT16_MIN);
         if (n == 8)
-            return;
+            return; 
         /*endif*/
 
         /* Schur recursion */
         temp = gsm_mult_r(P[1], *r);
         P[0] = saturated_add16(P[0], temp);
 
-        for (m = 1; m <= 8 - n; m++) {
+        for (m = 1;  m <= 8 - n;  m++)
+        {
             temp = gsm_mult_r(K[m], *r);
             P[m] = saturated_add16(P[m + 1], temp);
 
@@ -482,7 +504,8 @@ static void reflection_coefficients(int32_t L_ACF[9], int16_t r[8]) {
 /*- End of function --------------------------------------------------------*/
 
 /* 4.2.6 */
-static void transform_to_log_area_ratios(int16_t r[8]) {
+static void transform_to_log_area_ratios(int16_t r[8])
+{
     int16_t temp;
     int i;
 
@@ -494,23 +517,29 @@ static void transform_to_log_area_ratios(int16_t r[8]) {
     */
 
     /* Computation of the LAR[0..7] from the r[0..7] */
-    for (i = 1; i <= 8; i++, r++) {
+    for (i = 1;  i <= 8;  i++, r++)
+    {
         temp = saturated_abs16(*r);
         assert(temp >= 0);
 
-        if (temp < 22118) {
+        if (temp < 22118)
+        {
             temp >>= 1;
-        } else if (temp < 31130) {
+        }
+        else if (temp < 31130)
+        {
             assert(temp >= 11059);
             temp -= 11059;
-        } else {
+        }
+        else
+        {
             assert(temp >= 26112);
             temp -= 26112;
             temp <<= 2;
         }
         /*endif*/
 
-        *r = (*r < 0) ? -temp : temp;
+        *r = (*r < 0)  ?  -temp  :  temp;
         assert(*r != INT16_MIN);
     }
     /*endfor*/
@@ -518,7 +547,8 @@ static void transform_to_log_area_ratios(int16_t r[8]) {
 /*- End of function --------------------------------------------------------*/
 
 /* 4.2.7 */
-static void quantization_and_coding(int16_t LAR[8]) {
+static void quantization_and_coding(int16_t LAR[8])
+{
     int16_t temp;
 
     /* This procedure needs four tables; the following equations
@@ -530,7 +560,7 @@ static void quantization_and_coding(int16_t LAR[8]) {
        MIC[0..7] = minimum of the LARc[0..7] */
 
 #undef STEP
-#define STEP(A, B, MAC, MIC)                                       \
+#define STEP(A,B,MAC,MIC)                                       \
         temp = saturated_mul16(A, *LAR);                        \
         temp = saturated_add16(temp, B);                        \
         temp = saturated_add16(temp, 256);                      \
@@ -542,23 +572,23 @@ static void quantization_and_coding(int16_t LAR[8]) {
                          ((temp < MIC)  ?  0  :  temp - MIC));  \
         LAR++;
 
-    STEP(20480, 0, 31, -32);
-    STEP(20480, 0, 31, -32);
-    STEP(20480, 2048, 15, -16);
-    STEP(20480, -2560, 15, -16);
+    STEP(20480,     0,  31, -32);
+    STEP(20480,     0,  31, -32);
+    STEP(20480,  2048,  15, -16);
+    STEP(20480, -2560,  15, -16);
 
-    STEP(13964, 94, 7, -8);
-    STEP(15360, -1792, 7, -8);
-    STEP(8534, -341, 3, -4);
-    STEP(9036, -1144, 3, -4);
+    STEP(13964,    94,   7,  -8);
+    STEP(15360, -1792,   7,  -8);
+    STEP( 8534,  -341,   3,  -4);
+    STEP( 9036, -1144,   3,  -4);
 #undef STEP
 }
-
 /*- End of function --------------------------------------------------------*/
 
 void gsm0610_lpc_analysis(gsm0610_state_t *s,
                           int16_t amp[GSM0610_FRAME_LEN],
-                          int16_t LARc[8]) {
+                          int16_t LARc[8])
+{
     int32_t L_ACF[9];
 
     autocorrelation(amp, L_ACF);

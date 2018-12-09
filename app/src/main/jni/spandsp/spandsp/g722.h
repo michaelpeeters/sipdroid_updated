@@ -50,7 +50,8 @@ codec is considerably faster, and still fully compatible with wideband terminals
 ???.
 */
 
-enum {
+enum
+{
     G722_SAMPLE_RATE_8000 = 0x0001,
     G722_PACKED = 0x0002
 };
@@ -76,29 +77,17 @@ extern "C"
            The valid rates are 64000, 56000 and 48000.
     \param options
     \return A pointer to the G.722 encode context, or NULL for error. */
-SPAN_DECLARE(g722_encode_state_t
-*)
-g722_encode_init(g722_encode_state_t
-*s,
-int rate,
-int options
-);
+SPAN_DECLARE(g722_encode_state_t *) g722_encode_init(g722_encode_state_t *s, int rate, int options);
 
 /*! Release a G.722 encode context.
     \param s The G.722 encode context.
     \return 0 for OK. */
-SPAN_DECLARE(int)
-
-g722_encode_release(g722_encode_state_t
-*s);
+SPAN_DECLARE(int) g722_encode_release(g722_encode_state_t *s);
 
 /*! Free a G.722 encode context.
     \param s The G.722 encode context.
     \return 0 for OK. */
-SPAN_DECLARE(int)
-
-g722_encode_free(g722_encode_state_t
-*s);
+SPAN_DECLARE(int) g722_encode_free(g722_encode_state_t *s);
 
 /*! Encode a buffer of linear PCM data to G.722
     \param s The G.722 context.
@@ -106,14 +95,7 @@ g722_encode_free(g722_encode_state_t
     \param amp The audio sample buffer.
     \param len The number of samples in the buffer.
     \return The number of bytes of G.722 data produced. */
-SPAN_DECLARE(int)
-
-g722_encode(g722_encode_state_t
-*s,
-uint8_t g722_data[],
-const int16_t amp[],
-int len
-);
+SPAN_DECLARE(int) g722_encode(g722_encode_state_t *s, uint8_t g722_data[], const int16_t amp[], int len);
 
 /*! Initialise an G.722 decode context.
     \param s The G.722 decode context.
@@ -121,29 +103,17 @@ int len
            The valid rates are 64000, 56000 and 48000.
     \param options
     \return A pointer to the G.722 decode context, or NULL for error. */
-SPAN_DECLARE(g722_decode_state_t
-*)
-g722_decode_init(g722_decode_state_t
-*s,
-int rate,
-int options
-);
+SPAN_DECLARE(g722_decode_state_t *) g722_decode_init(g722_decode_state_t *s, int rate, int options);
 
 /*! Release a G.722 decode context.
     \param s The G.722 decode context.
     \return 0 for OK. */
-SPAN_DECLARE(int)
-
-g722_decode_release(g722_decode_state_t
-*s);
+SPAN_DECLARE(int) g722_decode_release(g722_decode_state_t *s);
 
 /*! Free a G.722 decode context.
     \param s The G.722 decode context.
     \return 0 for OK. */
-SPAN_DECLARE(int)
-
-g722_decode_free(g722_decode_state_t
-*s);
+SPAN_DECLARE(int) g722_decode_free(g722_decode_state_t *s);
 
 /*! Decode a buffer of G.722 data to linear PCM.
     \param s The G.722 context.
@@ -151,14 +121,7 @@ g722_decode_free(g722_decode_state_t
     \param g722_data
     \param len
     \return The number of samples returned. */
-SPAN_DECLARE(int)
-
-g722_decode(g722_decode_state_t
-*s,
-int16_t amp[],
-const uint8_t g722_data[],
-int len
-);
+SPAN_DECLARE(int) g722_decode(g722_decode_state_t *s, int16_t amp[], const uint8_t g722_data[], int len);
 
 #if defined(__cplusplus)
 }

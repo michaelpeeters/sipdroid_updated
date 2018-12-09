@@ -37,34 +37,35 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 /* Coefficients for coarsest 2-fold resampling */
-static SKP_int16 A20cst[1] = {3786};
-static SKP_int16 A21cst[1] = {17908};
+static SKP_int16 A20cst[ 1 ] = {  3786 };
+static SKP_int16 A21cst[ 1 ] = { 17908 };
 
 /* Downsample by a factor 2, coarsest */
 void SKP_Silk_resample_1_2_coarsest(
-        const SKP_int16 *in,                /* I:   16 kHz signal [2*len]   */
-        SKP_int32 *S,                 /* I/O: State vector [2]        */
-        SKP_int16 *out,               /* O:   8 kHz signal [len]      */
-        SKP_int32 *scratch,           /* I:   Scratch memory [3*len]  */
-        const SKP_int32 len                 /* I:   Number of OUTPUT samples*/
-) {
+    const SKP_int16     *in,                /* I:   16 kHz signal [2*len]   */
+    SKP_int32           *S,                 /* I/O: State vector [2]        */
+    SKP_int16           *out,               /* O:   8 kHz signal [len]      */
+    SKP_int32           *scratch,           /* I:   Scratch memory [3*len]  */
+    const SKP_int32     len                 /* I:   Number of OUTPUT samples*/
+)
+{
     SKP_int32 k, idx;
 
     /* De-interleave allpass inputs, and convert Q15 -> Q25 */
-    for (k = 0; k < len; k++) {
-        idx = SKP_LSHIFT(k, 1);
-        scratch[k] = SKP_LSHIFT((SKP_int32) in[idx], 10);
-        scratch[k + len] = SKP_LSHIFT((SKP_int32) in[idx + 1], 10);
+    for( k = 0; k < len; k++ ) {
+        idx = SKP_LSHIFT( k, 1 );
+        scratch[ k ]       = SKP_LSHIFT( (SKP_int32)in[ idx     ], 10 );
+        scratch[ k + len ] = SKP_LSHIFT( (SKP_int32)in[ idx + 1 ], 10 );
     }
 
-    idx = SKP_LSHIFT(len, 1);
+    idx = SKP_LSHIFT( len, 1 );
     /* Allpass filters */
-    SKP_Silk_allpass_int(scratch, S, A21cst[0], scratch + idx, len);
-    SKP_Silk_allpass_int(scratch + len, S + 1, A20cst[0], scratch, len);
+    SKP_Silk_allpass_int( scratch,       S,     A21cst[ 0 ], scratch + idx, len );
+    SKP_Silk_allpass_int( scratch + len, S + 1, A20cst[ 0 ], scratch,       len );
 
     /* Add two allpass outputs */
-    for (k = 0; k < len; k++) {
-        out[k] = (SKP_int16) SKP_SAT16(SKP_RSHIFT_ROUND(scratch[k] + scratch[k + idx], 11));
+    for( k = 0; k < len; k++ ) {
+        out[ k ] = (SKP_int16)SKP_SAT16( SKP_RSHIFT_ROUND( scratch[ k ] + scratch[ k + idx ], 11 ) );
     }
 }
 

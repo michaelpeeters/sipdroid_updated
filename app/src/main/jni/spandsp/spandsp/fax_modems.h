@@ -30,7 +30,8 @@
 #if !defined(_SPANDSP_FAX_MODEMS_H_)
 #define _SPANDSP_FAX_MODEMS_H_
 
-enum {
+enum
+{
     FAX_MODEM_NONE = -1,
     FAX_MODEM_FLUSH = 0,
     FAX_MODEM_SILENCE_TX,
@@ -59,41 +60,28 @@ extern "C"
 #endif
 
 /* N.B. the following are currently a work in progress */
-SPAN_DECLARE(int)
-fax_modems_v17_v21_rx(void *user_data, const int16_t amp[], int len);
-SPAN_DECLARE(int)
-fax_modems_v27ter_v21_rx(void *user_data, const int16_t amp[], int len);
-SPAN_DECLARE(int)
-fax_modems_v29_v21_rx(void *user_data, const int16_t amp[], int len);
-SPAN_DECLARE(int)
-fax_modems_v17_v21_rx_fillin(void *user_data, int len);
-SPAN_DECLARE(int)
-fax_modems_v27ter_v21_rx_fillin(void *user_data, int len);
-SPAN_DECLARE(int)
-fax_modems_v29_v21_rx_fillin(void *user_data, int len);
-SPAN_DECLARE(void)
-fax_modems_start_rx_modem(fax_modems_state_t * s , int which ) ;
+SPAN_DECLARE(int) fax_modems_v17_v21_rx(void *user_data, const int16_t amp[], int len);
+SPAN_DECLARE(int) fax_modems_v27ter_v21_rx(void *user_data, const int16_t amp[], int len);
+SPAN_DECLARE(int) fax_modems_v29_v21_rx(void *user_data, const int16_t amp[], int len);
+SPAN_DECLARE(int) fax_modems_v17_v21_rx_fillin(void *user_data, int len);
+SPAN_DECLARE(int) fax_modems_v27ter_v21_rx_fillin(void *user_data, int len);
+SPAN_DECLARE(int) fax_modems_v29_v21_rx_fillin(void *user_data, int len);
+SPAN_DECLARE(void) fax_modems_start_rx_modem(fax_modems_state_t *s, int which);
 
-SPAN_DECLARE(void)
-fax_modems_set_tep_mode(fax_modems_state_t * s , int use_tep ) ;
+SPAN_DECLARE(void) fax_modems_set_tep_mode(fax_modems_state_t *s, int use_tep);
 
-SPAN_DECLARE(fax_modems_state_t * ) fax_modems_init(fax_modems_state_t * s ,
-int use_tep,
-        hdlc_frame_handler_t
-hdlc_accept ,
-hdlc_underflow_handler_t hdlc_tx_underflow,
-        put_bit_func_t
-non_ecm_put_bit ,
-get_bit_func_t non_ecm_get_bit,
-        tone_report_func_t
-tone_callback ,
-void *user_data ) ;
+SPAN_DECLARE(fax_modems_state_t *) fax_modems_init(fax_modems_state_t *s,
+                                                   int use_tep,
+                                                   hdlc_frame_handler_t hdlc_accept,
+                                                   hdlc_underflow_handler_t hdlc_tx_underflow,
+                                                   put_bit_func_t non_ecm_put_bit,
+                                                   get_bit_func_t non_ecm_get_bit,
+                                                   tone_report_func_t tone_callback,
+                                                   void *user_data);
 
-SPAN_DECLARE(int)
-fax_modems_release(fax_modems_state_t * s ) ;
+SPAN_DECLARE(int) fax_modems_release(fax_modems_state_t *s);
 
-SPAN_DECLARE(int)
-fax_modems_free(fax_modems_state_t * s ) ;
+SPAN_DECLARE(int) fax_modems_free(fax_modems_state_t *s);
 
 #if defined(__cplusplus)
 }

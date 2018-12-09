@@ -35,21 +35,25 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
 #if defined(HAVE_TGMATH_H)
 #include <tgmath.h>
 #endif
 #if defined(HAVE_MATH_H)
 #include <math.h>
 #endif
+#include <assert.h>
+
+#include "floating_fudge.h"
+#include "mmx_sse_decs.h"
 
 #include "spandsp/telephony.h"
 #include "spandsp/vector_int.h"
 
-SPAN_DECLARE(int32_t) vec_dot_prodi16(const int16_t x[], const int16_t y[], int n) {
+SPAN_DECLARE(int32_t) vec_dot_prodi16(const int16_t x[], const int16_t y[], int n)
+{
     int32_t z;
 
-#if defined(__GNUC__) && defined(SPANDSP_USE_MMX) && defined(__x86_64__)
+#if defined(__GNUC__)  &&  defined(SPANDSP_USE_MMX)  &&  defined(__x86_64__)
     __asm__ __volatile__(
         " emms;\n"
         " pxor %%mm0,%%mm0;\n"
@@ -147,7 +151,7 @@ SPAN_DECLARE(int32_t) vec_dot_prodi16(const int16_t x[], const int16_t y[], int 
         : "S" (x), "D" (y), "a" (n)
         : "cc"
     );
-#elif defined(__GNUC__) && defined(SPANDSP_USE_MMX) && defined(__i386__)
+#elif defined(__GNUC__)  &&  defined(SPANDSP_USE_MMX)  &&  defined(__i386__)
     __asm__ __volatile__(
         " emms;\n"
         " pxor %%mm0,%%mm0;\n"
@@ -249,15 +253,15 @@ SPAN_DECLARE(int32_t) vec_dot_prodi16(const int16_t x[], const int16_t y[], int 
     int i;
 
     z = 0;
-    for (i = 0; i < n; i++)
-        z += (int32_t) x[i] * (int32_t) y[i];
+    for (i = 0;  i < n;  i++)
+        z += (int32_t) x[i]*(int32_t) y[i];
 #endif
     return z;
 }
 /*- End of function --------------------------------------------------------*/
 
-SPAN_DECLARE(int32_t)
-vec_circular_dot_prodi16(const int16_t x[], const int16_t y[], int n, int pos) {
+SPAN_DECLARE(int32_t) vec_circular_dot_prodi16(const int16_t x[], const int16_t y[], int n, int pos)
+{
     int32_t z;
 
     z = vec_dot_prodi16(&x[pos], &y[0], n - pos);
@@ -266,23 +270,25 @@ vec_circular_dot_prodi16(const int16_t x[], const int16_t y[], int n, int pos) {
 }
 /*- End of function --------------------------------------------------------*/
 
-SPAN_DECLARE(void) vec_lmsi16(const int16_t x[], int16_t y[], int n, int16_t error) {
+SPAN_DECLARE(void) vec_lmsi16(const int16_t x[], int16_t y[], int n, int16_t error)
+{
     int i;
 
-    for (i = 0; i < n; i++)
-        y[i] += (int16_t) (((int32_t) x[i] * (int32_t) error) >> 15);
+    for (i = 0;  i < n;  i++)
+        y[i] += (int16_t) (((int32_t) x[i]*(int32_t) error) >> 15);
 }
 /*- End of function --------------------------------------------------------*/
 
-SPAN_DECLARE(void)
-vec_circular_lmsi16(const int16_t x[], int16_t y[], int n, int pos, int16_t error) {
+SPAN_DECLARE(void) vec_circular_lmsi16(const int16_t x[], int16_t y[], int n, int pos, int16_t error)
+{
     vec_lmsi16(&x[pos], &y[0], n - pos, error);
     vec_lmsi16(&x[0], &y[n - pos], pos, error);
 }
 /*- End of function --------------------------------------------------------*/
 
-SPAN_DECLARE(int32_t) vec_min_maxi16(const int16_t x[], int n, int16_t out[]) {
-#if defined(__GNUC__) && defined(SPANDSP_USE_MMX) && defined(__x86_64__)
+SPAN_DECLARE(int32_t) vec_min_maxi16(const int16_t x[], int n, int16_t out[])
+{
+#if defined(__GNUC__)  &&  defined(SPANDSP_USE_MMX)  &&  defined(__x86_64__)
     static const int32_t lower_bound = 0x80008000;
     static const int32_t upper_bound = 0x7FFF7FFF;
     int32_t max;
@@ -434,7 +440,7 @@ SPAN_DECLARE(int32_t) vec_min_maxi16(const int16_t x[], int n, int16_t out[]) {
         : "S" (x), "a" (n), "d" (out), [lower] "m" (lower_bound), [upper] "m" (upper_bound)
         : "ecx"
     );
-#elif defined(__GNUC__) && defined(SPANDSP_USE_MMX) && defined(__i386__)
+#elif defined(__GNUC__)  &&  defined(SPANDSP_USE_MMX)  &&  defined(__i386__)
     static const int32_t lower_bound = 0x80008000;
     static const int32_t upper_bound = 0x7FFF7FFF;
     int32_t max;
@@ -593,10 +599,11 @@ SPAN_DECLARE(int32_t) vec_min_maxi16(const int16_t x[], int n, int16_t out[]) {
     int16_t max;
     int16_t temp;
     int32_t z;
-
+    
     max = INT16_MIN;
     min = INT16_MAX;
-    for (i = 0; i < n; i++) {
+    for (i = 0;  i < n;  i++)
+    {
         temp = x[i];
         if (temp > max)
             max = temp;
@@ -606,7 +613,8 @@ SPAN_DECLARE(int32_t) vec_min_maxi16(const int16_t x[], int n, int16_t out[]) {
         /*endif*/
     }
     /*endfor*/
-    if (out) {
+    if (out)
+    {
         out[0] = max;
         out[1] = min;
     }

@@ -24,7 +24,7 @@
  *
  * $Id: v18.h,v 1.6 2009/11/04 15:52:06 steveu Exp $
  */
-
+ 
 /*! \file */
 
 /*! \page v18_page The V.18 text telephony protocols
@@ -38,24 +38,25 @@
 
 typedef struct v18_state_s v18_state_t;
 
-enum {
+enum
+{
     V18_MODE_NONE = 0,
     /* V.18 Annex A - Weitbrecht TDD at 45.45bps, half-duplex, 5 bit baudot. */
-            V18_MODE_5BIT_45 = 1,
+    V18_MODE_5BIT_45 = 1,
     /* V.18 Annex A - Weitbrecht TDD at 50bps, half-duplex, 5 bit baudot. */
-            V18_MODE_5BIT_50 = 2,
+    V18_MODE_5BIT_50 = 2,
     /* V.18 Annex B - DTMF encoding of ASCII. */
-            V18_MODE_DTMF = 3,
+    V18_MODE_DTMF = 3,
     /* V.18 Annex C - EDT 110bps, V.21, half-duplex, ASCII. */
-            V18_MODE_EDT = 4,
+    V18_MODE_EDT = 4,
     /* V.18 Annex D - 300bps, Bell 103, duplex, ASCII. */
-            V18_MODE_BELL103 = 5,
+    V18_MODE_BELL103 = 5,
     /* V.18 Annex E - 1200bps Videotex terminals, ASCII. */
-            V18_MODE_V23VIDEOTEX = 6,
+    V18_MODE_V23VIDEOTEX = 6,
     /* V.18 Annex F - V.21 text telephone, V.21, duplex, ASCII. */
-            V18_MODE_V21TEXTPHONE = 7,
+    V18_MODE_V21TEXTPHONE = 7,
     /* V.18 Annex G - V.18 text telephone mode. */
-            V18_MODE_V18TEXTPHONE = 8
+    V18_MODE_V18TEXTPHONE = 8
 };
 
 #if defined(__cplusplus)
@@ -63,7 +64,7 @@ extern "C"
 {
 #endif
 
-SPAN_DECLARE(logging_state_t * ) v18_get_logging_state(v18_state_t * s ) ;
+SPAN_DECLARE(logging_state_t *) v18_get_logging_state(v18_state_t *s);
 
 /*! Initialise a V.18 context.
     \brief Initialise a V.18 context.
@@ -74,26 +75,23 @@ SPAN_DECLARE(logging_state_t * ) v18_get_logging_state(v18_state_t * s ) ;
            to the application.
     \param user_data An opaque pointer for the callback routine.
     \return A pointer to the V.18 context, or NULL if there was a problem. */
-SPAN_DECLARE(v18_state_t * ) v18_init(v18_state_t * s ,
-int calling_party,
-int mode,
-        put_msg_func_t
-put_msg ,
-void *user_data ) ;
+SPAN_DECLARE(v18_state_t *) v18_init(v18_state_t *s,
+                                     int calling_party,
+                                     int mode,
+                                     put_msg_func_t put_msg,
+                                     void *user_data);
 
 /*! Release a V.18 context.
     \brief Release a V.18 context.
     \param s The V.18 context.
     \return 0 for OK. */
-SPAN_DECLARE(int)
-v18_release(v18_state_t * s ) ;
+SPAN_DECLARE(int) v18_release(v18_state_t *s);
 
 /*! Free a V.18 context.
     \brief Release a V.18 context.
     \param s The V.18 context.
     \return 0 for OK. */
-SPAN_DECLARE(int)
-v18_free(v18_state_t * s ) ;
+SPAN_DECLARE(int) v18_free(v18_state_t *s);
 
 /*! Generate a block of V.18 audio samples.
     \brief Generate a block of V.18 audio samples.
@@ -102,9 +100,7 @@ v18_free(v18_state_t * s ) ;
     \param max_len The number of samples to be generated.
     \return The number of samples actually generated.
 */
-SPAN_DECLARE_NONSTD(int)
-v18_tx(v18_state_t * s , int16_t amp[],
-int max_len ) ;
+SPAN_DECLARE_NONSTD(int) v18_tx(v18_state_t *s, int16_t amp[], int max_len);
 
 /*! Process a block of received V.18 audio samples.
     \brief Process a block of received V.18 audio samples.
@@ -112,9 +108,7 @@ int max_len ) ;
     \param amp The audio sample buffer.
     \param len The number of samples in the buffer.
 */
-SPAN_DECLARE_NONSTD(int)
-v18_rx(v18_state_t * s , const int16_t amp[],
-int len ) ;
+SPAN_DECLARE_NONSTD(int) v18_rx(v18_state_t *s, const int16_t amp[], int len);
 
 /*! \brief Put a string to a V.18 context's input buffer.
     \param s The V.18 context.
@@ -124,9 +118,7 @@ int len ) ;
     \return The number of characters actually added. This may be less than the
             length of the digit string, if the buffer fills up. If the string is
             invalid, this function will return -1. */
-SPAN_DECLARE(int)
-v18_put(v18_state_t * s , const char msg[],
-int len ) ;
+SPAN_DECLARE(int) v18_put(v18_state_t *s, const char msg[], int len);
 
 /*! Convert a text string to a V.18 DTMF string.
     \brief Convert a text string to a V.18 DTMF string.
@@ -135,9 +127,7 @@ int len ) ;
     \param msg The text string to be converted.
     \return The length of the DTMF string.
 */
-SPAN_DECLARE(int)
-v18_encode_dtmf(v18_state_t * s , char dtmf[],
-const char msg[] ) ;
+SPAN_DECLARE(int) v18_encode_dtmf(v18_state_t *s, char dtmf[], const char msg[]);
 
 /*! Convert a V.18 DTMF string to a text string.
     \brief Convert a V.18 DTMF string to a text string.
@@ -146,22 +136,17 @@ const char msg[] ) ;
     \param dtmf The DTMF string to be converted.
     \return The length of the text string.
 */
-SPAN_DECLARE(int)
-v18_decode_dtmf(v18_state_t * s , char msg[],
-const char dtmf[] ) ;
+SPAN_DECLARE(int) v18_decode_dtmf(v18_state_t *s, char msg[], const char dtmf[]);
 
-SPAN_DECLARE(uint16_t)
-v18_encode_baudot(v18_state_t * s , uint8_t ch ) ;
+SPAN_DECLARE(uint16_t) v18_encode_baudot(v18_state_t *s, uint8_t ch);
 
-SPAN_DECLARE(uint8_t)
-v18_decode_baudot(v18_state_t * s , uint8_t ch ) ;
+SPAN_DECLARE(uint8_t) v18_decode_baudot(v18_state_t *s, uint8_t ch);
 
 /*! \brief Return a short name for an V.18 mode
     \param mode The code for the V.18 mode.
     \return A pointer to the name.
 */
-SPAN_DECLARE(const char *)
-v18_mode_to_str(int mode);
+SPAN_DECLARE(const char *) v18_mode_to_str(int mode);
 
 #if defined(__cplusplus)
 }

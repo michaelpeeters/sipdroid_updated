@@ -33,64 +33,65 @@ extern "C"
 {
 #endif
 
-static __inline__ void vec_copyi(int z[], const int x[], int n) {
-    memcpy(z, x, n * sizeof(z[0]));
+static __inline__ void vec_copyi(int z[], const int x[], int n)
+{
+    memcpy(z, x, n*sizeof(z[0]));
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ void vec_copyi16(int16_t z[], const int16_t x[], int n) {
-    memcpy(z, x, n * sizeof(z[0]));
+static __inline__ void vec_copyi16(int16_t z[], const int16_t x[], int n)
+{
+    memcpy(z, x, n*sizeof(z[0]));
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ void vec_copyi32(int32_t z[], const int32_t x[], int n) {
-    memcpy(z, x, n * sizeof(z[0]));
+static __inline__ void vec_copyi32(int32_t z[], const int32_t x[], int n)
+{
+    memcpy(z, x, n*sizeof(z[0]));
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ void vec_zeroi(int z[], int n) {
-    memset(z, 0, n * sizeof(z[0]));
+static __inline__ void vec_zeroi(int z[], int n)
+{
+    memset(z, 0, n*sizeof(z[0]));
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ void vec_zeroi16(int16_t z[], int n) {
-    memset(z, 0, n * sizeof(z[0]));
+static __inline__ void vec_zeroi16(int16_t z[], int n)
+{
+    memset(z, 0, n*sizeof(z[0]));
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ void vec_zeroi32(int32_t z[], int n) {
-    memset(z, 0, n * sizeof(z[0]));
+static __inline__ void vec_zeroi32(int32_t z[], int n)
+{
+    memset(z, 0, n*sizeof(z[0]));
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ void vec_seti(int z[], int x, int n) {
+static __inline__ void vec_seti(int z[], int x, int n)
+{
     int i;
-
-    for (i = 0; i < n; i++)
+    
+    for (i = 0;  i < n;  i++)
         z[i] = x;
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ void vec_seti16(int16_t z[], int16_t x, int n) {
+static __inline__ void vec_seti16(int16_t z[], int16_t x, int n)
+{
     int i;
-
-    for (i = 0; i < n; i++)
+    
+    for (i = 0;  i < n;  i++)
         z[i] = x;
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ void vec_seti32(int32_t z[], int32_t x, int n) {
+static __inline__ void vec_seti32(int32_t z[], int32_t x, int n)
+{
     int i;
-
-    for (i = 0; i < n; i++)
+    
+    for (i = 0;  i < n;  i++)
         z[i] = x;
 }
 /*- End of function --------------------------------------------------------*/
@@ -100,9 +101,7 @@ static __inline__ void vec_seti32(int32_t z[], int32_t x, int n) {
     \param y The first vector.
     \param n The number of elements in the vectors.
     \return The dot product of the two vectors. */
-SPAN_DECLARE(int32_t)
-
-vec_dot_prodi16(const int16_t x[], const int16_t y[], int n);
+SPAN_DECLARE(int32_t) vec_dot_prodi16(const int16_t x[], const int16_t y[], int n);
 
 /*! \brief Find the dot product of two int16_t vectors, where the first is a circular buffer
            with an offset for the starting position.
@@ -111,15 +110,11 @@ vec_dot_prodi16(const int16_t x[], const int16_t y[], int n);
     \param n The number of elements in the vectors.
     \param pos The starting position in the x vector.
     \return The dot product of the two vectors. */
-SPAN_DECLARE(int32_t)
+SPAN_DECLARE(int32_t) vec_circular_dot_prodi16(const int16_t x[], const int16_t y[], int n, int pos);
 
-vec_circular_dot_prodi16(const int16_t x[], const int16_t y[], int n, int pos);
+SPAN_DECLARE(void) vec_lmsi16(const int16_t x[], int16_t y[], int n, int16_t error);
 
-SPAN_DECLARE(void)vec_lmsi16(const int16_t x[], int16_t y[], int n, int16_t error);
-
-        SPAN_DECLARE(void)
-
-vec_circular_lmsi16(const int16_t x[], int16_t y[], int n, int pos, int16_t error);
+SPAN_DECLARE(void) vec_circular_lmsi16(const int16_t x[], int16_t y[], int n, int pos, int16_t error);
 
 /*! \brief Find the minimum and maximum values in an int16_t vector.
     \param x The vector to be searched.
@@ -130,45 +125,46 @@ vec_circular_lmsi16(const int16_t x[], int16_t y[], int n, int pos, int16_t erro
     \return The absolute maximum value. Since the range of negative numbers
             exceeds the range of positive one, the returned integer is longer
             than the ones being searched. */
-SPAN_DECLARE(int32_t)
+SPAN_DECLARE(int32_t) vec_min_maxi16(const int16_t x[], int n, int16_t out[]);
 
-vec_min_maxi16(const int16_t x[], int n, int16_t out[]);
-
-static __inline__ int vec_norm2i16(const int16_t *vec, int len) {
+static __inline__ int vec_norm2i16(const int16_t *vec, int len)
+{
     int i;
     int sum;
 
     sum = 0;
-    for (i = 0; i < len; i++)
-        sum += vec[i] * vec[i];
+    for (i = 0;  i < len;  i++)
+        sum += vec[i]*vec[i];
     return sum;
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ void vec_sari16(int16_t *vec, int len, int shift) {
+static __inline__ void vec_sari16(int16_t *vec, int len, int shift)
+{
     int i;
 
-    for (i = 0; i < len; i++)
+    for (i = 0;  i < len;  i++)
         vec[i] >>= shift;
 }
-
 /*- End of function --------------------------------------------------------*/
 
-static __inline__ int vec_max_bitsi16(const int16_t *vec, int len) {
+static __inline__ int vec_max_bitsi16(const int16_t *vec, int len)
+{
     int i;
     int max;
     int v;
     int b;
 
     max = 0;
-    for (i = 0; i < len; i++) {
+    for (i = 0;  i < len;  i++)
+    {
         v = abs(vec[i]);
         if (v > max)
             max = v;
     }
     b = 0;
-    while (max != 0) {
+    while (max != 0)
+    {
         b++;
         max >>= 1;
     }

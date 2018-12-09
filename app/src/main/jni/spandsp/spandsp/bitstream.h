@@ -49,36 +49,29 @@ extern "C"
     \param c A pointer to the bitstream output buffer.
     \param value The value to be pushed into the output buffer.
     \param bits The number of bits of value to be pushed. 1 to 25 bits is valid. */
-SPAN_DECLARE(void)
-bitstream_put(bitstream_state_t * s , uint8_t **c, uint32_t
-value , int bits ) ;
+SPAN_DECLARE(void) bitstream_put(bitstream_state_t *s, uint8_t **c, uint32_t value, int bits);
 
 /*! \brief Get a chunk of bits from the input buffer.
     \param s A pointer to the bitstream context.
     \param c A pointer to the bitstream input buffer.
     \param bits The number of bits of value to be grabbed. 1 to 25 bits is valid.
     \return The value retrieved from the input buffer. */
-SPAN_DECLARE(uint32_t)
-bitstream_get(bitstream_state_t * s , const uint8_t **c,
-int bits ) ;
+SPAN_DECLARE(uint32_t) bitstream_get(bitstream_state_t *s, const uint8_t **c, int bits);
 
 /*! \brief Flush any residual bit to the output buffer.
     \param s A pointer to the bitstream context.
     \param c A pointer to the bitstream output buffer. */
-SPAN_DECLARE(void)
-bitstream_flush(bitstream_state_t * s , uint8_t **c ) ;
+SPAN_DECLARE(void) bitstream_flush(bitstream_state_t *s, uint8_t **c);
 
 /*! \brief Initialise a bitstream context.
     \param s A pointer to the bitstream context.
     \param lsb_first TRUE if the bit stream is LSB first, else its MSB first.
     \return A pointer to the bitstream context. */
-SPAN_DECLARE(bitstream_state_t * ) bitstream_init(bitstream_state_t * s , int direction ) ;
+SPAN_DECLARE(bitstream_state_t *) bitstream_init(bitstream_state_t *s, int direction);
 
-SPAN_DECLARE(int)
-bitstream_release(bitstream_state_t * s ) ;
+SPAN_DECLARE(int) bitstream_release(bitstream_state_t *s);
 
-SPAN_DECLARE(int)
-bitstream_free(bitstream_state_t * s ) ;
+SPAN_DECLARE(int) bitstream_free(bitstream_state_t *s);
 
 #if defined(__cplusplus)
 }

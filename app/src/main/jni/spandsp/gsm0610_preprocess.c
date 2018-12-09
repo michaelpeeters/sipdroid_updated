@@ -36,16 +36,18 @@
 
 #include <assert.h>
 #include <inttypes.h>
-
 #if defined(HAVE_TGMATH_H)
 #include <tgmath.h>
 #endif
 #if defined(HAVE_MATH_H)
 #include <math.h>
 #endif
-
+#include "floating_fudge.h"
 #include <stdlib.h>
 
+#include "spandsp/telephony.h"
+#include "spandsp/fast_convert.h"
+#include "spandsp/bitstream.h"
 #include "spandsp/saturated.h"
 #include "spandsp/gsm0610.h"
 
@@ -68,8 +70,8 @@
          S.S.v.v.v.v.v.v.v.v.v.v.v.v.0.0
 */
 
-void gsm0610_preprocess(gsm0610_state_t *s, const int16_t amp[GSM0610_FRAME_LEN],
-                        int16_t so[GSM0610_FRAME_LEN]) {
+void gsm0610_preprocess(gsm0610_state_t *s, const int16_t amp[GSM0610_FRAME_LEN], int16_t so[GSM0610_FRAME_LEN])
+{
     int16_t z1;
     int16_t mp;
     int16_t s1;
@@ -86,12 +88,13 @@ void gsm0610_preprocess(gsm0610_state_t *s, const int16_t amp[GSM0610_FRAME_LEN]
     z1 = s->z1;
     L_z2 = s->L_z2;
     mp = s->mp;
-    for (k = 0; k < GSM0610_FRAME_LEN; k++) {
+    for (k = 0;  k < GSM0610_FRAME_LEN;  k++)
+    {
         /* 4.2.1   Downscaling of the input signal */
         SO = (amp[k] >> 1) & ~3;
 
         assert(SO >= -0x4000); // downscaled by
-        assert(SO <= 0x3FFC); // previous routine.
+        assert(SO <=  0x3FFC); // previous routine.
 
         /* 4.2.2   Offset compensation */
 
@@ -112,7 +115,7 @@ void gsm0610_preprocess(gsm0610_state_t *s, const int16_t amp[GSM0610_FRAME_LEN]
 
         /* Perform a 31 by 16 bits multiplication */
 #if defined(__GNUC__)
-        L_z2 = ((int64_t) L_z2 * 32735 + 0x4000) >> 15;
+        L_z2 = ((int64_t) L_z2*32735 + 0x4000) >> 15;
         /* Alternate (ANSI) version of below line does slightly different rounding:
          * L_temp = L_z2 >> 9;
          * L_temp += L_temp >> 5;

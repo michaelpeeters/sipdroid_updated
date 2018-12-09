@@ -34,155 +34,156 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Copyright 2008 (c), Skype Limited                                           *
  *                                                                      */
 #include "SKP_Silk_SigProc_FIX.h"
-
 #define QA          16
 #define A_LIMIT     65520
 
 /* Compute inverse of LPC prediction gain, and                          */
 /* test if LPC coefficients are stable (all poles within unit circle)   */
 SKP_int SKP_Silk_LPC_inverse_pred_gain(       /* O:   Returns 1 if unstable, otherwise 0          */
-        SKP_int32 *invGain_Q30,           /* O:   Inverse prediction gain, Q30 energy domain  */
-        const SKP_int16 *A_Q12,                 /* I:   Prediction coefficients, Q12 [order]        */
-        const SKP_int order                   /* I:   Prediction order                            */
-) {
-    SKP_int k, n, headrm;
+    SKP_int32           *invGain_Q30,           /* O:   Inverse prediction gain, Q30 energy domain  */
+    const SKP_int16     *A_Q12,                 /* I:   Prediction coefficients, Q12 [order]        */
+    const SKP_int       order                   /* I:   Prediction order                            */
+)
+{
+    SKP_int   k, n, headrm;
     SKP_int32 rc_Q31, rc_mult1_Q30, rc_mult2_Q16;
-    SKP_int32 Atmp_QA[2][SigProc_MAX_ORDER_LPC], tmp_QA;
+    SKP_int32 Atmp_QA[ 2 ][ SigProc_MAX_ORDER_LPC ], tmp_QA;
     SKP_int32 *Aold_QA, *Anew_QA;
 
-    Anew_QA = Atmp_QA[order & 1];
+    Anew_QA = Atmp_QA[ order & 1 ];
     /* Increase Q domain of the AR coefficients */
-    for (k = 0; k < order; k++) {
-        Anew_QA[k] = SKP_LSHIFT((SKP_int32) A_Q12[k], QA - 12);
+    for( k = 0; k < order; k++ ) {
+        Anew_QA[ k ] = SKP_LSHIFT( (SKP_int32)A_Q12[ k ], QA - 12 );
     }
 
-    *invGain_Q30 = (1 << 30);
-    for (k = order - 1; k > 0; k--) {
+    *invGain_Q30 = ( 1 << 30 );
+    for( k = order - 1; k > 0; k-- ) {
         /* Check for stability */
-        if ((Anew_QA[k] > A_LIMIT) || (Anew_QA[k] < -A_LIMIT)) {
+        if( ( Anew_QA[ k ] > A_LIMIT ) || ( Anew_QA[ k ] < -A_LIMIT ) ) {
             return 1;
         }
 
         /* Set RC equal to negated AR coef */
-        rc_Q31 = -SKP_LSHIFT(Anew_QA[k], 31 - QA);
-
+        rc_Q31 = -SKP_LSHIFT( Anew_QA[ k ], 31 - QA );
+        
         /* rc_mult1_Q30 range: [ 1 : 2^30-1 ] */
-        rc_mult1_Q30 = (SKP_int32_MAX >> 1) - SKP_SMMUL(rc_Q31, rc_Q31);
-        SKP_assert(rc_mult1_Q30 > (1 << 15));                   /* reduce A_LIMIT if fails */
-        SKP_assert(rc_mult1_Q30 < (1 << 30));
+        rc_mult1_Q30 = ( SKP_int32_MAX >> 1 ) - SKP_SMMUL( rc_Q31, rc_Q31 );
+        SKP_assert( rc_mult1_Q30 > ( 1 << 15 ) );                   /* reduce A_LIMIT if fails */
+        SKP_assert( rc_mult1_Q30 < ( 1 << 30 ) );
 
         /* rc_mult2_Q16 range: [ 2^16 : SKP_int32_MAX ] */
-        rc_mult2_Q16 = SKP_INVERSE32_varQ(rc_mult1_Q30, 46);      /* 16 = 46 - 30 */
+        rc_mult2_Q16 = SKP_INVERSE32_varQ( rc_mult1_Q30, 46 );      /* 16 = 46 - 30 */
 
         /* Update inverse gain */
         /* invGain_Q30 range: [ 0 : 2^30 ] */
-        *invGain_Q30 = SKP_LSHIFT(SKP_SMMUL(*invGain_Q30, rc_mult1_Q30), 2);
-        SKP_assert(*invGain_Q30 >= 0);
-        SKP_assert(*invGain_Q30 <= (1 << 30));
+        *invGain_Q30 = SKP_LSHIFT( SKP_SMMUL( *invGain_Q30, rc_mult1_Q30 ), 2 );
+        SKP_assert( *invGain_Q30 >= 0           );
+        SKP_assert( *invGain_Q30 <= ( 1 << 30 ) );
 
         /* Swap pointers */
         Aold_QA = Anew_QA;
-        Anew_QA = Atmp_QA[k & 1];
-
+        Anew_QA = Atmp_QA[ k & 1 ];
+        
         /* Update AR coefficient */
-        headrm = SKP_Silk_CLZ32(rc_mult2_Q16) - 1;
-        rc_mult2_Q16 = SKP_LSHIFT(rc_mult2_Q16, headrm);          /* Q: 16 + headrm */
-        for (n = 0; n < k; n++) {
-            tmp_QA = Aold_QA[n] - SKP_LSHIFT(SKP_SMMUL(Aold_QA[k - n - 1], rc_Q31), 1);
-            Anew_QA[n] = SKP_LSHIFT(SKP_SMMUL(tmp_QA, rc_mult2_Q16), 16 - headrm);
+        headrm = SKP_Silk_CLZ32( rc_mult2_Q16 ) - 1;
+        rc_mult2_Q16 = SKP_LSHIFT( rc_mult2_Q16, headrm );          /* Q: 16 + headrm */
+        for( n = 0; n < k; n++ ) {
+            tmp_QA = Aold_QA[ n ] - SKP_LSHIFT( SKP_SMMUL( Aold_QA[ k - n - 1 ], rc_Q31 ), 1 );
+            Anew_QA[ n ] = SKP_LSHIFT( SKP_SMMUL( tmp_QA, rc_mult2_Q16 ), 16 - headrm );
         }
     }
 
     /* Check for stability */
-    if ((Anew_QA[0] > A_LIMIT) || (Anew_QA[0] < -A_LIMIT)) {
+    if( ( Anew_QA[ 0 ] > A_LIMIT ) || ( Anew_QA[ 0 ] < -A_LIMIT ) ) {
         return 1;
     }
 
     /* Set RC equal to negated AR coef */
-    rc_Q31 = -SKP_LSHIFT(Anew_QA[0], 31 - QA);
+    rc_Q31 = -SKP_LSHIFT( Anew_QA[ 0 ], 31 - QA );
 
     /* Range: [ 1 : 2^30 ] */
-    rc_mult1_Q30 = (SKP_int32_MAX >> 1) - SKP_SMMUL(rc_Q31, rc_Q31);
+    rc_mult1_Q30 = ( SKP_int32_MAX >> 1 ) - SKP_SMMUL( rc_Q31, rc_Q31 );
 
     /* Update inverse gain */
     /* Range: [ 0 : 2^30 ] */
-    *invGain_Q30 = SKP_LSHIFT(SKP_SMMUL(*invGain_Q30, rc_mult1_Q30), 2);
-    SKP_assert(*invGain_Q30 >= 0);
-    SKP_assert(*invGain_Q30 <= 1 << 30);
+    *invGain_Q30 = SKP_LSHIFT( SKP_SMMUL( *invGain_Q30, rc_mult1_Q30 ), 2 );
+    SKP_assert( *invGain_Q30 >= 0     );
+    SKP_assert( *invGain_Q30 <= 1<<30 );
 
     return 0;
 }
 
 /* For input in Q13 domain */
 SKP_int SKP_Silk_LPC_inverse_pred_gain_Q13(   /* O:   Returns 1 if unstable, otherwise 0          */
-        SKP_int32 *invGain_Q30,           /* O:   Inverse prediction gain, Q30 energy domain  */
-        const SKP_int16 *A_Q13,                 /* I:   Prediction coefficients, Q13 [order]        */
-        const SKP_int order                   /* I:   Prediction order                            */
-) {
-    SKP_int k, n, headrm;
+    SKP_int32           *invGain_Q30,           /* O:   Inverse prediction gain, Q30 energy domain  */
+    const SKP_int16     *A_Q13,                 /* I:   Prediction coefficients, Q13 [order]        */
+    const SKP_int       order                   /* I:   Prediction order                            */
+)
+{
+    SKP_int   k, n, headrm;
     SKP_int32 rc_Q31, rc_mult1_Q30, rc_mult2_Q16;
-    SKP_int32 Atmp_QA[2][SigProc_MAX_ORDER_LPC], tmp_QA;
+    SKP_int32 Atmp_QA[ 2 ][ SigProc_MAX_ORDER_LPC ], tmp_QA;
     SKP_int32 *Aold_QA, *Anew_QA;
 
-    Anew_QA = Atmp_QA[order & 1];
+    Anew_QA = Atmp_QA[ order & 1 ];
     /* Increase Q domain of the AR coefficients */
-    for (k = 0; k < order; k++) {
-        Anew_QA[k] = SKP_LSHIFT((SKP_int32) A_Q13[k], QA - 13);
+    for( k = 0; k < order; k++ ) {
+        Anew_QA[ k ] = SKP_LSHIFT( (SKP_int32)A_Q13[ k ], QA - 13 );
     }
 
-    *invGain_Q30 = (1 << 30);
-    for (k = order - 1; k > 0; k--) {
+    *invGain_Q30 = ( 1 << 30 );
+    for( k = order - 1; k > 0; k-- ) {
         /* Check for stability */
-        if ((Anew_QA[k] > A_LIMIT) || (Anew_QA[k] < -A_LIMIT)) {
+        if( ( Anew_QA[ k ] > A_LIMIT ) || ( Anew_QA[ k ] < -A_LIMIT ) ) {
             return 1;
         }
 
         /* Set RC equal to negated AR coef */
-        rc_Q31 = -SKP_LSHIFT(Anew_QA[k], 31 - QA);
-
+        rc_Q31 = -SKP_LSHIFT( Anew_QA[ k ], 31 - QA );
+        
         /* rc_mult1_Q30 range: [ 1 : 2^30-1 ] */
-        rc_mult1_Q30 = (SKP_int32_MAX >> 1) - SKP_SMMUL(rc_Q31, rc_Q31);
-        SKP_assert(rc_mult1_Q30 > (1 << 15));                   /* reduce A_LIMIT if fails */
-        SKP_assert(rc_mult1_Q30 < (1 << 30));
+        rc_mult1_Q30 = ( SKP_int32_MAX >> 1 ) - SKP_SMMUL( rc_Q31, rc_Q31 );
+        SKP_assert( rc_mult1_Q30 > ( 1 << 15 ) );                   /* reduce A_LIMIT if fails */
+        SKP_assert( rc_mult1_Q30 < ( 1 << 30 ) );
 
         /* rc_mult2_Q16 range: [ 2^16 : SKP_int32_MAX ] */
-        rc_mult2_Q16 = SKP_INVERSE32_varQ(rc_mult1_Q30, 46);      /* 16 = 46 - 30 */
+        rc_mult2_Q16 = SKP_INVERSE32_varQ( rc_mult1_Q30, 46 );      /* 16 = 46 - 30 */
 
         /* Update inverse gain */
         /* invGain_Q30 range: [ 0 : 2^30 ] */
-        *invGain_Q30 = SKP_LSHIFT(SKP_SMMUL(*invGain_Q30, rc_mult1_Q30), 2);
-        SKP_assert(*invGain_Q30 >= 0);
-        SKP_assert(*invGain_Q30 <= 1 << 30);
+        *invGain_Q30 = SKP_LSHIFT( SKP_SMMUL( *invGain_Q30, rc_mult1_Q30 ), 2 );
+        SKP_assert( *invGain_Q30 >= 0     );
+        SKP_assert( *invGain_Q30 <= 1<<30 );
 
         /* Swap pointers */
         Aold_QA = Anew_QA;
-        Anew_QA = Atmp_QA[k & 1];
-
+        Anew_QA = Atmp_QA[ k & 1 ];
+        
         /* Update AR coefficient */
-        headrm = SKP_Silk_CLZ32(rc_mult2_Q16) - 1;
-        rc_mult2_Q16 = SKP_LSHIFT(rc_mult2_Q16, headrm);          /* Q: 16 + headrm */
-        for (n = 0; n < k; n++) {
-            tmp_QA = Aold_QA[n] - SKP_LSHIFT(SKP_SMMUL(Aold_QA[k - n - 1], rc_Q31), 1);
-            Anew_QA[n] = SKP_LSHIFT(SKP_SMMUL(tmp_QA, rc_mult2_Q16), 16 - headrm);
+        headrm = SKP_Silk_CLZ32( rc_mult2_Q16 ) - 1;
+        rc_mult2_Q16 = SKP_LSHIFT( rc_mult2_Q16, headrm );          /* Q: 16 + headrm */
+        for( n = 0; n < k; n++ ) {
+            tmp_QA = Aold_QA[ n ] - SKP_LSHIFT( SKP_SMMUL( Aold_QA[ k - n - 1 ], rc_Q31 ), 1 );
+            Anew_QA[ n ] = SKP_LSHIFT( SKP_SMMUL( tmp_QA, rc_mult2_Q16 ), 16 - headrm );
         }
     }
 
     /* Check for stability */
-    if ((Anew_QA[0] > A_LIMIT) || (Anew_QA[0] < -A_LIMIT)) {
+    if( ( Anew_QA[ 0 ] > A_LIMIT ) || ( Anew_QA[ 0 ] < -A_LIMIT ) ) {
         return 1;
     }
 
     /* Set RC equal to negated AR coef */
-    rc_Q31 = -SKP_LSHIFT(Anew_QA[0], 31 - QA);
+    rc_Q31 = -SKP_LSHIFT( Anew_QA[ 0 ], 31 - QA );
 
     /* Range: [ 1 : 2^30 ] */
-    rc_mult1_Q30 = (SKP_int32_MAX >> 1) - SKP_SMMUL(rc_Q31, rc_Q31);
+    rc_mult1_Q30 = ( SKP_int32_MAX >> 1 ) - SKP_SMMUL( rc_Q31, rc_Q31 );
 
     /* Update inverse gain */
     /* Range: [ 0 : 2^30 ] */
-    *invGain_Q30 = SKP_LSHIFT(SKP_SMMUL(*invGain_Q30, rc_mult1_Q30), 2);
-    SKP_assert(*invGain_Q30 >= 0);
-    SKP_assert(*invGain_Q30 <= 1 << 30);
+    *invGain_Q30 = SKP_LSHIFT( SKP_SMMUL( *invGain_Q30, rc_mult1_Q30 ), 2 );
+    SKP_assert( *invGain_Q30 >= 0     );
+    SKP_assert( *invGain_Q30 <= 1<<30 );
 
     return 0;
 }

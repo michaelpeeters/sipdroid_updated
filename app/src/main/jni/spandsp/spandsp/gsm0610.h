@@ -48,7 +48,8 @@ This implementation supports encoded data in one of three packing formats:
 ???.
 */
 
-enum {
+enum
+{
     GSM0610_PACKING_NONE,
     GSM0610_PACKING_WAV49,
     GSM0610_PACKING_VOIP
@@ -57,7 +58,8 @@ enum {
 /*!
     GSM 06.10 FR codec unpacked frame.
 */
-typedef struct {
+typedef struct
+{
     int16_t LARc[8];
     int16_t Nc[4];
     int16_t bc[4];
@@ -81,26 +83,23 @@ extern "C"
     \param s The GSM 06.10 context
     \param packing One of the GSM0610_PACKING_xxx options.
     \return A pointer to the GSM 06.10 context, or NULL for error. */
-SPAN_DECLARE(gsm0610_state_t * ) gsm0610_init(gsm0610_state_t * s , int packing ) ;
+SPAN_DECLARE(gsm0610_state_t *) gsm0610_init(gsm0610_state_t *s, int packing);
 
 /*! Release a GSM 06.10 encode or decode context.
     \param s The GSM 06.10 context
     \return 0 for success, else -1. */
-SPAN_DECLARE(int)
-gsm0610_release(gsm0610_state_t * s ) ;
+SPAN_DECLARE(int) gsm0610_release(gsm0610_state_t *s);
 
 /*! Free a GSM 06.10 encode or decode context.
     \param s The GSM 06.10 context
     \return 0 for success, else -1. */
-SPAN_DECLARE(int)
-gsm0610_free(gsm0610_state_t * s ) ;
+SPAN_DECLARE(int) gsm0610_free(gsm0610_state_t *s);
 
 /*! Set the packing format for a GSM 06.10 encode or decode context.
     \param s The GSM 06.10 context
     \param packing One of the GSM0610_PACKING_xxx options.
     \return 0 for success, else -1. */
-SPAN_DECLARE(int)
-gsm0610_set_packing(gsm0610_state_t * s , int packing ) ;
+SPAN_DECLARE(int) gsm0610_set_packing(gsm0610_state_t *s, int packing);
 
 /*! Encode a buffer of linear PCM data to GSM 06.10.
     \param s The GSM 06.10 context.
@@ -108,10 +107,7 @@ gsm0610_set_packing(gsm0610_state_t * s , int packing ) ;
     \param amp The audio sample buffer.
     \param len The number of samples in the buffer.
     \return The number of bytes of GSM 06.10 data produced. */
-SPAN_DECLARE(int)
-gsm0610_encode(gsm0610_state_t * s , uint8_t code[],
-const int16_t amp[],
-int len ) ;
+SPAN_DECLARE(int) gsm0610_encode(gsm0610_state_t *s, uint8_t code[], const int16_t amp[], int len);
 
 /*! Decode a buffer of GSM 06.10 data to linear PCM.
     \param s The GSM 06.10 context.
@@ -119,47 +115,35 @@ int len ) ;
     \param code The GSM 06.10 data.
     \param len The number of bytes of GSM 06.10 data to be decoded.
     \return The number of samples returned. */
-SPAN_DECLARE(int)
-gsm0610_decode(gsm0610_state_t * s , int16_t amp[],
-const uint8_t code[],
-int len ) ;
+SPAN_DECLARE(int) gsm0610_decode(gsm0610_state_t *s, int16_t amp[], const uint8_t code[], int len);
 
-SPAN_DECLARE(int)
-gsm0610_pack_none(uint8_t
-c [ ] , const gsm0610_frame_t *s ) ;
+SPAN_DECLARE(int) gsm0610_pack_none(uint8_t c[], const gsm0610_frame_t *s);
 
 /*! Pack a pair of GSM 06.10 frames in the format used for wave files (wave type 49).
     \param c The buffer for the packed data. This must be at least 65 bytes long.
     \param s A pointer to the frames to be packed.
     \return The number of bytes generated. */
-SPAN_DECLARE(int)
-gsm0610_pack_wav49(uint8_t
-c [ ] , const gsm0610_frame_t *s ) ;
+SPAN_DECLARE(int) gsm0610_pack_wav49(uint8_t c[], const gsm0610_frame_t *s);
 
 /*! Pack a GSM 06.10 frames in the format used for VoIP.
     \param c The buffer for the packed data. This must be at least 33 bytes long.
     \param s A pointer to the frame to be packed.
     \return The number of bytes generated. */
-SPAN_DECLARE(int)
-gsm0610_pack_voip(uint8_t
-c [ ] , const gsm0610_frame_t *s ) ;
+SPAN_DECLARE(int) gsm0610_pack_voip(uint8_t c[], const gsm0610_frame_t *s);
 
-SPAN_DECLARE(int)
-gsm0610_unpack_none(gsm0610_frame_t * s , const uint8_t c[] ) ;
+SPAN_DECLARE(int) gsm0610_unpack_none(gsm0610_frame_t *s, const uint8_t c[]);
 
 /*! Unpack a pair of GSM 06.10 frames from the format used for wave files (wave type 49).
     \param s A pointer to a buffer into which the frames will be packed.
     \param c The buffer containing the data to be unpacked. This must be at least 65 bytes long.
     \return The number of bytes absorbed. */
-SPAN_DECLARE(int)
-gsm0610_unpack_wav49(gsm0610_frame_t * s , const uint8_t c[] ) ;
+SPAN_DECLARE(int) gsm0610_unpack_wav49(gsm0610_frame_t *s, const uint8_t c[]);
 
 /*! Unpack a GSM 06.10 frame from the format used for VoIP.
     \param s A pointer to a buffer into which the frame will be packed.
     \param c The buffer containing the data to be unpacked. This must be at least 33 bytes long.
     \return The number of bytes absorbed. */
-SPAN_DECLARE(int)
-gsm0610_unpack_voip(gsm0610_frame_t * s , const uint8_t c[] ) ;
+SPAN_DECLARE(int) gsm0610_unpack_voip(gsm0610_frame_t *s, const uint8_t c[]);
 
 #if defined(__cplusplus)
 }

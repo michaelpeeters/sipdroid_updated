@@ -29,11 +29,12 @@
 #include "bvcommon.h"
 
 void pp3dec(
-        Word16 idx,
-        Word16 *b) {
-    Word16 *fp;
-    Word16 i;
-    fp = pp9cb + idx * 9;
-    for (i = 0; i < 3; i++)
-        b[i] = *fp++;
+            Word16   idx,
+            Word16   *b)
+{
+   Word16   *fp;
+   Word16   i;
+   fp = pp9cb+idx*9;
+   for (i=0;i<3;i++) 
+      b[i] = *fp++;
 }

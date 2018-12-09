@@ -183,29 +183,29 @@ static int useAdbNetworking = 0;
 
 /* needed for connecting with timeout */
 typedef struct selectFDSet {
-    int nfds;
-    int sock;
-    fd_set writeSet;
-    fd_set readSet;
-    fd_set exceptionSet;
+  int nfds;
+  int sock;
+  fd_set writeSet;
+  fd_set readSet;
+  fd_set exceptionSet;
 } selectFDSet;
 
-static const char *netLookupErrorString(int anErrorNum);
+static const char * netLookupErrorString(int anErrorNum);
 
-#define log_socket_close(a, b)
-#define log_socket_connect(a, b, c)
-#define add_send_stats(a, b)
-#define add_recv_stats(a, b)
-#define adb_networking_connect_fd(a, b) 0
-#define adb_networking_gethostbyname(a, b) 0
+#define log_socket_close(a,b)
+#define log_socket_connect(a,b,c)
+#define add_send_stats(a,b)
+#define add_recv_stats(a,b)
+#define adb_networking_connect_fd(a,b) 0
+#define adb_networking_gethostbyname(a,b) 0
 #define PROPERTY_VALUE_MAX 1
-#define property_get(a, b, c)
+#define property_get(a,b,c)
 #define assert(a)
-
 /*
  * Throw an exception with the specified class and an optional message.
  */
-int jniThrowException(JNIEnv *env, const char *className, const char *msg) {
+int jniThrowException(JNIEnv* env, const char* className, const char* msg)
+{
     jclass exceptionClass;
 
     exceptionClass = env->FindClass(className);
@@ -227,7 +227,8 @@ int jniThrowException(JNIEnv *env, const char *className, const char *msg) {
  *
  * Get the file descriptor.
  */
-static inline int getFd(JNIEnv *env, jobject obj) {
+static inline int getFd(JNIEnv* env, jobject obj)
+{
     return env->GetIntField(obj, gCachedFields.descriptor);
 }
 
@@ -236,7 +237,8 @@ static inline int getFd(JNIEnv *env, jobject obj) {
  *
  * Set the file descriptor.
  */
-static inline void setFd(JNIEnv *env, jobject obj, jint value) {
+static inline void setFd(JNIEnv* env, jobject obj, jint value)
+{
     env->SetIntField(obj, gCachedFields.descriptor, value);
 }
 
@@ -245,7 +247,7 @@ static inline void setFd(JNIEnv *env, jobject obj, jint value) {
  * Get an int file descriptor from a java.io.FileDescriptor
  */
 
-static int jniGetFDFromFileDescriptor(JNIEnv *env, jobject fileDescriptor) {
+static int jniGetFDFromFileDescriptor (JNIEnv* env, jobject fileDescriptor) {
 
     return getFd(env, fileDescriptor);
 }
@@ -255,7 +257,7 @@ static int jniGetFDFromFileDescriptor(JNIEnv *env, jobject fileDescriptor) {
  * Set the descriptor of a java.io.FileDescriptor
  */
 
-static void jniSetFileDescriptorOfFD(JNIEnv *env, jobject fileDescriptor, int value) {
+static void jniSetFileDescriptorOfFD (JNIEnv* env, jobject fileDescriptor, int value) {
 
     setFd(env, fileDescriptor, value);
 }
@@ -265,7 +267,7 @@ static void jniSetFileDescriptorOfFD(JNIEnv *env, jobject fileDescriptor, int va
  */
 static void throwSocketException(JNIEnv *env, int errorCode) {
     jniThrowException(env, "java/net/SocketException",
-                      netLookupErrorString(errorCode));
+        netLookupErrorString(errorCode));
 }
 
 /**
@@ -300,12 +302,12 @@ static int javaAddressToStructIn(
         return -1;
     }
 
-    jbyte *java_address_bytes
-            = env->GetByteArrayElements(java_address, NULL);
+    jbyte * java_address_bytes
+        =  env->GetByteArrayElements(java_address, NULL);
 
     memcpy(&(address->s_addr),
-           java_address_bytes,
-           sizeof(address->s_addr));
+        java_address_bytes,
+        sizeof(address->s_addr));
 
     env->ReleaseByteArrayElements(java_address, java_address_bytes, JNI_ABORT);
 
@@ -346,14 +348,13 @@ static int structInToJavaAddress(
  * return value is 0.
  */
 static int socketAddressToInetAddress(JNIEnv *env,
-                                      struct sockaddr_in *sockaddress, jobject inetaddress,
-                                      int *port) {
+        struct sockaddr_in *sockaddress, jobject inetaddress, int *port) {
 
     jbyteArray ipaddress;
     int result;
 
-    ipaddress = (jbyteArray) env->GetObjectField(inetaddress,
-                                                 gCachedFields.iaddr_ipaddress);
+    ipaddress = (jbyteArray)env->GetObjectField(inetaddress,
+            gCachedFields.iaddr_ipaddress);
 
     if (structInToJavaAddress(env, &sockaddress->sin_addr, ipaddress) < 0) {
         return -1;
@@ -371,14 +372,13 @@ static int socketAddressToInetAddress(JNIEnv *env,
  * return value is 0.
  */
 static int inetAddressToSocketAddress(JNIEnv *env,
-                                      jobject inetaddress, int port,
-                                      struct sockaddr_in *sockaddress) {
+        jobject inetaddress, int port, struct sockaddr_in *sockaddress) {
 
     jbyteArray ipaddress;
     int result;
 
-    ipaddress = (jbyteArray) env->GetObjectField(inetaddress,
-                                                 gCachedFields.iaddr_ipaddress);
+    ipaddress = (jbyteArray)env->GetObjectField(inetaddress,
+            gCachedFields.iaddr_ipaddress);
 
     memset(sockaddress, 0, sizeof(sockaddress));
 
@@ -407,7 +407,7 @@ static jobject structInToInetAddress(JNIEnv *env, struct in_addr *address) {
     }
 
     return env->CallStaticObjectMethod(gCachedFields.iaddr_class,
-                                       gCachedFields.iaddr_getbyaddress, bytes);
+            gCachedFields.iaddr_getbyaddress, bytes);
 }
 
 /**
@@ -419,7 +419,7 @@ static jobject structInToInetAddress(JNIEnv *env, struct in_addr *address) {
  * @return  the new Boolean
  */
 
-static jobject newJavaLangBoolean(JNIEnv *env, jint anInt) {
+static jobject newJavaLangBoolean(JNIEnv * env, jint anInt) {
     jclass tempClass;
     jmethodID tempMethod;
 
@@ -437,7 +437,7 @@ static jobject newJavaLangBoolean(JNIEnv *env, jint anInt) {
  * @return  the new Byte
  */
 
-static jobject newJavaLangByte(JNIEnv *env, jbyte val) {
+static jobject newJavaLangByte(JNIEnv * env, jbyte val) {
     jclass tempClass;
     jmethodID tempMethod;
 
@@ -455,7 +455,7 @@ static jobject newJavaLangByte(JNIEnv *env, jbyte val) {
  * @return  the new Integer
  */
 
-static jobject newJavaLangInteger(JNIEnv *env, jint anInt) {
+static jobject newJavaLangInteger(JNIEnv * env, jint anInt) {
     jclass tempClass;
     jmethodID tempMethod;
 
@@ -473,7 +473,7 @@ static jobject newJavaLangInteger(JNIEnv *env, jint anInt) {
  * @return  the new String
  */
 
-static jobject newJavaLangString(JNIEnv *env, jbyteArray bytes) {
+static jobject newJavaLangString(JNIEnv * env, jbyteArray bytes) {
     jclass tempClass;
     jmethodID tempMethod;
 
@@ -528,7 +528,7 @@ static int isLocalhost(struct sockaddr_in *address) {
  * @return  a human readable error string
  */
 
-static const char *netLookupErrorString(int anErrorNum) {
+static const char * netLookupErrorString(int anErrorNum) {
     switch (anErrorNum) {
         case SOCKERR_BADSOCKET:
             return "Bad socket";
@@ -698,7 +698,7 @@ static int convertError(int errorCode) {
 }
 
 static int sockSelect(int nfds, fd_set *readfds, fd_set *writefds,
-                      fd_set *exceptfds, struct timeval *timeout) {
+        fd_set *exceptfds, struct timeval *timeout) {
 
     int result = select(nfds, readfds, writefds, exceptfds, timeout);
 
@@ -799,7 +799,7 @@ static int pollSelectWait(JNIEnv *env, jobject fileDescriptor, int timeout, int 
                      * have been interrupted.
                      */
                     jniThrowException(env, "java/net/SocketTimeoutException",
-                                      netLookupErrorString(SOCKERR_TIMEOUT));
+                            netLookupErrorString(SOCKERR_TIMEOUT));
                 } else {
                     continue; // try again
                 }
@@ -818,7 +818,7 @@ static int pollSelectWait(JNIEnv *env, jobject fileDescriptor, int timeout, int 
              *  if interrupted (or a timeout) just retry
              */
             if (SOCKERR_TIMEOUT == result ||
-                SOCKERR_INTERRUPTED == result) {
+               SOCKERR_INTERRUPTED == result) {
 
                 continue; // try again
             } else if (0 > result) {
@@ -838,12 +838,12 @@ static int pollSelectWait(JNIEnv *env, jobject fileDescriptor, int timeout, int 
  * @param env  pointer to the JNI library
  * @param longclass Java Long Object
  */
-void setConnectContext(JNIEnv *env, jobject longclass, jbyte *context) {
+void setConnectContext(JNIEnv *env,jobject longclass,jbyte * context) {
     jclass descriptorCLS;
     jfieldID descriptorFID;
     descriptorCLS = env->FindClass("java/lang/Long");
     descriptorFID = env->GetFieldID(descriptorCLS, "value", "J");
-    env->SetLongField(longclass, descriptorFID, (jlong) ((jint) context));
+    env->SetLongField(longclass, descriptorFID, (jlong)((jint)context));
 };
 
 /**
@@ -857,26 +857,26 @@ jbyte *getConnectContext(JNIEnv *env, jobject longclass) {
     jfieldID descriptorFID;
     descriptorCLS = env->FindClass("java/lang/Long");
     descriptorFID = env->GetFieldID(descriptorCLS, "value", "J");
-    return (jbyte *) ((jint) env->GetLongField(longclass, descriptorFID));
+    return (jbyte*) ((jint)env->GetLongField(longclass, descriptorFID));
 };
 
 // typical ip checksum
-unsigned short ip_checksum(unsigned short *buffer, int size) {
-    register unsigned short *buf = buffer;
+unsigned short ip_checksum(unsigned short* buffer, int size) {
+    register unsigned short * buf = buffer;
     register int bufleft = size;
     register unsigned long sum = 0;
 
     while (bufleft > 1) {
         sum = sum + (*buf++);
-        bufleft = bufleft - sizeof(unsigned short);
+        bufleft = bufleft - sizeof(unsigned short );
     }
     if (bufleft) {
-        sum = sum + (*(unsigned char *) buf);
+        sum = sum + (*(unsigned char*)buf);
     }
     sum = (sum >> 16) + (sum & 0xffff);
     sum += (sum >> 16);
 
-    return (unsigned short) (~sum);
+    return (unsigned short )(~sum);
 }
 
 /**
@@ -901,7 +901,7 @@ unsigned short ip_checksum(unsigned short *buffer, int size) {
  * @return 0, if no errors occurred, otherwise the (negative) error code.
  */
 static int sockConnectWithTimeout(int handle, struct sockaddr_in addr,
-                                  unsigned int timeout, unsigned int step, jbyte *ctxt) {
+        unsigned int timeout, unsigned int step, jbyte *ctxt) {
     int rc = 0;
     struct timeval passedTimeout;
     int errorVal;
@@ -924,7 +924,7 @@ static int sockConnectWithTimeout(int handle, struct sockaddr_in addr,
 
         } else {
             log_socket_connect(handle, ntohl(addr.sin_addr.s_addr),
-                               ntohs(addr.sin_port));
+                    ntohs(addr.sin_port));
             /* set the socket to non-blocking */
             int block = JNI_TRUE;
             rc = ioctl(handle, FIONBIO, &block);
@@ -936,7 +936,7 @@ static int sockConnectWithTimeout(int handle, struct sockaddr_in addr,
             //         addr.sin_addr.s_addr, handle);
             do {
                 rc = connect(handle, (struct sockaddr *) &addr,
-                             sizeof(struct sockaddr));
+                        sizeof(struct sockaddr));
             } while (rc < 0 && errno == EINTR);
             // LOGD("-connect to address 0x%08x (via normal) returned %d",
             //         addr.sin_addr.s_addr, (int) rc);
@@ -972,8 +972,8 @@ static int sockConnectWithTimeout(int handle, struct sockaddr_in addr,
         passedTimeout.tv_sec = 0;
         if (timeout > 100) {
             passedTimeout.tv_usec = 100 * 1000;
-        } else if ((int) timeout >= 0) {
-            passedTimeout.tv_usec = timeout * 1000;
+        } else if ((int)timeout >= 0) {
+          passedTimeout.tv_usec = timeout * 1000;
         }
 
         /* initialize the FD sets for the select */
@@ -985,10 +985,10 @@ static int sockConnectWithTimeout(int handle, struct sockaddr_in addr,
         FD_SET(context->sock, &(context->exceptionSet));
 
         rc = select(context->nfds,
-                    &(context->readSet),
-                    &(context->writeSet),
-                    &(context->exceptionSet),
-                    (int) timeout >= 0 ? &passedTimeout : NULL);
+                   &(context->readSet),
+                   &(context->writeSet),
+                   &(context->exceptionSet),
+                   (int)timeout >= 0 ? &passedTimeout : NULL);
 
         /* if there is at least one descriptor ready to be checked */
         if (0 < rc) {
@@ -1001,7 +1001,7 @@ static int sockConnectWithTimeout(int handle, struct sockaddr_in addr,
                 } else {
                     /* ok we have more work to do to figure it out */
                     if (getsockopt(context->sock, SOL_SOCKET, SO_ERROR,
-                                   &errorVal, &errorValLen) >= 0) {
+                            &errorVal, &errorValLen) >= 0) {
                         return errorVal ? convertError(errorVal) : 0;
                     } else {
                         return convertError(errno);
@@ -1012,7 +1012,7 @@ static int sockConnectWithTimeout(int handle, struct sockaddr_in addr,
             /* if the descriptor is in the exception set the connect failed */
             if (FD_ISSET(context->sock, &(context->exceptionSet))) {
                 if (getsockopt(context->sock, SOL_SOCKET, SO_ERROR, &errorVal,
-                               &errorValLen) >= 0) {
+                        &errorValLen) >= 0) {
                     return errorVal ? convertError(errorVal) : 0;
                 }
                 rc = errno;
@@ -1069,8 +1069,8 @@ static int sockConnectWithTimeout(int handle, struct sockaddr_in addr,
  *
  * @exception SocketException if an error occurs during the call
  */
-static void mcastAddDropMembership(JNIEnv *env, int handle, jobject optVal,
-                                   int ignoreIF, int setSockOptVal) {
+static void mcastAddDropMembership (JNIEnv * env, int handle, jobject optVal,
+        int ignoreIF, int setSockOptVal) {
     int result;
     struct ip_mreq ipmreqP;
     struct sockaddr_in sockaddrP;
@@ -1091,16 +1091,16 @@ static void mcastAddDropMembership(JNIEnv *env, int handle, jobject optVal,
      * check whether we are getting an InetAddress or an Generic IPMreq, for now
      * we support both so that we will not break the tests
      */
-    if (env->IsInstanceOf(optVal, gCachedFields.iaddr_class)) {
+    if (env->IsInstanceOf (optVal, gCachedFields.iaddr_class)) {
 
         ipmreqP.imr_interface.s_addr = htonl(INADDR_ANY);
         if (!ignoreIF) {
 
             result = getsockopt(handle, IPPROTO_IP, IP_MULTICAST_IF, &sockaddrP,
-                                &lengthIF);
+                    &lengthIF);
 
             if (0 != result) {
-                throwSocketException(env, convertError(errno));
+                throwSocketException (env, convertError(errno));
                 return;
             }
 
@@ -1118,7 +1118,7 @@ static void mcastAddDropMembership(JNIEnv *env, int handle, jobject optVal,
 
         result = setsockopt(handle, IPPROTO_IP, setSockOptVal, &ipmreqP, length);
         if (0 != result) {
-            throwSocketException(env, convertError(errno));
+            throwSocketException (env, convertError(errno));
             return;
         }
 
@@ -1140,7 +1140,7 @@ static void mcastAddDropMembership(JNIEnv *env, int handle, jobject optVal,
 
         /* we need to use an IP_MREQ as it is an IPV4 address */
         interfaceAddrID = env->GetFieldID(cls, "interfaceAddr",
-                                          "Ljava/net/InetAddress;");
+                "Ljava/net/InetAddress;");
         interfaceAddr = env->GetObjectField(optVal, interfaceAddrID);
 
         ipmreqP.imr_interface.s_addr = htonl(INADDR_ANY);
@@ -1154,7 +1154,7 @@ static void mcastAddDropMembership(JNIEnv *env, int handle, jobject optVal,
             if (NULL != interfaceAddr) {
 
                 result = inetAddressToSocketAddress(env, interfaceAddr, 0,
-                                                    &sockaddrP);
+                        &sockaddrP);
 
                 if (result < 0) {
                     throwSocketException(env, SOCKERR_BADSOCKET);
@@ -1169,15 +1169,14 @@ static void mcastAddDropMembership(JNIEnv *env, int handle, jobject optVal,
         /* join/drop the multicast address */
         result = setsockopt(handle, IPPROTO_IP, setSockOptVal, &ipmreqP, length);
         if (0 != result) {
-            throwSocketException(env, convertError(errno));
+            throwSocketException (env, convertError(errno));
             return;
         }
     }
 }
 
-extern "C" void
-Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env, jobject obj,
-                                                                     jboolean jcl_supports_ipv6) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv* env, jobject obj,
+        jboolean jcl_supports_ipv6) {
     // LOGD("ENTER oneTimeInitializationImpl of OSNetworkSystem");
 
     char useAdbNetworkingProperty[PROPERTY_VALUE_MAX];
@@ -1186,8 +1185,8 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env
     property_get("android.net.use-adb-networking", useAdbNetworkingProperty, "");
     property_get("adb.connected", adbConnectedProperty, "");
 
-    if (strlen((char *) useAdbNetworkingProperty) > 0
-        && strlen((char *) adbConnectedProperty) > 0) {
+    if (strlen((char *)useAdbNetworkingProperty) > 0
+            && strlen((char *)adbConnectedProperty) > 0) {
         useAdbNetworking = 1;
     }
 
@@ -1199,7 +1198,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env
 
     if (iaddrclass == NULL) {
         jniThrowException(env, "java/lang/ClassNotFoundException",
-                          "java.net.InetAddress");
+                "java.net.InetAddress");
         return;
     }
 
@@ -1215,12 +1214,11 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env
     gCachedFields.iaddr_class_init = iaddrclassinit;
 
     jmethodID iaddrgetbyaddress = env->GetStaticMethodID(iaddrclass,
-                                                         "getByAddress",
-                                                         "([B)Ljava/net/InetAddress;");
+            "getByAddress", "([B)Ljava/net/InetAddress;");
 
     if (iaddrgetbyaddress == NULL) {
         jniThrowException(env, "java/lang/NoSuchMethodError",
-                          "InetAddress.getByAddress(byte[] val)");
+                "InetAddress.getByAddress(byte[] val)");
         return;
     }
 
@@ -1230,7 +1228,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env
 
     if (iaddripaddress == NULL) {
         jniThrowException(env, "java/lang/NoSuchFieldError",
-                          "Can't find field InetAddress.ipaddress");
+                "Can't find field InetAddress.ipaddress");
         return;
     }
 
@@ -1242,7 +1240,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env
 
     if (genericipmreqclass == NULL) {
         jniThrowException(env, "java/lang/ClassNotFoundException",
-                          "org.apache.harmony.luni.net.GenericIPMreq");
+                "org.apache.harmony.luni.net.GenericIPMreq");
         return;
     }
 
@@ -1254,7 +1252,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env
 
     if (integerclass == NULL) {
         jniThrowException(env, "java/lang/ClassNotFoundException",
-                          "java.lang.Integer");
+                "java.lang.Integer");
         return;
     }
 
@@ -1262,7 +1260,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env
 
     if (integerclassinit == NULL) {
         jniThrowException(env, "java/lang/NoSuchMethodError",
-                          "Integer.<init>(int val)");
+                "Integer.<init>(int val)");
         return;
     }
 
@@ -1283,7 +1281,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env
 
     if (booleanclass == NULL) {
         jniThrowException(env, "java/lang/ClassNotFoundException",
-                          "java.lang.Boolean");
+                "java.lang.Boolean");
         return;
     }
 
@@ -1291,7 +1289,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env
 
     if (booleanclassinit == NULL) {
         jniThrowException(env, "java/lang/NoSuchMethodError",
-                          "Boolean.<init>(boolean val)");
+                "Boolean.<init>(boolean val)");
         return;
     }
 
@@ -1312,7 +1310,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env
 
     if (byteclass == NULL) {
         jniThrowException(env, "java/lang/ClassNotFoundException",
-                          "java.lang.Byte");
+                "java.lang.Byte");
         return;
     }
 
@@ -1320,7 +1318,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env
 
     if (byteclassinit == NULL) {
         jniThrowException(env, "java/lang/NoSuchMethodError",
-                          "Byte.<init>(byte val)");
+                "Byte.<init>(byte val)");
         return;
     }
 
@@ -1341,7 +1339,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env
 
     if (stringclass == NULL) {
         jniThrowException(env, "java/lang/ClassNotFoundException",
-                          "java.lang.String");
+                "java.lang.String");
         return;
     }
 
@@ -1349,7 +1347,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env
 
     if (stringclassinit == NULL) {
         jniThrowException(env, "java/lang/NoSuchMethodError",
-                          "String.<init>(byte[] val)");
+                "String.<init>(byte[] val)");
         return;
     }
 
@@ -1362,7 +1360,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env
 
     if (socketimplclass == NULL) {
         jniThrowException(env, "java/lang/ClassNotFoundException",
-                          "java.net.SocketImpl");
+                "java.net.SocketImpl");
         return;
     }
 
@@ -1374,11 +1372,11 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env
     }
 
     jfieldID socketimpladdress = env->GetFieldID(socketimplclass, "address",
-                                                 "Ljava/net/InetAddress;");
+            "Ljava/net/InetAddress;");
 
     if (socketimpladdress == NULL) {
         jniThrowException(env, "java/lang/NoSuchFieldError",
-                          "SocketImpl.address");
+                "SocketImpl.address");
         return;
     }
 
@@ -1388,53 +1386,51 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_oneTimeInitializationImpl(JNIEnv *env
     gCachedFields.dpack_class = env->FindClass("java/net/DatagramPacket");
     if (gCachedFields.dpack_class == NULL) {
         jniThrowException(env, "java/lang/ClassNotFoundException",
-                          "java.net.DatagramPacket");
+                "java.net.DatagramPacket");
         return;
     }
 
     gCachedFields.dpack_address = env->GetFieldID(gCachedFields.dpack_class,
-                                                  "address", "Ljava/net/InetAddress;");
+            "address", "Ljava/net/InetAddress;");
     if (gCachedFields.dpack_address == NULL) {
         jniThrowException(env, "java/lang/NoSuchFieldError",
-                          "DatagramPacket.address");
+                "DatagramPacket.address");
         return;
     }
 
     gCachedFields.dpack_port = env->GetFieldID(gCachedFields.dpack_class,
-                                               "port", "I");
+            "port", "I");
     if (gCachedFields.dpack_port == NULL) {
         jniThrowException(env, "java/lang/NoSuchFieldError",
-                          "DatagramPacket.port");
+                "DatagramPacket.port");
         return;
     }
 
     gCachedFields.dpack_length = env->GetFieldID(gCachedFields.dpack_class,
-                                                 "length", "I");
+            "length", "I");
     if (gCachedFields.dpack_length == NULL) {
         jniThrowException(env, "java/lang/NoSuchFieldError",
-                          "DatagramPacket.length");
+                "DatagramPacket.length");
         return;
     }
 
-    gCachedFields.fd_class = env->FindClass("java/io/FileDescriptor");
+        gCachedFields.fd_class = env->FindClass("java/io/FileDescriptor");
     if (gCachedFields.fd_class == NULL) {
         jniThrowException(env, "java/lang/ClassNotFoundException",
-                          "java.io.FileDescriptor");
+                "java.io.FileDescriptor");
         return;
     }
-    gCachedFields.descriptor = env->GetFieldID(gCachedFields.fd_class, "descriptor", "I");
+        gCachedFields.descriptor = env->GetFieldID(gCachedFields.fd_class, "descriptor", "I");
     if (gCachedFields.descriptor == NULL) {
         jniThrowException(env, "java/lang/NoSuchFieldError",
-                          "FileDescriptor.descriptor");
+                "FileDescriptor.descriptor");
         return;
     }
 
 }
 
-extern "C" void
-Java_org_sipdroid_net_impl_OSNetworkSystem_createSocketImpl(JNIEnv *env, jclass clazz,
-                                                            jobject fileDescriptor,
-                                                            jboolean preferIPv4Stack) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_createSocketImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jboolean preferIPv4Stack) {
     // LOGD("ENTER createSocketImpl");
 
     int ret = socket(PF_INET, SOCK_STREAM, 0);
@@ -1450,10 +1446,8 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_createSocketImpl(JNIEnv *env, jclass 
     return;
 }
 
-extern "C" void
-Java_org_sipdroid_net_impl_OSNetworkSystem_createDatagramSocketImpl(JNIEnv *env, jclass clazz,
-                                                                    jobject fileDescriptor,
-                                                                    jboolean preferIPv4Stack) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_createDatagramSocketImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jboolean preferIPv4Stack) {
     // LOGD("ENTER createDatagramSocketImpl");
 
     int ret = socket(PF_INET, SOCK_DGRAM, 0);
@@ -1469,16 +1463,13 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_createDatagramSocketImpl(JNIEnv *env,
     return;
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_readSocketDirectImpl(JNIEnv *env, jclass clazz,
-                                                                jobject fileDescriptor,
-                                                                jint address, jint offset,
-                                                                jint count,
-                                                                jint timeout) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_readSocketDirectImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jint address, jint offset, jint count,
+        jint timeout) {
     // LOGD("ENTER readSocketDirectImpl");
 
     int handle;
-    jbyte *message = (jbyte *) address;
+    jbyte *message = (jbyte *)address;
     int result, ret, localCount;
 
     handle = jniGetFDFromFileDescriptor(env, fileDescriptor);
@@ -1512,11 +1503,9 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_readSocketDirectImpl(JNIEnv *env, jcl
     return ret;
 }
 
-extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_readSocketImpl(JNIEnv *env, jclass clazz,
-                                                                          jobject fileDescriptor,
-                                                                          jbyteArray data,
-                                                                          jint offset, jint count,
-                                                                          jint timeout) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_readSocketImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jbyteArray data, jint offset, jint count,
+        jint timeout) {
     // LOGD("ENTER readSocketImpl");
 
     jbyte *message;
@@ -1527,41 +1516,36 @@ extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_readSocketImpl(JNIEnv
     localCount = (count < 65536) ? count : 65536;
 
     if (localCount > BUFFERSIZE) {
-        message = (jbyte *) malloc(localCount * sizeof(jbyte));
+        message = (jbyte*)malloc(localCount * sizeof(jbyte));
         if (message == NULL) {
             jniThrowException(env, "java/lang/OutOfMemoryError",
-                              "couldn't allocate enough memory for readSocket");
+                    "couldn't allocate enough memory for readSocket");
             return 0;
         }
     } else {
-        message = (jbyte *) internalBuffer;
+        message = (jbyte *)internalBuffer;
     }
 
-    result = Java_org_sipdroid_net_impl_OSNetworkSystem_readSocketDirectImpl(env, clazz,
-                                                                             fileDescriptor,
-                                                                             (jint) message, offset,
-                                                                             count, timeout);
+    result = Java_org_sipdroid_net_impl_OSNetworkSystem_readSocketDirectImpl(env, clazz, fileDescriptor,
+            (jint) message, offset, count, timeout);
 
     if (result > 0) {
-        env->SetByteArrayRegion(data, offset, result, (jbyte *) message);
+        env->SetByteArrayRegion(data, offset, result, (jbyte *)message);
     }
 
-    if (((jbyte *) message) != internalBuffer) {
-        free((jbyte *) message);
+    if (((jbyte *)message) != internalBuffer) {
+        free(( jbyte *)message);
     }
 
     return result;
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_writeSocketDirectImpl(JNIEnv *env, jclass clazz,
-                                                                 jobject fileDescriptor,
-                                                                 jint address, jint offset,
-                                                                 jint count) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_writeSocketDirectImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jint address, jint offset, jint count) {
     // LOGD("ENTER writeSocketDirectImpl");
 
     int handle;
-    jbyte *message = (jbyte *) address;
+    jbyte *message = (jbyte *)address;
     int result = 0, sent = 0;
 
     if (count <= 0) {
@@ -1580,37 +1564,35 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_writeSocketDirectImpl(JNIEnv *env, jc
         int err = convertError(errno);
         log_socket_close(handle, err);
 
-        if (SOCKERR_WOULDBLOCK == err) {
-            jclass socketExClass, errorCodeExClass;
-            jmethodID errorCodeExConstructor, socketExConstructor, socketExCauseMethod;
+        if (SOCKERR_WOULDBLOCK == err){
+            jclass socketExClass,errorCodeExClass;
+            jmethodID errorCodeExConstructor, socketExConstructor,socketExCauseMethod;
             jobject errorCodeEx, socketEx;
-            const char *errorMessage = netLookupErrorString(err);
+            const char* errorMessage = netLookupErrorString(err);
             jstring errorMessageString = env->NewStringUTF(errorMessage);
 
             errorCodeExClass = env->FindClass("org/apache/harmony/luni/util/ErrorCodeException");
-            if (!errorCodeExClass) {
+            if (!errorCodeExClass){
                 return 0;
             }
-            errorCodeExConstructor = env->GetMethodID(errorCodeExClass, "<init>", "(I)V");
-            if (!errorCodeExConstructor) {
+            errorCodeExConstructor = env->GetMethodID(errorCodeExClass,"<init>","(I)V");
+            if (!errorCodeExConstructor){
                 return 0;
             }
-            errorCodeEx = env->NewObject(errorCodeExClass, errorCodeExConstructor, err);
+            errorCodeEx = env->NewObject(errorCodeExClass,errorCodeExConstructor,err);
 
             socketExClass = env->FindClass("java/net/SocketException");
             if (!socketExClass) {
                 return 0;
             }
-            socketExConstructor = env->GetMethodID(socketExClass, "<init>",
-                                                   "(Ljava/lang/String;)V");
+            socketExConstructor = env->GetMethodID(socketExClass,"<init>","(Ljava/lang/String;)V");
             if (!socketExConstructor) {
                 return 0;
             }
-            socketEx = env->NewObject(socketExClass, socketExConstructor, errorMessageString);
-            socketExCauseMethod = env->GetMethodID(socketExClass, "initCause",
-                                                   "(Ljava/lang/Throwable;)Ljava/lang/Throwable;");
-            env->CallObjectMethod(socketEx, socketExCauseMethod, errorCodeEx);
-            env->Throw((jthrowable) socketEx);
+            socketEx = env->NewObject(socketExClass, socketExConstructor, errorMessageString); 
+            socketExCauseMethod = env->GetMethodID(socketExClass,"initCause","(Ljava/lang/Throwable;)Ljava/lang/Throwable;");
+            env->CallObjectMethod(socketEx,socketExCauseMethod,errorCodeEx);
+            env->Throw((jthrowable)socketEx);
             return 0;
         }
         throwSocketException(env, err);
@@ -1621,10 +1603,8 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_writeSocketDirectImpl(JNIEnv *env, jc
     return result;
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_writeSocketImpl(JNIEnv *env, jclass clazz,
-                                                           jobject fileDescriptor, jbyteArray data,
-                                                           jint offset, jint count) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_writeSocketImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jbyteArray data, jint offset, jint count) {
     // LOGD("ENTER writeSocketImpl");
 
     jbyte *message;
@@ -1636,34 +1616,30 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_writeSocketImpl(JNIEnv *env, jclass c
     jbyte internalBuffer[INTERNAL_SEND_BUFFER_MAX];
 
     if (count > INTERNAL_SEND_BUFFER_MAX) {
-        message = (jbyte *) malloc(count * sizeof(jbyte));
+        message = (jbyte*)malloc(count * sizeof( jbyte));
         if (message == NULL) {
             jniThrowException(env, "java/lang/OutOfMemoryError",
-                              "couldn't allocate enough memory for writeSocket");
+                    "couldn't allocate enough memory for writeSocket");
             return 0;
         }
     } else {
-        message = (jbyte *) internalBuffer;
+        message = (jbyte *)internalBuffer;
     }
 
     env->GetByteArrayRegion(data, offset, count, message);
 
-    result = Java_org_sipdroid_net_impl_OSNetworkSystem_writeSocketDirectImpl(env, clazz,
-                                                                              fileDescriptor,
-                                                                              (jint) message,
-                                                                              offset, count);
+    result = Java_org_sipdroid_net_impl_OSNetworkSystem_writeSocketDirectImpl(env, clazz, fileDescriptor,
+            (jint) message, offset, count);
 
-    if ((jbyte *) message != internalBuffer) {
-        free((jbyte *) message);
+    if (( jbyte *)message != internalBuffer) {
+      free(( jbyte *)message);
     }
 #undef INTERNAL_SEND_BUFFER_MAX
-    return result;
+   return result;
 }
 
-extern "C" void
-Java_org_sipdroid_net_impl_OSNetworkSystem_setNonBlockingImpl(JNIEnv *env, jclass clazz,
-                                                              jobject fileDescriptor,
-                                                              jboolean nonblocking) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_setNonBlockingImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jboolean nonblocking) {
     // LOGD("ENTER setNonBlockingImpl");
 
     int handle;
@@ -1685,21 +1661,12 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_setNonBlockingImpl(JNIEnv *env, jclas
     }
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_connectSocketImpl(JNIEnv *env, jclass clazz,
-                                                             jobject fileDescriptor,
-                                                             jint trafficClass, jobject inetAddr,
-                                                             jint port);
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_connectSocketImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jint trafficClass, jobject inetAddr, jint port);
 
-extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_connectWithTimeoutSocketImpl(JNIEnv *env,
-                                                                                        jclass clazz,
-                                                                                        jobject fileDescriptor,
-                                                                                        jint timeout,
-                                                                                        jint trafficClass,
-                                                                                        jobject inetAddr,
-                                                                                        jint port,
-                                                                                        jint step,
-                                                                                        jbyteArray passContext) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_connectWithTimeoutSocketImpl(JNIEnv* env,
+        jclass clazz, jobject fileDescriptor, jint timeout, jint trafficClass,
+        jobject inetAddr, jint port, jint step, jbyteArray passContext) {
     // LOGD("ENTER connectWithTimeoutSocketImpl");
 
     int handle;
@@ -1712,7 +1679,7 @@ extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_connectWithTimeoutSoc
     address.sin_family = AF_INET;
 
     result = inetAddressToSocketAddress(env, inetAddr, port,
-                                        (struct sockaddr_in *) &address);
+            (struct sockaddr_in *) &address);
 
     if (result < 0) {
         throwSocketException(env, SOCKERR_BADSOCKET);
@@ -1721,10 +1688,8 @@ extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_connectWithTimeoutSoc
 
     // Check if we're using adb networking and redirect in case it is used.
     if (useAdbNetworking && !isLocalhost(&address)) {
-        return Java_org_sipdroid_net_impl_OSNetworkSystem_connectSocketImpl(env, clazz,
-                                                                            fileDescriptor,
-                                                                            trafficClass, inetAddr,
-                                                                            port);
+        return Java_org_sipdroid_net_impl_OSNetworkSystem_connectSocketImpl(env, clazz, fileDescriptor,
+                trafficClass, inetAddr, port);
     }
 
     handle = jniGetFDFromFileDescriptor(env, fileDescriptor);
@@ -1736,16 +1701,16 @@ extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_connectWithTimeoutSoc
 
     address.sin_port = htons(port);
 
-    context = (jbyte *) env->GetPrimitiveArrayCritical(passContext, NULL);
+    context = (jbyte *)env->GetPrimitiveArrayCritical(passContext, NULL);
 
     switch (step) {
         case SOCKET_CONNECT_STEP_START:
             result = sockConnectWithTimeout(handle, address, 0,
-                                            SOCKET_STEP_START, context);
+                    SOCKET_STEP_START, context);
             break;
         case SOCKET_CONNECT_STEP_CHECK:
             result = sockConnectWithTimeout(handle, address, timeout,
-                                            SOCKET_STEP_CHECK, context);
+                    SOCKET_STEP_CHECK, context);
             break;
     }
 
@@ -1769,14 +1734,9 @@ extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_connectWithTimeoutSoc
     return result;
 }
 
-extern "C" void
-Java_org_sipdroid_net_impl_OSNetworkSystem_connectStreamWithTimeoutSocketImpl(JNIEnv *env,
-                                                                              jclass clazz,
-                                                                              jobject fileDescriptor,
-                                                                              jint remotePort,
-                                                                              jint timeout,
-                                                                              jint trafficClass,
-                                                                              jobject inetAddr) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_connectStreamWithTimeoutSocketImpl(JNIEnv* env,
+        jclass clazz, jobject fileDescriptor, jint remotePort, jint timeout,
+        jint trafficClass, jobject inetAddr) {
     // LOGD("ENTER connectStreamWithTimeoutSocketImpl");
 
     int result = 0;
@@ -1790,7 +1750,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_connectStreamWithTimeoutSocketImpl(JN
     char hasTimeout = timeout > 0;
 
     /* if a timeout was specified calculate the finish time value */
-    if (hasTimeout) {
+    if (hasTimeout)  {
         finishTime = time_msec_clock() + (int) timeout;
     }
 
@@ -1802,7 +1762,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_connectStreamWithTimeoutSocketImpl(JN
         return;
     } else {
         result = inetAddressToSocketAddress(env, inetAddr, remotePort,
-                                            (struct sockaddr_in *) &address);
+                (struct sockaddr_in *) &address);
 
         if (result < 0) {
             throwSocketException(env, SOCKERR_BADSOCKET);
@@ -1812,10 +1772,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_connectStreamWithTimeoutSocketImpl(JN
         // Check if we're using adb networking and redirect in case it is used.
         if (useAdbNetworking && !isLocalhost(&address)) {
             int retVal = Java_org_sipdroid_net_impl_OSNetworkSystem_connectSocketImpl(env, clazz,
-                                                                                      fileDescriptor,
-                                                                                      trafficClass,
-                                                                                      inetAddr,
-                                                                                      remotePort);
+                    fileDescriptor, trafficClass, inetAddr, remotePort);
             if (retVal != 0) {
                 throwSocketException(env, SOCKERR_BADSOCKET);
             }
@@ -1826,7 +1783,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_connectStreamWithTimeoutSocketImpl(JN
          * we will be looping checking for when we are connected so allocate
          * the descriptor sets that we will use
          */
-        context = (jbyte *) malloc(sizeof(struct selectFDSet));
+        context =(jbyte *) malloc(sizeof(struct selectFDSet));
 
         if (NULL == context) {
             throwSocketException(env, SOCKERR_NOBUFFERS);
@@ -1860,7 +1817,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_connectStreamWithTimeoutSocketImpl(JN
              * for up to passedTimeout milliseconds
              */
             result = sockConnectWithTimeout(handle, address, passedTimeout,
-                                            SOCKET_STEP_CHECK, context);
+                    SOCKET_STEP_CHECK, context);
 
             /*
              * now check if the socket is still connected.
@@ -1871,7 +1828,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_connectStreamWithTimeoutSocketImpl(JN
 
             if (handle == 0 || handle == -1) {
                 sockConnectWithTimeout(handle, address, 0,
-                                       SOCKET_STEP_DONE, context);
+                        SOCKET_STEP_DONE, context);
                 throwSocketException(env, SOCKERR_BADSOCKET);
                 goto bail;
             }
@@ -1882,7 +1839,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_connectStreamWithTimeoutSocketImpl(JN
              */
             if (0 == result) {
                 sockConnectWithTimeout(handle, address, 0,
-                                       SOCKET_STEP_DONE, context);
+                        SOCKET_STEP_DONE, context);
                 goto bail;
             }
 
@@ -1897,12 +1854,12 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_connectStreamWithTimeoutSocketImpl(JN
                     if (remainingTimeout <= 0) {
                         log_socket_close(handle, result);
                         sockConnectWithTimeout(handle, address, 0,
-                                               SOCKET_STEP_DONE, context);
+                                SOCKET_STEP_DONE, context);
                         jniThrowException(env,
-                                          "java/net/SocketTimeoutException",
-                                          netLookupErrorString(result));
+                                "java/net/SocketTimeoutException",
+                                netLookupErrorString(result));
                         goto bail;
-                    }
+                     }
                 } else {
                     remainingTimeout = 100;
                 }
@@ -1928,19 +1885,16 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_connectStreamWithTimeoutSocketImpl(JN
         }
     }
 
-    bail:
+bail:
 
     /* free the memory for the FD set */
-    if (context != NULL) {
+    if (context != NULL)  {
         free(context);
     }
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_connectSocketImpl(JNIEnv *env, jclass clazz,
-                                                             jobject fileDescriptor,
-                                                             jint trafficClass, jobject inetAddr,
-                                                             jint port) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_connectSocketImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jint trafficClass, jobject inetAddr, jint port) {
     //LOGD("ENTER direct-call connectSocketImpl\n");
 
     struct sockaddr_in address;
@@ -1953,7 +1907,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_connectSocketImpl(JNIEnv *env, jclass
     address.sin_family = AF_INET;
 
     ret = inetAddressToSocketAddress(env, inetAddr, port,
-                                     (struct sockaddr_in *) &address);
+            (struct sockaddr_in *) &address);
 
     if (ret < 0) {
         throwSocketException(env, SOCKERR_BADSOCKET);
@@ -1980,10 +1934,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_connectSocketImpl(JNIEnv *env, jclass
 
         // call this method with a timeout of zero
         Java_org_sipdroid_net_impl_OSNetworkSystem_connectStreamWithTimeoutSocketImpl(env, clazz,
-                                                                                      fileDescriptor,
-                                                                                      port, 0,
-                                                                                      trafficClass,
-                                                                                      inetAddr);
+                fileDescriptor, port, 0, trafficClass, inetAddr);
         if (env->ExceptionOccurred() != 0) {
             return -1;
         } else {
@@ -1994,17 +1945,15 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_connectSocketImpl(JNIEnv *env, jclass
 
     if (ret < 0) {
         jniThrowException(env, "java/net/ConnectException",
-                          netLookupErrorString(convertError(errno)));
+                netLookupErrorString(convertError(errno)));
         return ret;
     }
 
     return ret;
 }
 
-extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_socketBindImpl(JNIEnv *env, jclass clazz,
-                                                                          jobject fileDescriptor,
-                                                                          jint port,
-                                                                          jobject inetAddress) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_socketBindImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jint port, jobject inetAddress) {
     // LOGD("ENTER socketBindImpl");
 
     struct sockaddr_in sockaddress;
@@ -2012,7 +1961,7 @@ extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_socketBindImpl(JNIEnv
     int handle;
 
     ret = inetAddressToSocketAddress(env, inetAddress, port,
-                                     (struct sockaddr_in *) &sockaddress);
+            (struct sockaddr_in *) &sockaddress);
 
     if (ret < 0) {
         throwSocketException(env, SOCKERR_BADSOCKET);
@@ -2026,19 +1975,17 @@ extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_socketBindImpl(JNIEnv
         return;
     }
 
-    ret = bind(handle, (const sockaddr *) &sockaddress, sizeof(sockaddress));
+    ret = bind(handle, (const sockaddr*)&sockaddress, sizeof(sockaddress));
 
     if (ret < 0) {
         jniThrowException(env, "java/net/BindException",
-                          netLookupErrorString(convertError(errno)));
+                netLookupErrorString(convertError(errno)));
         return;
     }
 }
 
-extern "C" void
-Java_org_sipdroid_net_impl_OSNetworkSystem_listenStreamSocketImpl(JNIEnv *env, jclass clazz,
-                                                                  jobject fileDescriptor,
-                                                                  jint backlog) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_listenStreamSocketImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jint backlog) {
     // LOGD("ENTER listenStreamSocketImpl");
 
     int ret;
@@ -2061,9 +2008,8 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_listenStreamSocketImpl(JNIEnv *env, j
     }
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_availableStreamImpl(JNIEnv *env, jclass clazz,
-                                                               jobject fileDescriptor) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_availableStreamImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor) {
     // LOGD("ENTER availableStreamImpl");
 
     int handle;
@@ -2105,10 +2051,8 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_availableStreamImpl(JNIEnv *env, jcla
     return result;
 }
 
-extern "C" void
-Java_org_sipdroid_net_impl_OSNetworkSystem_acceptSocketImpl(JNIEnv *env, jclass clazz,
-                                                            jobject fdServer, jobject newSocket,
-                                                            jobject fdnewSocket, jint timeout) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_acceptSocketImpl(JNIEnv* env, jclass clazz,
+        jobject fdServer, jobject newSocket, jobject fdnewSocket, jint timeout) {
     // LOGD("ENTER acceptSocketImpl");
 
     union {
@@ -2173,18 +2117,17 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_acceptSocketImpl(JNIEnv *env, jclass 
         }
 
         env->SetObjectField(newSocket,
-                            gCachedFields.socketimpl_address, inetAddress);
+                gCachedFields.socketimpl_address, inetAddress);
 
         env->SetIntField(newSocket, gCachedFields.socketimpl_port,
-                         ntohs(sa.in_address.sin_port));
+                ntohs(sa.in_address.sin_port));
     }
 
     jniSetFileDescriptorOfFD(env, fdnewSocket, retFD);
 }
 
-extern "C" jboolean Java_org_sipdroid_net_impl_OSNetworkSystem_supportsUrgentDataImpl(JNIEnv *env,
-                                                                                      jclass clazz,
-                                                                                      jobject fileDescriptor) {
+extern "C" jboolean Java_org_sipdroid_net_impl_OSNetworkSystem_supportsUrgentDataImpl(JNIEnv* env,
+        jclass clazz, jobject fileDescriptor) {
     // LOGD("ENTER supportsUrgentDataImpl");
 
     int handle;
@@ -2197,9 +2140,8 @@ extern "C" jboolean Java_org_sipdroid_net_impl_OSNetworkSystem_supportsUrgentDat
     return JNI_TRUE;
 }
 
-extern "C" void
-Java_org_sipdroid_net_impl_OSNetworkSystem_sendUrgentDataImpl(JNIEnv *env, jclass clazz,
-                                                              jobject fileDescriptor, jbyte value) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_sendUrgentDataImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jbyte value) {
     // LOGD("ENTER sendUrgentDataImpl");
 
     int handle;
@@ -2219,11 +2161,8 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_sendUrgentDataImpl(JNIEnv *env, jclas
     }
 }
 
-extern "C" void
-Java_org_sipdroid_net_impl_OSNetworkSystem_connectDatagramImpl2(JNIEnv *env, jclass clazz,
-                                                                jobject fd, jint port,
-                                                                jint trafficClass,
-                                                                jobject inetAddress) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_connectDatagramImpl2(JNIEnv* env, jclass clazz,
+        jobject fd, jint port, jint trafficClass, jobject inetAddress) {
     // LOGD("ENTER connectDatagramImpl2");
 
     int handle = jniGetFDFromFileDescriptor(env, fd);
@@ -2238,7 +2177,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_connectDatagramImpl2(JNIEnv *env, jcl
         return;
     }
     log_socket_connect(handle, ntohl(sockAddr.sin_addr.s_addr), port);
-    int result = connect(handle, (struct sockaddr *) &sockAddr, sizeof(sockAddr));
+    int result = connect(handle, (struct sockaddr *)&sockAddr, sizeof(sockAddr));
     if (result < 0) {
         int err = convertError(errno);
         log_socket_close(handle, err);
@@ -2246,9 +2185,8 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_connectDatagramImpl2(JNIEnv *env, jcl
     }
 }
 
-extern "C" void
-Java_org_sipdroid_net_impl_OSNetworkSystem_disconnectDatagramImpl(JNIEnv *env, jclass clazz,
-                                                                  jobject fd) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_disconnectDatagramImpl(JNIEnv* env, jclass clazz,
+        jobject fd) {
     // LOGD("ENTER disconnectDatagramImpl");
 
     int handle = jniGetFDFromFileDescriptor(env, fd);
@@ -2259,7 +2197,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_disconnectDatagramImpl(JNIEnv *env, j
     memset(sockAddr, 0, sockAddrLen);
 
     sockAddr->sin_family = AF_UNSPEC;
-    int result = connect(handle, (struct sockaddr *) sockAddr, sockAddrLen);
+    int result = connect(handle, (struct sockaddr *)sockAddr, sockAddrLen);
     free(sockAddr);
 
     if (result < 0) {
@@ -2269,11 +2207,9 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_disconnectDatagramImpl(JNIEnv *env, j
     }
 }
 
-extern "C" jboolean
-Java_org_sipdroid_net_impl_OSNetworkSystem_socketBindImpl2(JNIEnv *env, jclass clazz,
-                                                           jobject fileDescriptor, jint port,
-                                                           jboolean bindToDevice,
-                                                           jobject inetAddress) {
+extern "C" jboolean Java_org_sipdroid_net_impl_OSNetworkSystem_socketBindImpl2(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jint port, jboolean bindToDevice,
+        jobject inetAddress) {
     // LOGD("ENTER socketBindImpl2");
 
     struct sockaddr_in sockaddress;
@@ -2281,7 +2217,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_socketBindImpl2(JNIEnv *env, jclass c
     int handle;
 
     ret = inetAddressToSocketAddress(env, inetAddress, port,
-                                     (struct sockaddr_in *) &sockaddress);
+            (struct sockaddr_in *) &sockaddress);
 
     if (ret < 0) {
         throwSocketException(env, SOCKERR_BADSOCKET);
@@ -2294,7 +2230,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_socketBindImpl2(JNIEnv *env, jclass c
         return 0;
     }
 
-    ret = bind(handle, (const sockaddr *) &sockaddress, sizeof(sockaddress));
+    ret = bind(handle, (const sockaddr*)&sockaddress, sizeof(sockaddress));
 
     if (ret < 0) {
         int err = convertError(errno);
@@ -2306,16 +2242,14 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_socketBindImpl2(JNIEnv *env, jclass c
     return 0;
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_peekDatagramImpl(JNIEnv *env, jclass clazz,
-                                                            jobject fd, jobject sender,
-                                                            jint receiveTimeout) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_peekDatagramImpl(JNIEnv* env, jclass clazz,
+        jobject fd, jobject sender, jint receiveTimeout) {
     // LOGD("ENTER peekDatagramImpl");
 
     int port = -1;
 
-    int result = pollSelectWait(env, fd, receiveTimeout, SELECT_READ_TYPE);
-    if (0 > result) {
+    int result = pollSelectWait (env, fd, receiveTimeout, SELECT_READ_TYPE);
+    if (0> result) {
         return (jint) 0;
     }
 
@@ -2330,7 +2264,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_peekDatagramImpl(JNIEnv *env, jclass 
     socklen_t sockAddrLen = sizeof(sockAddr);
 
     int length = recvfrom(handle, NULL, 0, MSG_PEEK,
-                          (struct sockaddr *) &sockAddr, &sockAddrLen);
+            (struct sockaddr *)&sockAddr, &sockAddrLen);
 
     if (length < 0) {
         int err = convertError(errno);
@@ -2347,16 +2281,12 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_peekDatagramImpl(JNIEnv *env, jclass 
     return port;
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_receiveDatagramDirectImpl(JNIEnv *env, jclass clazz,
-                                                                     jobject fd, jobject packet,
-                                                                     jint address, jint offset,
-                                                                     jint length,
-                                                                     jint receiveTimeout,
-                                                                     jboolean peek) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_receiveDatagramDirectImpl(JNIEnv* env, jclass clazz,
+        jobject fd, jobject packet, jint address, jint offset, jint length,
+        jint receiveTimeout, jboolean peek) {
     // LOGD("ENTER receiveDatagramDirectImpl");
 
-    int result = pollSelectWait(env, fd, receiveTimeout, SELECT_READ_TYPE);
+    int result = pollSelectWait (env, fd, receiveTimeout, SELECT_READ_TYPE);
     if (0 > result) {
         return (jint) 0;
     }
@@ -2373,8 +2303,8 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_receiveDatagramDirectImpl(JNIEnv *env
 
     int mode = peek ? MSG_PEEK : 0;
 
-    int actualLength = recvfrom(handle, (char *) (address + offset), length, mode,
-                                (struct sockaddr *) &sockAddr, &sockAddrLen);
+    int actualLength = recvfrom(handle, (char*)(address + offset), length, mode,
+            (struct sockaddr *)&sockAddr, &sockAddrLen);
 
     if (actualLength < 0) {
         int err = convertError(errno);
@@ -2384,51 +2314,41 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_receiveDatagramDirectImpl(JNIEnv *env
     }
 
     if (packet != NULL) {
-        /*
-            int port = ntohs(sockAddr.sin_port);
-            jbyteArray addr = env->NewByteArray(sizeof(struct in_addr));
-            if ((structInToJavaAddress(env, &sockAddr.sin_addr, addr)) < 0) {
-                jniThrowException(env, "java/net/SocketException",
-                        "Could not set address of packet.");
-                return 0;
-            }
-            jobject sender = env->CallStaticObjectMethod(
-                    gCachedFields.iaddr_class, gCachedFields.iaddr_getbyaddress,
-                    addr);
-            env->SetObjectField(packet, gCachedFields.dpack_address, sender);
-            env->SetIntField(packet, gCachedFields.dpack_port, port);
-            */
+    /*
+        int port = ntohs(sockAddr.sin_port);
+        jbyteArray addr = env->NewByteArray(sizeof(struct in_addr));
+        if ((structInToJavaAddress(env, &sockAddr.sin_addr, addr)) < 0) {
+            jniThrowException(env, "java/net/SocketException",
+                    "Could not set address of packet.");
+            return 0;
+        }
+        jobject sender = env->CallStaticObjectMethod(
+                gCachedFields.iaddr_class, gCachedFields.iaddr_getbyaddress,
+                addr);
+        env->SetObjectField(packet, gCachedFields.dpack_address, sender);
+        env->SetIntField(packet, gCachedFields.dpack_port, port);
+        */
         env->SetIntField(packet, gCachedFields.dpack_length, actualLength);
     }
     add_recv_stats(handle, actualLength);
     return actualLength;
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_receiveDatagramImpl(JNIEnv *env, jclass clazz,
-                                                               jobject fd, jobject packet,
-                                                               jbyteArray data, jint offset,
-                                                               jint length,
-                                                               jint receiveTimeout, jboolean peek) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_receiveDatagramImpl(JNIEnv* env, jclass clazz,
+        jobject fd, jobject packet, jbyteArray data, jint offset, jint length,
+        jint receiveTimeout, jboolean peek) {
     // LOGD("ENTER receiveDatagramImpl");
 
     int localLength = (length < 65536) ? length : 65536;
-    jbyte *bytes = (jbyte *) malloc(localLength);
+    jbyte *bytes = (jbyte*) malloc(localLength);
     if (bytes == NULL) {
         jniThrowException(env, "java/lang/OutOfMemoryError",
-                          "couldn't allocate enough memory for receiveDatagram");
+                "couldn't allocate enough memory for receiveDatagram");
         return 0;
     }
 
-    int actualLength = Java_org_sipdroid_net_impl_OSNetworkSystem_receiveDatagramDirectImpl(env,
-                                                                                            clazz,
-                                                                                            fd,
-                                                                                            packet,
-                                                                                            (jint) bytes,
-                                                                                            offset,
-                                                                                            localLength,
-                                                                                            receiveTimeout,
-                                                                                            peek);
+    int actualLength = Java_org_sipdroid_net_impl_OSNetworkSystem_receiveDatagramDirectImpl(env, clazz, fd,
+            packet, (jint)bytes, offset, localLength, receiveTimeout, peek);
 
     if (actualLength > 0) {
         env->SetByteArrayRegion(data, offset, actualLength, bytes);
@@ -2438,18 +2358,12 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_receiveDatagramImpl(JNIEnv *env, jcla
     return actualLength;
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_recvConnectedDatagramDirectImpl(JNIEnv *env,
-                                                                           jclass clazz, jobject fd,
-                                                                           jobject packet,
-                                                                           jint address,
-                                                                           jint offset,
-                                                                           jint length,
-                                                                           jint receiveTimeout,
-                                                                           jboolean peek) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_recvConnectedDatagramDirectImpl(JNIEnv* env,
+        jclass clazz, jobject fd, jobject packet, jint address, jint offset,
+        jint length, jint receiveTimeout, jboolean peek) {
     // LOGD("ENTER receiveConnectedDatagramDirectImpl");
 
-    int result = pollSelectWait(env, fd, receiveTimeout, SELECT_READ_TYPE);
+    int result = pollSelectWait (env, fd, receiveTimeout, SELECT_READ_TYPE);
 
     if (0 > result) {
         return 0;
@@ -2465,40 +2379,35 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_recvConnectedDatagramDirectImpl(JNIEn
     int mode = peek ? MSG_PEEK : 0;
 
     int actualLength = recvfrom(handle,
-                                (char *) (address + offset), length, mode, NULL, NULL);
+            (char*)(address + offset), length, mode, NULL, NULL);
 
     if (actualLength < 0) {
         jniThrowException(env, "java/net/PortUnreachableException", "");
         return 0;
     }
 
-    if (packet != NULL) {
+    if ( packet != NULL) {
         env->SetIntField(packet, gCachedFields.dpack_length, actualLength);
     }
     add_recv_stats(handle, actualLength);
     return actualLength;
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_recvConnectedDatagramImpl(JNIEnv *env, jclass clazz,
-                                                                     jobject fd, jobject packet,
-                                                                     jbyteArray data, jint offset,
-                                                                     jint length,
-                                                                     jint receiveTimeout,
-                                                                     jboolean peek) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_recvConnectedDatagramImpl(JNIEnv* env, jclass clazz,
+        jobject fd, jobject packet, jbyteArray data, jint offset, jint length,
+        jint receiveTimeout, jboolean peek) {
     // LOGD("ENTER receiveConnectedDatagramImpl");
 
     int localLength = (length < 65536) ? length : 65536;
-    jbyte *bytes = (jbyte *) malloc(localLength);
+    jbyte *bytes = (jbyte*) malloc(localLength);
     if (bytes == NULL) {
         jniThrowException(env, "java/lang/OutOfMemoryError",
-                          "couldn't allocate enough memory for recvConnectedDatagram");
+                "couldn't allocate enough memory for recvConnectedDatagram");
         return 0;
     }
 
-    int actualLength = Java_org_sipdroid_net_impl_OSNetworkSystem_recvConnectedDatagramDirectImpl(
-            env,
-            clazz, fd, packet, (jint) bytes, offset, localLength,
+    int actualLength = Java_org_sipdroid_net_impl_OSNetworkSystem_recvConnectedDatagramDirectImpl(env,
+            clazz, fd, packet, (jint)bytes, offset, localLength,
             receiveTimeout, peek);
 
     if (actualLength > 0) {
@@ -2509,14 +2418,9 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_recvConnectedDatagramImpl(JNIEnv *env
     return actualLength;
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_sendDatagramDirectImpl(JNIEnv *env, jclass clazz,
-                                                                  jobject fd, jint address,
-                                                                  jint offset, jint length,
-                                                                  jint port,
-                                                                  jboolean bindToDevice,
-                                                                  jint trafficClass,
-                                                                  jobject inetAddress) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_sendDatagramDirectImpl(JNIEnv* env, jclass clazz,
+        jobject fd, jint address, jint offset, jint length, jint port,
+        jboolean bindToDevice, jint trafficClass, jobject inetAddress) {
     // LOGD("ENTER sendDatagramDirectImpl");
 
     int result = 0;
@@ -2535,13 +2439,13 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_sendDatagramDirectImpl(JNIEnv *env, j
         return 0;
     }
 
-    result = sendto(handle, (char *) (address + offset), length, SOCKET_NOFLAGS,
-                    (struct sockaddr *) &receiver, sizeof(receiver));
+    result = sendto(handle, (char*)(address + offset), length, SOCKET_NOFLAGS,
+            (struct sockaddr*)&receiver, sizeof(receiver));
 
     if (result < 0) {
         int err = convertError(errno);
         if ((SOCKERR_CONNRESET == err)
-            || (SOCKERR_CONNECTION_REFUSED == err)) {
+                || (SOCKERR_CONNECTION_REFUSED == err)) {
             return 0;
         } else {
             log_socket_close(handle, err);
@@ -2553,36 +2457,23 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_sendDatagramDirectImpl(JNIEnv *env, j
     return result;
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_sendDatagramImpl(JNIEnv *env, jclass clazz,
-                                                            jobject fd, jbyteArray data,
-                                                            jint offset, jint length, jint port,
-                                                            jboolean bindToDevice,
-                                                            jint trafficClass,
-                                                            jobject inetAddress) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_sendDatagramImpl(JNIEnv* env, jclass clazz,
+        jobject fd, jbyteArray data, jint offset, jint length, jint port,
+        jboolean bindToDevice, jint trafficClass, jobject inetAddress) {
     // LOGD("ENTER sendDatagramImpl");
 
     jbyte *bytes = env->GetByteArrayElements(data, NULL);
-    int actualLength = Java_org_sipdroid_net_impl_OSNetworkSystem_sendDatagramDirectImpl(env, clazz,
-                                                                                         fd,
-                                                                                         (jint) bytes,
-                                                                                         offset,
-                                                                                         length,
-                                                                                         port,
-                                                                                         bindToDevice,
-                                                                                         trafficClass,
-                                                                                         inetAddress);
+    int actualLength = Java_org_sipdroid_net_impl_OSNetworkSystem_sendDatagramDirectImpl(env, clazz, fd,
+            (jint)bytes, offset, length, port, bindToDevice, trafficClass,
+            inetAddress);
     env->ReleaseByteArrayElements(data, bytes, JNI_ABORT);
 
     return actualLength;
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_sendConnectedDatagramDirectImpl(JNIEnv *env,
-                                                                           jclass clazz, jobject fd,
-                                                                           jint address,
-                                                                           jint offset, jint length,
-                                                                           jboolean bindToDevice) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_sendConnectedDatagramDirectImpl(JNIEnv* env,
+        jclass clazz, jobject fd, jint address, jint offset, jint length,
+        jboolean bindToDevice) {
     // LOGD("ENTER sendConnectedDatagramDirectImpl");
 
     int handle = jniGetFDFromFileDescriptor(env, fd);
@@ -2592,7 +2483,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_sendConnectedDatagramDirectImpl(JNIEn
         return 0;
     }
 
-    int result = send(handle, (char *) (address + offset), length, 0);
+    int result = send(handle, (char*)(address + offset), length, 0);
 
     if (result < 0) {
         int err = convertError(errno);
@@ -2608,26 +2499,21 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_sendConnectedDatagramDirectImpl(JNIEn
     return result;
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_sendConnectedDatagramImpl(JNIEnv *env, jclass clazz,
-                                                                     jobject fd, jbyteArray data,
-                                                                     jint offset, jint length,
-                                                                     jboolean bindToDevice) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_sendConnectedDatagramImpl(JNIEnv* env, jclass clazz,
+        jobject fd, jbyteArray data, jint offset, jint length,
+        jboolean bindToDevice) {
     // LOGD("ENTER sendConnectedDatagramImpl");
 
     jbyte *bytes = env->GetByteArrayElements(data, NULL);
-    int actualLength = Java_org_sipdroid_net_impl_OSNetworkSystem_sendConnectedDatagramDirectImpl(
-            env,
-            clazz, fd, (jint) bytes, offset, length, bindToDevice);
+    int actualLength = Java_org_sipdroid_net_impl_OSNetworkSystem_sendConnectedDatagramDirectImpl(env,
+            clazz, fd, (jint)bytes, offset, length, bindToDevice);
     env->ReleaseByteArrayElements(data, bytes, JNI_ABORT);
 
     return actualLength;
 }
 
-extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_createServerStreamSocketImpl(JNIEnv *env,
-                                                                                        jclass clazz,
-                                                                                        jobject fileDescriptor,
-                                                                                        jboolean preferIPv4Stack) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_createServerStreamSocketImpl(JNIEnv* env,
+        jclass clazz, jobject fileDescriptor, jboolean preferIPv4Stack) {
     // LOGD("ENTER createServerStreamSocketImpl");
 
     if (fileDescriptor == NULL) {
@@ -2650,10 +2536,8 @@ extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_createServerStreamSoc
     setsockopt(handle, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(int));
 }
 
-extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_createMulticastSocketImpl(JNIEnv *env,
-                                                                                     jclass clazz,
-                                                                                     jobject fileDescriptor,
-                                                                                     jboolean preferIPv4Stack) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_createMulticastSocketImpl(JNIEnv* env,
+        jclass clazz, jobject fileDescriptor, jboolean preferIPv4Stack) {
     // LOGD("ENTER createMulticastSocketImpl");
 
     int handle = socket(PF_INET, SOCK_DGRAM, 0);
@@ -2675,12 +2559,9 @@ extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_createMulticastSocket
 /*
  * @param timeout in milliseconds.  If zero, block until data received
  */
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_receiveStreamImpl(JNIEnv *env, jclass clazz,
-                                                             jobject fileDescriptor,
-                                                             jbyteArray data, jint offset,
-                                                             jint count,
-                                                             jint timeout) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_receiveStreamImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jbyteArray data, jint offset, jint count,
+        jint timeout) {
     // LOGD("ENTER receiveStreamImpl");
 
     int result;
@@ -2693,7 +2574,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_receiveStreamImpl(JNIEnv *env, jclass
 
     // Cap read length to available buf size
     int spaceAvailable = env->GetArrayLength(data) - offset;
-    int localCount = count < spaceAvailable ? count : spaceAvailable;
+    int localCount = count < spaceAvailable? count : spaceAvailable;
 
     jboolean isCopy;
     jbyte *body = env->GetByteArrayElements(data, &isCopy);
@@ -2702,7 +2583,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_receiveStreamImpl(JNIEnv *env, jclass
     struct timeval tv;
     tv.tv_sec = timeout / 1000;
     tv.tv_usec = (timeout % 1000) * 1000;
-    setsockopt(handle, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *) &tv,
+    setsockopt(handle, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tv,
                sizeof(struct timeval));
 
     do {
@@ -2734,10 +2615,8 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_receiveStreamImpl(JNIEnv *env, jclass
     }
 }
 
-extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_sendStreamImpl(JNIEnv *env, jclass clazz,
-                                                                          jobject fileDescriptor,
-                                                                          jbyteArray data,
-                                                                          jint offset, jint count) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_sendStreamImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jbyteArray data, jint offset, jint count) {
     // LOGD("ENTER sendStreamImpl");
 
     int handle = 0;
@@ -2755,19 +2634,19 @@ extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_sendStreamImpl(JNIEnv
         handle = jniGetFDFromFileDescriptor(env, fileDescriptor);
         if (handle == 0 || handle == -1) {
             throwSocketException(env,
-                                 sent == 0 ? SOCKERR_BADSOCKET : SOCKERR_INTERRUPTED);
+                    sent == 0 ? SOCKERR_BADSOCKET : SOCKERR_INTERRUPTED);
             env->ReleaseByteArrayElements(data, message, 0);
             return 0;
         }
 
         // LOGD("before select %d", count);
         selectWait(handle, SEND_RETRY_TIME, SELECT_WRITE_TYPE);
-        result = send(handle, (jbyte *) message + offset + sent,
-                      (int) count - sent, SOCKET_NOFLAGS);
+        result = send(handle, (jbyte *)message + offset + sent,
+                (int) count - sent, SOCKET_NOFLAGS);
 
         if (result < 0) {
             result = errno;
-            if (result == EAGAIN || result == EWOULDBLOCK) {
+            if (result == EAGAIN ||result == EWOULDBLOCK) {
                 // LOGD("write blocked %d", sent);
                 continue;
             }
@@ -2785,9 +2664,8 @@ extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_sendStreamImpl(JNIEnv
     return sent;
 }
 
-extern "C" void
-Java_org_sipdroid_net_impl_OSNetworkSystem_shutdownInputImpl(JNIEnv *env, jobject obj,
-                                                             jobject fileDescriptor) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_shutdownInputImpl(JNIEnv* env, jobject obj,
+        jobject fileDescriptor) {
     // LOGD("ENTER shutdownInputImpl");
 
     int ret;
@@ -2810,9 +2688,8 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_shutdownInputImpl(JNIEnv *env, jobjec
     }
 }
 
-extern "C" void
-Java_org_sipdroid_net_impl_OSNetworkSystem_shutdownOutputImpl(JNIEnv *env, jobject obj,
-                                                              jobject fileDescriptor) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_shutdownOutputImpl(JNIEnv* env, jobject obj,
+        jobject fileDescriptor) {
     // LOGD("ENTER shutdownOutputImpl");
 
     int ret;
@@ -2834,11 +2711,9 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_shutdownOutputImpl(JNIEnv *env, jobje
     }
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_sendDatagramImpl2(JNIEnv *env, jclass clazz,
-                                                             jobject fd, jbyteArray data,
-                                                             jint offset, jint length, jint port,
-                                                             jobject inetAddress) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_sendDatagramImpl2(JNIEnv* env, jclass clazz,
+        jobject fd, jbyteArray data, jint offset, jint length, jint port,
+        jobject inetAddress) {
     // LOGD("ENTER sendDatagramImpl2");
 
     jbyte *message;
@@ -2851,7 +2726,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_sendDatagramImpl2(JNIEnv *env, jclass
     if (inetAddress != NULL) {
 
         result = inetAddressToSocketAddress(env, inetAddress, port,
-                                            (struct sockaddr_in *) &sockaddrP);
+                (struct sockaddr_in *) &sockaddrP);
 
         if (result < 0) {
             throwSocketException(env, SOCKERR_BADSOCKET);
@@ -2866,10 +2741,10 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_sendDatagramImpl2(JNIEnv *env, jclass
         }
     }
 
-    message = (jbyte *) malloc(length * sizeof(jbyte));
+    message = (jbyte*) malloc(length * sizeof(jbyte));
     if (message == NULL) {
         jniThrowException(env, "java/lang/OutOfMemoryError",
-                          "couldn't allocate enough memory for readSocket");
+                "couldn't allocate enough memory for readSocket");
         return 0;
     }
 
@@ -2880,14 +2755,14 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_sendDatagramImpl2(JNIEnv *env, jclass
 
         if (handle == 0 || handle == -1) {
             throwSocketException(env,
-                                 sent == 0 ? SOCKERR_BADSOCKET : SOCKERR_INTERRUPTED);
+                    sent == 0 ? SOCKERR_BADSOCKET : SOCKERR_INTERRUPTED);
             free(message);
             return 0;
         }
 
         result = sendto(handle, (char *) (message + sent),
-                        (int) (length - sent), SOCKET_NOFLAGS,
-                        (struct sockaddr *) &sockaddrP, sizeof(sockaddrP));
+                (int) (length - sent), SOCKET_NOFLAGS,
+                (struct sockaddr *) &sockaddrP, sizeof(sockaddrP));
 
         if (result < 0) {
             int err = convertError(errno);
@@ -2905,36 +2780,32 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_sendDatagramImpl2(JNIEnv *env, jclass
     return sent;
 }
 
-extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_selectImpl(JNIEnv *env, jclass clazz,
-                                                                      jobjectArray readFDArray,
-                                                                      jobjectArray writeFDArray,
-                                                                      jint countReadC,
-                                                                      jint countWriteC,
-                                                                      jintArray outFlags,
-                                                                      jlong timeout) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_selectImpl(JNIEnv* env, jclass clazz,
+        jobjectArray readFDArray, jobjectArray writeFDArray, jint countReadC,
+        jint countWriteC, jintArray outFlags, jlong timeout) {
     // LOGD("ENTER selectImpl");
 
     struct timeval timeP;
     int result = 0;
     int size = 0;
     jobject gotFD;
-    fd_set *fdset_read, *fdset_write;
+    fd_set *fdset_read,*fdset_write;
     int handle;
-    jboolean isCopy;
+    jboolean isCopy ;
     jint *flagArray;
     int val;
-    unsigned int time_sec = (unsigned int) timeout / 1000;
-    unsigned int time_msec = (unsigned int) (timeout % 1000);
+    unsigned int time_sec = (unsigned int)timeout/1000;
+    unsigned int time_msec = (unsigned int)(timeout%1000);
 
-    fdset_read = (fd_set *) malloc(sizeof(fd_set));
-    fdset_write = (fd_set *) malloc(sizeof(fd_set));
+    fdset_read = (fd_set *)malloc(sizeof(fd_set));
+    fdset_write = (fd_set *)malloc(sizeof(fd_set));
 
     FD_ZERO(fdset_read);
     FD_ZERO(fdset_write);
 
-    for (val = 0; val < countReadC; val++) {
+    for (val = 0; val<countReadC; val++) {
 
-        gotFD = env->GetObjectArrayElement(readFDArray, val);
+        gotFD = env->GetObjectArrayElement(readFDArray,val);
 
         handle = jniGetFDFromFileDescriptor(env, gotFD);
 
@@ -2945,9 +2816,9 @@ extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_selectImpl(JNIEnv *en
         }
     }
 
-    for (val = 0; val < countWriteC; val++) {
+    for (val = 0; val<countWriteC; val++) {
 
-        gotFD = env->GetObjectArrayElement(writeFDArray, val);
+        gotFD = env->GetObjectArrayElement(writeFDArray,val);
 
         handle = jniGetFDFromFileDescriptor(env, gotFD);
 
@@ -2959,16 +2830,16 @@ extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_selectImpl(JNIEnv *en
     }
 
     /* the size is the max_fd + 1 */
-    size = size + 1;
+    size =size + 1;
 
     if (0 > size) {
         result = SOCKERR_FDSET_SIZEBAD;
     } else {
-        /* only set when timeout >= 0 (non-block)*/
+      /* only set when timeout >= 0 (non-block)*/
         if (0 <= timeout) {
 
             timeP.tv_sec = time_sec;
-            timeP.tv_usec = time_msec * 1000;
+            timeP.tv_usec = time_msec*1000;
 
             result = sockSelect(size, fdset_read, fdset_write, NULL, &timeP);
 
@@ -2978,31 +2849,31 @@ extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_selectImpl(JNIEnv *en
     }
 
     if (0 < result) {
-        /*output the result to a int array*/
-        flagArray = env->GetIntArrayElements(outFlags, &isCopy);
+       /*output the result to a int array*/
+       flagArray = env->GetIntArrayElements(outFlags, &isCopy);
 
-        for (val = 0; val < countReadC; val++) {
-            gotFD = env->GetObjectArrayElement(readFDArray, val);
+       for (val=0; val<countReadC; val++) {
+            gotFD = env->GetObjectArrayElement(readFDArray,val);
 
             handle = jniGetFDFromFileDescriptor(env, gotFD);
 
-            if (FD_ISSET(handle, fdset_read)) {
+            if (FD_ISSET(handle,fdset_read)) {
                 flagArray[val] = SOCKET_OP_READ;
             } else {
                 flagArray[val] = SOCKET_OP_NONE;
             }
         }
 
-        for (val = 0; val < countWriteC; val++) {
+        for (val=0; val<countWriteC; val++) {
 
-            gotFD = env->GetObjectArrayElement(writeFDArray, val);
+            gotFD = env->GetObjectArrayElement(writeFDArray,val);
 
             handle = jniGetFDFromFileDescriptor(env, gotFD);
 
-            if (FD_ISSET(handle, fdset_write)) {
-                flagArray[val + countReadC] = SOCKET_OP_WRITE;
+            if (FD_ISSET(handle,fdset_write)) {
+                flagArray[val+countReadC] = SOCKET_OP_WRITE;
             } else {
-                flagArray[val + countReadC] = SOCKET_OP_NONE;
+                flagArray[val+countReadC] = SOCKET_OP_NONE;
             }
         }
 
@@ -3016,10 +2887,8 @@ extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_selectImpl(JNIEnv *en
     return result;
 }
 
-extern "C" jobject Java_org_sipdroid_net_impl_OSNetworkSystem_getSocketLocalAddressImpl(JNIEnv *env,
-                                                                                        jclass clazz,
-                                                                                        jobject fileDescriptor,
-                                                                                        jboolean preferIPv6Addresses) {
+extern "C" jobject Java_org_sipdroid_net_impl_OSNetworkSystem_getSocketLocalAddressImpl(JNIEnv* env,
+        jclass clazz, jobject fileDescriptor, jboolean preferIPv6Addresses) {
     // LOGD("ENTER getSocketLocalAddressImpl");
 
     struct sockaddr_in addr;
@@ -3036,7 +2905,7 @@ extern "C" jobject Java_org_sipdroid_net_impl_OSNetworkSystem_getSocketLocalAddr
         return NULL;
     }
 
-    result = getsockname(handle, (struct sockaddr *) &addr, &addrLen);
+    result = getsockname(handle, (struct sockaddr *)&addr, &addrLen);
 
     // Spec says ignore all errors
 
@@ -3044,10 +2913,8 @@ extern "C" jobject Java_org_sipdroid_net_impl_OSNetworkSystem_getSocketLocalAddr
 
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_getSocketLocalPortImpl(JNIEnv *env, jclass clazz,
-                                                                  jobject fileDescriptor,
-                                                                  jboolean preferIPv6Addresses) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_getSocketLocalPortImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jboolean preferIPv6Addresses) {
     // LOGD("ENTER getSocketLocalPortImpl");
 
     struct sockaddr_in addr;
@@ -3061,7 +2928,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_getSocketLocalPortImpl(JNIEnv *env, j
         return 0;
     }
 
-    result = getsockname(handle, (struct sockaddr *) &addr, &addrLen);
+    result = getsockname(handle, (struct sockaddr *)&addr, &addrLen);
 
     if (0 != result) {
         // The java spec does not indicate any exceptions on this call
@@ -3071,10 +2938,8 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_getSocketLocalPortImpl(JNIEnv *env, j
     }
 }
 
-extern "C" jobject
-Java_org_sipdroid_net_impl_OSNetworkSystem_getSocketOptionImpl(JNIEnv *env, jclass clazz,
-                                                               jobject fileDescriptor,
-                                                               jint anOption) {
+extern "C" jobject Java_org_sipdroid_net_impl_OSNetworkSystem_getSocketOptionImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jint anOption) {
     // LOGD("ENTER getSocketOptionImpl");
 
     int handle;
@@ -3128,7 +2993,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_getSocketOptionImpl(JNIEnv *env, jcla
                 throwSocketException(env, convertError(errno));
                 return NULL;
             }
-            return newJavaLangByte(env, (jbyte) (byteValue & 0xFF));
+            return newJavaLangByte(env, (jbyte)(byteValue & 0xFF));
         }
         case JAVASOCKOPT_MCAST_INTERFACE: {
             if ((anOption >> 16) & BROKEN_MULTICAST_IF) {
@@ -3213,7 +3078,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_getSocketOptionImpl(JNIEnv *env, jcla
                 throwSocketException(env, convertError(errno));
                 return NULL;
             }
-            return newJavaLangInteger(env, timeout.tv_sec * 1000 + timeout.tv_usec / 1000);
+            return newJavaLangInteger(env, timeout.tv_sec * 1000 + timeout.tv_usec/1000);
         }
         default: {
             throwSocketException(env, SOCKERR_OPTUNSUPP);
@@ -3223,10 +3088,8 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_getSocketOptionImpl(JNIEnv *env, jcla
 
 }
 
-extern "C" void
-Java_org_sipdroid_net_impl_OSNetworkSystem_setSocketOptionImpl(JNIEnv *env, jclass clazz,
-                                                               jobject fileDescriptor,
-                                                               jint anOption, jobject optVal) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_setSocketOptionImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor, jint anOption, jobject optVal) {
     // LOGD("ENTER setSocketOptionImpl");
 
     int handle, result;
@@ -3265,7 +3128,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_setSocketOptionImpl(JNIEnv *env, jcla
             lingr.l_onoff = intVal > 0 ? 1 : 0;
             lingr.l_linger = intVal;
             result = setsockopt(handle, SOL_SOCKET, SO_LINGER, &lingr,
-                                sizeof(struct linger));
+                    sizeof(struct linger));
             if (0 != result) {
                 throwSocketException(env, convertError(errno));
                 return;
@@ -3285,7 +3148,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_setSocketOptionImpl(JNIEnv *env, jcla
             break;
         }
 
-        case JAVASOCKOPT_MCAST_TTL: {
+      case JAVASOCKOPT_MCAST_TTL: {
             if ((anOption >> 16) & BROKEN_MULTICAST_TTL) {
                 return;
             }
@@ -3299,13 +3162,13 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_setSocketOptionImpl(JNIEnv *env, jcla
 
         case JAVASOCKOPT_MCAST_ADD_MEMBERSHIP: {
             mcastAddDropMembership(env, handle, optVal,
-                                   (anOption >> 16) & BROKEN_MULTICAST_IF, IP_ADD_MEMBERSHIP);
+                    (anOption >> 16) & BROKEN_MULTICAST_IF, IP_ADD_MEMBERSHIP);
             return;
         }
 
         case JAVASOCKOPT_MCAST_DROP_MEMBERSHIP: {
             mcastAddDropMembership(env, handle, optVal,
-                                   (anOption >> 16) & BROKEN_MULTICAST_IF, IP_DROP_MEMBERSHIP);
+                    (anOption >> 16) & BROKEN_MULTICAST_IF, IP_DROP_MEMBERSHIP);
             return;
         }
 
@@ -3407,7 +3270,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_setSocketOptionImpl(JNIEnv *env, jcla
             timeout.tv_sec = intVal / 1000;
             timeout.tv_usec = (intVal % 1000) * 1000;
             result = setsockopt(handle, SOL_SOCKET, SO_RCVTIMEO, &timeout,
-                                sizeof(struct timeval));
+                    sizeof(struct timeval));
             if (0 != result) {
                 throwSocketException(env, convertError(errno));
                 return;
@@ -3421,17 +3284,15 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_setSocketOptionImpl(JNIEnv *env, jcla
     }
 }
 
-extern "C" jint
-Java_org_sipdroid_net_impl_OSNetworkSystem_getSocketFlagsImpl(JNIEnv *env, jclass clazz) {
+extern "C" jint Java_org_sipdroid_net_impl_OSNetworkSystem_getSocketFlagsImpl(JNIEnv* env, jclass clazz) {
     // LOGD("ENTER getSocketFlagsImpl");
 
     // Not implemented by harmony
     return 0;
 }
 
-extern "C" void
-Java_org_sipdroid_net_impl_OSNetworkSystem_socketCloseImpl(JNIEnv *env, jclass clazz,
-                                                           jobject fileDescriptor) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_socketCloseImpl(JNIEnv* env, jclass clazz,
+        jobject fileDescriptor) {
     // LOGD("ENTER socketCloseImpl");
 
     int handle = jniGetFDFromFileDescriptor(env, fileDescriptor);
@@ -3448,9 +3309,8 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_socketCloseImpl(JNIEnv *env, jclass c
     close(handle);
 }
 
-extern "C" jobject
-Java_org_sipdroid_net_impl_OSNetworkSystem_getHostByAddrImpl(JNIEnv *env, jclass clazz,
-                                                             jbyteArray addrStr) {
+extern "C" jobject Java_org_sipdroid_net_impl_OSNetworkSystem_getHostByAddrImpl(JNIEnv* env, jclass clazz,
+        jbyteArray addrStr) {
     // LOGD("ENTER getHostByAddrImpl");
 
     if (addrStr == NULL) {
@@ -3458,13 +3318,13 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_getHostByAddrImpl(JNIEnv *env, jclass
         return JNI_FALSE;
     }
 
-    jstring address = (jstring) newJavaLangString(env, addrStr);
+    jstring address = (jstring)newJavaLangString(env, addrStr);
     jstring result;
-    const char *addr = env->GetStringUTFChars(address, NULL);
+    const char* addr = env->GetStringUTFChars(address, NULL);
 
-    struct hostent *ent = gethostbyaddr(addr, strlen(addr), AF_INET);
+    struct hostent* ent = gethostbyaddr(addr, strlen(addr), AF_INET);
 
-    if (ent != NULL && ent->h_name != NULL) {
+    if (ent != NULL  && ent->h_name != NULL) {
         result = env->NewStringUTF(ent->h_name);
     } else {
         result = NULL;
@@ -3475,10 +3335,8 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_getHostByAddrImpl(JNIEnv *env, jclass
     return result;
 }
 
-extern "C" jobject
-Java_org_sipdroid_net_impl_OSNetworkSystem_getHostByNameImpl(JNIEnv *env, jclass clazz,
-                                                             jstring nameStr,
-                                                             jboolean preferIPv6Addresses) {
+extern "C" jobject Java_org_sipdroid_net_impl_OSNetworkSystem_getHostByNameImpl(JNIEnv* env, jclass clazz,
+        jstring nameStr, jboolean preferIPv6Addresses) {
     // LOGD("ENTER getHostByNameImpl");
 
     if (nameStr == NULL) {
@@ -3486,7 +3344,7 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_getHostByNameImpl(JNIEnv *env, jclass
         return NULL;
     }
 
-    const char *name = env->GetStringUTFChars(nameStr, NULL);
+    const char* name = env->GetStringUTFChars(nameStr, NULL);
 
     if (useAdbNetworking) {
 
@@ -3517,11 +3375,11 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_getHostByNameImpl(JNIEnv *env, jclass
     } else {
 
         // normal case...no adb networking
-        struct hostent *ent = gethostbyname(name);
+        struct hostent* ent = gethostbyname(name);
 
         env->ReleaseStringUTFChars(nameStr, name);
 
-        if (ent != NULL && ent->h_length > 0) {
+        if (ent != NULL  && ent->h_length > 0) {
             jbyteArray addr = env->NewByteArray(4);
             jbyte v[4];
             memcpy(v, ent->h_addr, 4);
@@ -3533,9 +3391,8 @@ Java_org_sipdroid_net_impl_OSNetworkSystem_getHostByNameImpl(JNIEnv *env, jclass
     }
 }
 
-extern "C" void
-Java_org_sipdroid_net_impl_OSNetworkSystem_setInetAddressImpl(JNIEnv *env, jobject obj,
-                                                              jobject sender, jbyteArray address) {
+extern "C" void Java_org_sipdroid_net_impl_OSNetworkSystem_setInetAddressImpl(JNIEnv* env, jobject obj,
+        jobject sender, jbyteArray address) {
     // LOGD("ENTER setInetAddressImpl");
 
     env->SetObjectField(sender, gCachedFields.iaddr_ipaddress, address);

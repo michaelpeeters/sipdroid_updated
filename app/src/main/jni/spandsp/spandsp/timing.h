@@ -66,7 +66,8 @@ static __inline__ uint64_t rdtscll(void)
 }
 /*- End of function --------------------------------------------------------*/
 #else
-static __inline__ uint64_t rdtscll(void) {
+static __inline__ uint64_t rdtscll(void)
+{
     /* This architecture doesn't have a suitable timer */
     return 0llu;
 }

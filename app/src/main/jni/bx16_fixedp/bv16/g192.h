@@ -26,6 +26,5 @@
 ******************************************************************************/
 
 /* prototypes for G.192 bit-stream functions */
-void bv16_fwrite_g192bitstrm(struct BV16_Bit_Stream *bs, FILE *fo);
-
+void  bv16_fwrite_g192bitstrm(struct BV16_Bit_Stream *bs, FILE *fo);
 short bv16_fread_g192bitstrm(struct BV16_Bit_Stream *bs, FILE *fi);

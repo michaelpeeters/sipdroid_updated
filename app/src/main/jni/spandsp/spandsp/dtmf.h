@@ -99,9 +99,7 @@ extern "C"
     \param max_samples The required number of generated samples.
     \return The number of samples actually generated. This may be less than 
             max_samples if the input buffer empties. */
-SPAN_DECLARE(int)
-dtmf_tx(dtmf_tx_state_t * s , int16_t amp[],
-int max_samples ) ;
+SPAN_DECLARE(int) dtmf_tx(dtmf_tx_state_t *s, int16_t amp[], int max_samples);
 
 /*! \brief Put a string of digits in a DTMF generator's input buffer.
     \param s The DTMF generator context.
@@ -110,42 +108,34 @@ int max_samples ) ;
            assumed to be a NULL terminated string.
     \return The number of digits actually added. This may be less than the
             length of the digit string, if the buffer fills up. */
-SPAN_DECLARE(int)
-dtmf_tx_put(dtmf_tx_state_t * s , const char *digits,
-int len ) ;
+SPAN_DECLARE(int) dtmf_tx_put(dtmf_tx_state_t *s, const char *digits, int len);
 
 /*! \brief Change the transmit level for a DTMF tone generator context.
     \param s The DTMF generator context.
     \param level The level of the low tone, in dBm0.
     \param twist The twist, in dB. */
-SPAN_DECLARE(void)
-dtmf_tx_set_level(dtmf_tx_state_t * s , int level,
-int twist ) ;
+SPAN_DECLARE(void) dtmf_tx_set_level(dtmf_tx_state_t *s, int level, int twist);
 
 /*! \brief Change the transmit on and off time for a DTMF tone generator context.
     \param s The DTMF generator context.
     \param on-time The on time, in ms.
     \param off_time The off time, in ms. */
-SPAN_DECLARE(void)
-dtmf_tx_set_timing(dtmf_tx_state_t * s , int on_time,
-int off_time ) ;
+SPAN_DECLARE(void) dtmf_tx_set_timing(dtmf_tx_state_t *s, int on_time, int off_time);
 
 /*! \brief Initialise a DTMF tone generator context.
     \param s The DTMF generator context.
     \return A pointer to the DTMF generator context. */
-SPAN_DECLARE(dtmf_tx_state_t * ) dtmf_tx_init(dtmf_tx_state_t * s ) ;
+SPAN_DECLARE(dtmf_tx_state_t *) dtmf_tx_init(dtmf_tx_state_t *s);
 
 /*! \brief Release a DTMF tone generator context.
     \param s The DTMF tone generator context.
     \return 0 for OK, else -1. */
-SPAN_DECLARE(int)
-dtmf_tx_release(dtmf_tx_state_t * s ) ;
+SPAN_DECLARE(int) dtmf_tx_release(dtmf_tx_state_t *s);
 
 /*! \brief Free a DTMF tone generator context.
     \param s The DTMF tone generator context.
     \return 0 for OK, else -1. */
-SPAN_DECLARE(int)
-dtmf_tx_free(dtmf_tx_state_t * s ) ;
+SPAN_DECLARE(int) dtmf_tx_free(dtmf_tx_state_t *s);
 
 /*! Set a optional realtime callback for a DTMF receiver context. This function
     is called immediately a confirmed state change occurs in the received DTMF. It
@@ -156,10 +146,9 @@ dtmf_tx_free(dtmf_tx_state_t * s ) ;
     \param callback Callback routine used to report the start and end of digits.
     \param user_data An opaque pointer which is associated with the context,
            and supplied in callbacks. */
-SPAN_DECLARE(void)
-dtmf_rx_set_realtime_callback(dtmf_rx_state_t * s ,
-tone_report_func_t callback,
-void *user_data ) ;
+SPAN_DECLARE(void) dtmf_rx_set_realtime_callback(dtmf_rx_state_t *s,
+                                                 tone_report_func_t callback,
+                                                 void *user_data);
 
 /*! \brief Adjust a DTMF receiver context.
     \param s The DTMF receiver context.
@@ -169,12 +158,11 @@ void *user_data ) ;
     \param reverse_twist Acceptable reverse twist, in dB. < 0 to leave unchanged.
     \param threshold The minimum acceptable tone level for detection, in dBm0.
            <= -99 to leave unchanged. */
-SPAN_DECLARE(void)
-dtmf_rx_parms(dtmf_rx_state_t * s ,
-int filter_dialtone,
-int twist,
-int reverse_twist,
-int threshold ) ;
+SPAN_DECLARE(void) dtmf_rx_parms(dtmf_rx_state_t *s,
+                                 int filter_dialtone,
+                                 int twist,
+                                 int reverse_twist,
+                                 int threshold);
 
 /*! Process a block of received DTMF audio samples.
     \brief Process a block of received DTMF audio samples.
@@ -182,9 +170,7 @@ int threshold ) ;
     \param amp The audio sample buffer.
     \param samples The number of samples in the buffer.
     \return The number of samples unprocessed. */
-SPAN_DECLARE(int)
-dtmf_rx(dtmf_rx_state_t * s , const int16_t amp[],
-int samples ) ;
+SPAN_DECLARE(int) dtmf_rx(dtmf_rx_state_t *s, const int16_t amp[], int samples);
 
 /*! Get the status of DTMF detection during processing of the last audio
     chunk.
@@ -193,17 +179,14 @@ int samples ) ;
     \param s The DTMF receiver context.
     \return The current digit status. Either 'x' for a "maybe" condition, or the
             digit being detected. */
-SPAN_DECLARE(int)
-dtmf_rx_status(dtmf_rx_state_t * s ) ;
+SPAN_DECLARE(int) dtmf_rx_status(dtmf_rx_state_t *s);
 
 /*! \brief Get a string of digits from a DTMF receiver's output buffer.
     \param s The DTMF receiver context.
     \param digits The buffer for the received digits.
     \param max The maximum  number of digits to be returned,
     \return The number of digits actually returned. */
-SPAN_DECLARE(size_t)
-dtmf_rx_get(dtmf_rx_state_t * s , char *digits,
-int max ) ;
+SPAN_DECLARE(size_t) dtmf_rx_get(dtmf_rx_state_t *s, char *digits, int max);
 
 /*! \brief Initialise a DTMF receiver context.
     \param s The DTMF receiver context.
@@ -213,21 +196,19 @@ int max ) ;
     \param user_data An opaque pointer which is associated with the context,
            and supplied in callbacks.
     \return A pointer to the DTMF receiver context. */
-SPAN_DECLARE(dtmf_rx_state_t * ) dtmf_rx_init(dtmf_rx_state_t * s ,
-digits_rx_callback_t callback,
-void *user_data ) ;
+SPAN_DECLARE(dtmf_rx_state_t *) dtmf_rx_init(dtmf_rx_state_t *s,
+                                             digits_rx_callback_t callback,
+                                             void *user_data);
 
 /*! \brief Release a DTMF receiver context.
     \param s The DTMF receiver context.
     \return 0 for OK, else -1. */
-SPAN_DECLARE(int)
-dtmf_rx_release(dtmf_rx_state_t * s ) ;
+SPAN_DECLARE(int) dtmf_rx_release(dtmf_rx_state_t *s);
 
 /*! \brief Free a DTMF receiver context.
     \param s The DTMF receiver context.
     \return 0 for OK, else -1. */
-SPAN_DECLARE(int)
-dtmf_rx_free(dtmf_rx_state_t * s ) ;
+SPAN_DECLARE(int) dtmf_rx_free(dtmf_rx_state_t *s);
 
 #if defined(__cplusplus)
 }

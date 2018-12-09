@@ -30,17 +30,18 @@
 #if !defined(_SPANDSP_T30_FCF_H_)
 #define _SPANDSP_T30_FCF_H_
 
-enum {
+enum
+{
     /*! Initial identification messages */
     /*! From the called to the calling terminal. */
-            T30_DIS = 0x80,         /*! [0000 0001] Digital identification signal */
+    T30_DIS = 0x80,         /*! [0000 0001] Digital identification signal */
     T30_CSI = 0x40,         /*! [0000 0010] Called subscriber identification */
     T30_NSF = 0x20,         /*! [0000 0100] Non-standard facilities */
 
     /*! Commands to send */
     /*! From a calling terminal wishing to be a receiver, to a called terminal
         which is capable of transmitting. */
-            T30_DTC = 0x81,         /*! [1000 0001] Digital transmit command */
+    T30_DTC = 0x81,         /*! [1000 0001] Digital transmit command */
     T30_CIG = 0x41,         /*! [1000 0010] Calling subscriber identification */
     T30_NSC = 0x21,         /*! [1000 0100] Non-standard facilities command */
     T30_PWD = 0xC1,         /*! [1000 0011] Password */
@@ -52,25 +53,25 @@ enum {
     /*! Commands to receive */
     /*! From a calling terminal wishing to be a transmitter, to a called terminal
         which is capable of receiving. */
-            T30_DCS = 0x82,         /*! [X100 0001] Digital command signal */
+    T30_DCS = 0x82,         /*! [X100 0001] Digital command signal */
     T30_TSI = 0x42,         /*! [X100 0010] Transmitting subscriber information */
     T30_NSS = 0x22,         /*! [X100 0100] Non-standard facilities set-up */
     T30_SUB = 0xC2,         /*! [X100 0011] Sub-address */
     T30_SID = 0xA2,         /*! [X100 0101] Sender identification */
     /*! T30_TCF - Training check is a burst of 1.5s of zeros sent using the image modem */
-            T30_CTC = 0x12,         /*! [X100 1000] Continue to correct */
+    T30_CTC = 0x12,         /*! [X100 1000] Continue to correct */
     T30_TSA = 0x62,         /*! [X100 0110] Transmitting subscriber internet address */
     T30_IRA = 0xE2,         /*! [X100 0111] Internet routing address */
 
     /*! Pre-message response signals */
     /*! From the receiver to the transmitter. */
-            T30_CFR = 0x84,         /*! [X010 0001] Confirmation to receive */
+    T30_CFR = 0x84,         /*! [X010 0001] Confirmation to receive */
     T30_FTT = 0x44,         /*! [X010 0010] Failure to train */
     T30_CTR = 0xC4,         /*! [X010 0011] Response for continue to correct */
     T30_CSA = 0x24,         /*! [X010 0100] Called subscriber internet address */
 
     /*! Post-message commands */
-            T30_EOM = 0x8E,         /*! [X111 0001] End of message */
+    T30_EOM = 0x8E,         /*! [X111 0001] End of message */
     T30_MPS = 0x4E,         /*! [X111 0010] Multipage signal */
     T30_EOP = 0x2E,         /*! [X111 0100] End of procedure */
     T30_PRI_EOM = 0x9E,     /*! [X111 1001] Procedure interrupt - end of procedure */
@@ -82,7 +83,7 @@ enum {
     T30_RR = 0x6E,          /*! [X111 0110] Receiver ready */
 
     /*! Post-message responses */
-            T30_MCF = 0x8C,         /*! [X011 0001] Message confirmation */
+    T30_MCF = 0x8C,         /*! [X011 0001] Message confirmation */
     T30_RTP = 0xCC,         /*! [X011 0011] Retrain positive */
     T30_RTN = 0x4C,         /*! [X011 0010] Retrain negative */
     T30_PIP = 0xAC,         /*! [X011 0101] Procedure interrupt positive */
@@ -93,7 +94,7 @@ enum {
     T30_FDM = 0xFC,         /*! [X011 1111] File diagnostics message */
 
     /*! Other line control signals */
-            T30_DCN = 0xFA,         /*! [X101 1111] Disconnect */
+    T30_DCN = 0xFA,         /*! [X101 1111] Disconnect */
     T30_CRP = 0x1A,         /*! [X101 1000] Command repeat */
     T30_FNV = 0xCA,         /*! [X101 0011] Field not valid */
     T30_TNR = 0xEA,         /*! [X101 0111] Transmitter not ready */
@@ -111,10 +112,10 @@ enum {
     T30_SPT = 0x80,         /*! [0000 0001] Security page type */
 
     /*! Something only use as a secondary value in error correcting mode */
-            T30_NULL = 0x00,        /*! [0000 0000] Nothing to say */
+    T30_NULL = 0x00,        /*! [0000 0000] Nothing to say */
 
     /*! Information frame types used for error correction mode, in T.4 */
-            T4_FCD = 0x06,          /*! [0110 0000] Facsimile coded data */
+    T4_FCD = 0x06,          /*! [0110 0000] Facsimile coded data */
     T4_RCP = 0x86           /*! [0110 0001] Return to control for partial page */
 };
 

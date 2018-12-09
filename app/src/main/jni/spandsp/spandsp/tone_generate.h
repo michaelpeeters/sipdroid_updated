@@ -77,29 +77,24 @@ extern "C"
     \param d3 x
     \param d4 x
     \param repeat x */
-SPAN_DECLARE(void)
-make_tone_gen_descriptor(tone_gen_descriptor_t * s ,
-int f1,
-int l1,
-int f2,
-int l2,
-int d1,
-int d2,
-int d3,
-int d4,
-int repeat ) ;
+SPAN_DECLARE(void) make_tone_gen_descriptor(tone_gen_descriptor_t *s,
+                                            int f1,
+                                            int l1,
+                                            int f2,
+                                            int l2,
+                                            int d1,
+                                            int d2,
+                                            int d3,
+                                            int d4,
+                                            int repeat);
 
-SPAN_DECLARE_NONSTD(int)
-tone_gen(tone_gen_state_t * s , int16_t amp[],
-int max_samples ) ;
+SPAN_DECLARE_NONSTD(int) tone_gen(tone_gen_state_t *s, int16_t amp[], int max_samples);
 
-SPAN_DECLARE(tone_gen_state_t * ) tone_gen_init(tone_gen_state_t * s , tone_gen_descriptor_t *t ) ;
+SPAN_DECLARE(tone_gen_state_t *) tone_gen_init(tone_gen_state_t *s, tone_gen_descriptor_t *t);
 
-SPAN_DECLARE(int)
-tone_gen_release(tone_gen_state_t * s ) ;
+SPAN_DECLARE(int) tone_gen_release(tone_gen_state_t *s);
 
-SPAN_DECLARE(int)
-tone_gen_free(tone_gen_state_t * s ) ;
+SPAN_DECLARE(int) tone_gen_free(tone_gen_state_t *s);
 
 #if defined(__cplusplus)
 }
